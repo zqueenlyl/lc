@@ -19,3 +19,9 @@
 ## 考点
 
 - 栈的匹配，O(n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p02_valid_parentheses.go)
+
+[单元测试](../solutions/p02_valid_parentheses_test.go)

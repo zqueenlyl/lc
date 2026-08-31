@@ -15,3 +15,9 @@
 ## 考点
 
 - 逐位取模反转 + 溢出判断，O(log n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p36_reverse_integer.go)
+
+[单元测试](../../solutions/p36_reverse_integer_test.go)

@@ -12,3 +12,9 @@
 ## 考点
 
 - 动态规划（组合数），O(mn)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p34_unique_paths.go)
+
+[单元测试](../../solutions/p34_unique_paths_test.go)

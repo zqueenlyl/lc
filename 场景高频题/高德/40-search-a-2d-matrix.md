@@ -12,3 +12,9 @@
 ## 考点
 
 - 将矩阵视为一维有序数组二分，或从右上角搜索，O(log(mn))。
+
+## 代码实现
+
+[Go 实现](../../solutions/p40_search_a_2d_matrix.go)
+
+[单元测试](../../solutions/p40_search_a_2d_matrix_test.go)

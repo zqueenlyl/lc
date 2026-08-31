@@ -13,3 +13,9 @@
 ## 考点
 
 - 动态规划 O(n²) 或贪心 + 二分 O(n log n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p25_longest_increasing_subsequence.go)
+
+[单元测试](../../solutions/p25_longest_increasing_subsequence_test.go)

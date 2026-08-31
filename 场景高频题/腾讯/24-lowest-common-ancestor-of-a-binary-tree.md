@@ -12,3 +12,9 @@
 ## 考点
 
 - 递归后序遍历，O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p24_lowest_common_ancestor_of_a_binary_tree.go)
+
+[单元测试](../../solutions/p24_lowest_common_ancestor_of_a_binary_tree_test.go)

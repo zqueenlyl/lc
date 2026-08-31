@@ -14,3 +14,9 @@
 ## 考点
 
 - 辅助栈（同步记录当前最小值）或差值法，O(1)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p37_min_stack.go)
+
+[单元测试](../../solutions/p37_min_stack_test.go)

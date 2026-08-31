@@ -13,3 +13,9 @@
 ## 考点
 
 - 动态规划（状态转移 dp[i] = max(dp[i-1], dp[i-2]+nums[i])），O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p35_house_robber.go)
+
+[单元测试](../../solutions/p35_house_robber_test.go)

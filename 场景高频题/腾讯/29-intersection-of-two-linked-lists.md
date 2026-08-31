@@ -12,3 +12,9 @@
 ## 考点
 
 - 双指针走对方链表，O(m+n)；或用哈希表。
+
+## 代码实现
+
+[Go 实现](../../solutions/p29_intersection_of_two_linked_lists.go)
+
+[单元测试](../../solutions/p29_intersection_of_two_linked_lists_test.go)

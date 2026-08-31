@@ -16,3 +16,9 @@
 ## 考点
 
 - 动态规划（完全背包），O(amount × n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p26_coin_change.go)
+
+[单元测试](../../solutions/p26_coin_change_test.go)

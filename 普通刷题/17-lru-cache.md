@@ -19,3 +19,9 @@
 ## 考点
 
 - 哈希表 + 双向链表，O(1)。
+
+## 代码实现
+
+[Go 实现](../solutions/p17_lru_cache.go)
+
+[单元测试](../solutions/p17_lru_cache_test.go)

@@ -12,3 +12,9 @@
 ## 考点
 
 - 找中点 + 反转后半段 + 交叉合并，O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p31_reorder_list.go)
+
+[单元测试](../../solutions/p31_reorder_list_test.go)

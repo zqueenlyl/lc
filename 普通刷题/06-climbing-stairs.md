@@ -13,3 +13,9 @@
 ## 考点
 
 - 动态规划（斐波那契），O(n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p06_climbing_stairs.go)
+
+[单元测试](../solutions/p06_climbing_stairs_test.go)

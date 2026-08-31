@@ -12,3 +12,9 @@
 ## 考点
 
 - 双指针 O(n)、单调栈 O(n) 或动态规划 O(n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p19_trapping_rain_water.go)
+
+[单元测试](../solutions/p19_trapping_rain_water_test.go)

@@ -15,3 +15,9 @@
 ## 考点
 
 - 中心扩展 O(n²) 或动态规划 O(n²)。
+
+## 代码实现
+
+[Go 实现](../solutions/p12_longest_palindromic_substring.go)
+
+[单元测试](../solutions/p12_longest_palindromic_substring_test.go)

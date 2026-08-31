@@ -17,3 +17,9 @@
 ## 考点
 
 - DFS / BFS 或并查集，O(mn)。
+
+## 代码实现
+
+[Go 实现](../solutions/p15_number_of_islands.go)
+
+[单元测试](../solutions/p15_number_of_islands_test.go)

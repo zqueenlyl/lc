@@ -18,3 +18,9 @@
 ## 考点
 
 - 逐字符解析 + 溢出判断，O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p30_string_to_integer_atoi.go)
+
+[单元测试](../../solutions/p30_string_to_integer_atoi_test.go)

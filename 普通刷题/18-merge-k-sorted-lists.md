@@ -12,3 +12,9 @@
 ## 考点
 
 - 优先队列（最小堆）O(n log k) 或分治两两合并。
+
+## 代码实现
+
+[Go 实现](../solutions/p18_merge_k_sorted_lists.go)
+
+[单元测试](../solutions/p18_merge_k_sorted_lists_test.go)

@@ -12,3 +12,9 @@
 ## 考点
 
 - 快速选择（平均 O(n)）或大小为 k 的小顶堆（O(n log k)）。
+
+## 代码实现
+
+[Go 实现](../../solutions/p27_kth_largest_element_in_an_array.go)
+
+[单元测试](../../solutions/p27_kth_largest_element_in_an_array_test.go)

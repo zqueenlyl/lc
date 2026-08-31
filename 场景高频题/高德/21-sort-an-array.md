@@ -12,3 +12,9 @@
 ## 考点
 
 - 快速排序 / 归并排序，O(n log n)，注意快排最坏情况的处理（随机化或三数取中）。
+
+## 代码实现
+
+[Go 实现](../../solutions/p21_sort_an_array.go)
+
+[单元测试](../../solutions/p21_sort_an_array_test.go)

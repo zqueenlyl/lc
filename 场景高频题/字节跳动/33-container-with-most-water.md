@@ -12,3 +12,9 @@
 ## 考点
 
 - 双指针向中间收缩，O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p33_container_with_most_water.go)
+
+[单元测试](../../solutions/p33_container_with_most_water_test.go)

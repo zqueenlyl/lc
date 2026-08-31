@@ -15,3 +15,9 @@
 ## 考点
 
 - 哈希表一次遍历，O(n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p01_two_sum.go)
+
+[单元测试](../solutions/p01_two_sum_test.go)

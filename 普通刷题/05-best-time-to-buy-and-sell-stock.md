@@ -13,3 +13,9 @@
 ## 考点
 
 - 一次遍历维护历史最低价，O(n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p05_best_time_to_buy_and_sell_stock.go)
+
+[单元测试](../solutions/p05_best_time_to_buy_and_sell_stock_test.go)

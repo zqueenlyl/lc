@@ -12,3 +12,9 @@
 ## 考点
 
 - 哈希表映射旧节点→新节点，或原地复制（穿插节点）O(n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p23_copy_list_with_random_pointer.go)
+
+[单元测试](../../solutions/p23_copy_list_with_random_pointer_test.go)

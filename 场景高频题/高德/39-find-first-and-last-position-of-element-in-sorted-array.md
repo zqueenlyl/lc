@@ -15,3 +15,9 @@
 ## 考点
 
 - 两次二分查找（找左边界和右边界），O(log n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p39_find_first_and_last_position_of_element_in_sorted_array.go)
+
+[单元测试](../../solutions/p39_find_first_and_last_position_of_element_in_sorted_array_test.go)

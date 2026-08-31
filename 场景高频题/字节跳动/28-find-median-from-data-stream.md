@@ -17,3 +17,9 @@
 ## 考点
 
 - 大顶堆（较小半部分）+ 小顶堆（较大半部分），O(log n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p28_find_median_from_data_stream.go)
+
+[单元测试](../../solutions/p28_find_median_from_data_stream_test.go)

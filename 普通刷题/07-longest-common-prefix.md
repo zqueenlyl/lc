@@ -15,3 +15,9 @@
 ## 考点
 
 - 纵向扫描或横向扫描，O(S)，S 为所有字符总数。
+
+## 代码实现
+
+[Go 实现](../solutions/p07_longest_common_prefix.go)
+
+[单元测试](../solutions/p07_longest_common_prefix_test.go)

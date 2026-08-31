@@ -12,3 +12,9 @@
 ## 考点
 
 - 回溯（DFS + 标记数组），O(n·n!)。
+
+## 代码实现
+
+[Go 实现](../solutions/p14_permutations.go)
+
+[单元测试](../solutions/p14_permutations_test.go)

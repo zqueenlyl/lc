@@ -12,3 +12,9 @@
 ## 考点
 
 - 双指针 + 虚拟头节点，O(m+n)。
+
+## 代码实现
+
+[Go 实现](../solutions/p03_merge_two_sorted_lists.go)
+
+[单元测试](../solutions/p03_merge_two_sorted_lists_test.go)

@@ -12,3 +12,9 @@
 ## 考点
 
 - 按起点排序 + 遍历合并，O(n log n)。
+
+## 代码实现
+
+[Go 实现](../../solutions/p32_merge_intervals.go)
+
+[单元测试](../../solutions/p32_merge_intervals_test.go)
