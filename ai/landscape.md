@@ -46,7 +46,7 @@
 | **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./multimodal/) |
 | **Diffusion** | 图像 / 视频生成主路径 | Flux、Midjourney、可灵、Seedance、Veo | [diffusion/](./diffusion/) |
 | **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./rag/) |
-| **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [loop-engineering.md](./loop-engineering.md) |
+| **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [agent/](./agent/) |
 | **Harness** | 套在模型外的编码循环外壳 | Claude Code、Codex、Kimi Code、Pi | [harness/](./harness/) |
 | **MCP** | Agent 连工具的 USB-C | Cursor / Claude / ChatGPT 都能插 | [mcp/](./mcp/) |
 | **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./a2a/) |
@@ -532,7 +532,7 @@ Agent 要大规模调工具
 
 | 你想搞懂 | 去 |
 |---|---|
-| Agent 怎么转起来 | [loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/)、[harness/](./harness/) |
+| Agent 怎么转起来 | [agent/](./agent/)、[loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/)、[harness/](./harness/) |
 | 知识怎么塞进模型 | [rag/](./rag/)、[知识库/](./知识库/)、[memory/](./memory/) |
 | 工具和多 Agent | [mcp/](./mcp/)、[a2a/](./a2a/)、[agent-skills/](./agent-skills/) |
 | 模型内部在升级什么 | [reasoning/](./reasoning/)、[moe/](./moe/)、[multimodal/](./multimodal/) |

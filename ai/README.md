@@ -12,6 +12,7 @@
 ai/
 ├── README.md                 # 本索引
 ├── landscape.md              # 产品 / 技术 / 公司一览（扫盲）
+├── agent/                    # Agent 知识总图
 ├── loop-engineering.md       # 循环工程（已有）
 │
 ├── rag/                      # RAG 检索增强（已有）
@@ -61,6 +62,7 @@ ai/
 | 主题 | 一句话 | 入口 |
 |---|---|---|
 | **产品 / 技术 / 公司一览** | 六层坐标系 + 模型家族 + 应用产品 + 芯片云 + 常用网站，2026-09 快照 | [landscape.md](./landscape.md) |
+| **Agent 知识整理** | 定义、解剖、ReAct/多 Agent、死法与选题梯子；链到各专题 | [agent/](./agent/) |
 
 ### 已有专题
 
@@ -76,6 +78,7 @@ ai/
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
+| **Agent（总图）** | 有目标、调工具、看反馈再试；聊天/工作流/Agent 三分 | [agent/](./agent/) |
 | **MCP** | Agent ↔ 工具 / 数据源的 USB-C | [mcp/](./mcp/) |
 | **A2A** | Agent ↔ Agent 的对等委托协议 | [a2a/](./a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、操作浏览器/桌面 | [computer-use/](./computer-use/) |
@@ -123,7 +126,7 @@ ai/
 生成：Diffusion · World Models
 ```
 
-MCP 连工具，A2A 连 Agent，二者互补而不是二选一。RAG / Memory / Context Engineering 解决「塞什么进窗口」，Guardrails / Eval 解决「能不能上线」。
+MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，Guardrails / Eval 解决「能不能上线」。
 
 ## 跑 MVP
 

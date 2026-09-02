@@ -144,6 +144,8 @@ DeepSeek V4、Kimi、MiniMax 等中国 LLM 以极低价格改变了局面：
 
 ## 关联阅读（本仓库）
 
+- [Agent 知识总图](./agent/)（定义、解剖、模式、何时不要上 Agent）
 - [RAG 类型与 MVP 实现](./rag/rag-types.md)、[rag-mvp.md](./rag/rag-mvp.md)
 - [LangGraph 图编排框架](./langgraph/README.md)（循环/状态机的落地工具）
 - [Agent 记忆专题](./memory/agent-memory.md)（循环的"脊梁"）
+- [Harness](./harness/) · [Eval](./eval/)
