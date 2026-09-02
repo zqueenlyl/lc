@@ -1,0 +1,17 @@
+# LangGraph 核心
+langgraph>=0.2.0
+
+# LangChain 生态
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+
+# 向量检索（demo 05 使用，无需外部服务）
+chromadb>=0.5.0
+
+# 图结构 ASCII 可视化（draw_ascii 依赖）
+grandalf>=0.8.0
+
+# 可选：本地持久化检查点
+# langgraph-checkpoint-sqlite>=2.0.0
