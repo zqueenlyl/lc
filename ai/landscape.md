@@ -47,6 +47,7 @@
 | **Diffusion** | 图像 / 视频生成主路径 | Flux、Midjourney、可灵、Seedance、Veo | [diffusion/](./diffusion/) |
 | **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./rag/) |
 | **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [loop-engineering.md](./loop-engineering.md) |
+| **Harness** | 套在模型外的编码循环外壳 | Claude Code、Codex、Kimi Code、Pi | [harness/](./harness/) |
 | **MCP** | Agent 连工具的 USB-C | Cursor / Claude / ChatGPT 都能插 | [mcp/](./mcp/) |
 | **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、开浏览器 | Claude Computer Use、各家浏览器 Agent | [computer-use/](./computer-use/) |
@@ -59,7 +60,7 @@
 | **Context Engineering** | 窗口里塞什么、砍什么、如何缓存 | 长上下文 + 前缀缓存产品 | [context-engineering/](./context-engineering/) |
 | **Memory** | 工作 / 短期 / 长期记忆 | Mem0、Zep、各框架 Checkpointer | [memory/](./memory/) |
 | **Guardrails** | 输入筛、工具门禁、输出校验、人审 | 云 Moderations、自建策略平面 | [guardrails/](./guardrails/) |
-| **Eval / Trace** | 自家任务集 + 线上追踪，替代榜单崇拜 | LangSmith、Langfuse、OTel GenAI | [eval/](./eval/) |
+| **Eval / Trace** | 学校考试评模型；上机考试评模型×Harness | LangSmith、Langfuse、SWE-bench、AA Coding Agents | [eval/](./eval/) |
 | **Model Routing** | 按难度/模态/故障选模型 | AI Gateway、LiteLLM、OpenRouter | [model-routing/](./model-routing/) |
 | **Voice / Realtime** | 双向音视频流，中途护栏 | Realtime / Live API、电话 Agent | [voice-realtime/](./voice-realtime/) |
 
@@ -228,6 +229,8 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 
 选型极简：日常在编辑器里写 → Cursor 或 Copilot；要啃大重构 → Claude Code；公司已经 all-in GitHub → Copilot；要私有模型 → 开源插件 + vLLM。
 
+产品（你打开的窗口）和 **Harness**（循环怎么转：默认工具、插件、子 Agent）不是一层。六款外壳对照见 [harness/](./harness/)：DeepSeek / Claude Code / Codex / Kimi Code / Pi / OpenClaw。Tool 个数不代表强弱。
+
 ### 4.3 搜索、研究、知识
 
 | 产品 | 公司 | 差异 |
@@ -386,14 +389,14 @@ Artificial Analysis 首页还能进 **Search Index**（比搜索 API）和 **Opt
 
 | 网站 | 测的是 | 链接 |
 |---|---|---|
-| **SWE-bench** | 真实 GitHub issue → 改仓库过测试；编程 Agent 最常被引用 | [swebench.com](https://www.swebench.com/) |
+| **SWE-bench** | 真实 GitHub issue → 改仓过测试；看 **% Resolved**。默认常看 Verified；要比模型锁外壳看 **Bash Only** | [swebench.com](https://www.swebench.com/) |
 | **Terminal-Bench** | 在终端里把活干完（装依赖、跑脚本），AA Coding Agent 的组成之一 | [tbench.ai](https://www.tbench.ai/) |
 | **LiveCodeBench** | 持续收新竞赛题，抗污染，看「会不会写新题」 | [livecodebench.github.io](https://livecodebench.github.io/) |
 | **Aider Polyglot** | 多语言代码编辑质量，偏「结对改文件」 | [aider.chat/docs/leaderboards](https://aider.chat/docs/leaderboards/) |
 | **OpenCompass** | 国内开源评测套件 + 公开榜，中文和多模态覆盖好 | [rank.opencompass.org.cn](https://rank.opencompass.org.cn/) |
 | **SuperCLUE** | 中文综合能力横评，看国内对话体感 | [superclueai.com](https://www.superclueai.com/) |
 
-写代码不要只看 HumanEval。2026 年有区分度的是 SWE-bench（及 Verified / Pro / Live）、Terminal-Bench、LiveCodeBench；再往上是你自己的仓库 + CI。
+写代码不要只看 HumanEval。有区分度的公开上机榜是 [SWE-bench](https://www.swebench.com/)（Full / Verified / Lite / Bash Only / 多语言 / 多模态）、Terminal-Bench、LiveCodeBench。SWE-bench Pro / Live 是后续变体，和官网这几张表不要混成一行。再往上是你自己的仓库 + CI。子集怎么读见 [eval 专题](./eval/)。
 
 ### 6.3 真实用量、价格、一键试用 API
 
@@ -512,6 +515,7 @@ Agent 要大规模调工具
 | **幻觉** | 说得像真的但不是真的 |
 | **MaaS** | Model as a Service，按 Token 卖模型 |
 | **Agent** | 能调用工具、多步完成目标的系统，不只是聊天 |
+| **Harness** | 编码 Agent 的运行时：工具、权限、插件、子循环 |
 | **MCP** | 工具与数据源的标准插头 |
 | **RAG** | 检索增强生成 |
 | **Embedding** | 把文本变成向量，供检索 |
@@ -528,7 +532,7 @@ Agent 要大规模调工具
 
 | 你想搞懂 | 去 |
 |---|---|
-| Agent 怎么转起来 | [loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/) |
+| Agent 怎么转起来 | [loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/)、[harness/](./harness/) |
 | 知识怎么塞进模型 | [rag/](./rag/)、[知识库/](./知识库/)、[memory/](./memory/) |
 | 工具和多 Agent | [mcp/](./mcp/)、[a2a/](./a2a/)、[agent-skills/](./agent-skills/) |
 | 模型内部在升级什么 | [reasoning/](./reasoning/)、[moe/](./moe/)、[multimodal/](./multimodal/) |

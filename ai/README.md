@@ -23,6 +23,7 @@ ai/
 ├── a2a/                      # Agent-to-Agent 协议
 ├── computer-use/             # 电脑/浏览器操控
 ├── agent-skills/             # Agent Skills 技能包
+├── harness/                  # 编码 Agent 运行时外壳
 │
 ├── reasoning/                # 推理模型 / Test-time Scaling
 ├── moe/                      # Mixture of Experts
@@ -79,6 +80,7 @@ ai/
 | **A2A** | Agent ↔ Agent 的对等委托协议 | [a2a/](./a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、操作浏览器/桌面 | [computer-use/](./computer-use/) |
 | **Agent Skills** | 把领域流程打成可发现、可复用技能包 | [agent-skills/](./agent-skills/) |
+| **Harness** | 编码 Agent 的循环外壳：工具 / 插件 / 子 Agent | [harness/](./harness/) |
 
 ### Foundation（模型、训练、能力）
 
@@ -97,7 +99,7 @@ ai/
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 | **Structured Output** | JSON Schema / Function Calling，让输出可机器消费 | [structured-output/](./structured-output/) |
 | **Guardrails** | 输入过滤、工具门禁、输出校验、人审 | [guardrails/](./guardrails/) |
-| **Eval** | 自定义评测 + Trace，替代公开榜单崇拜 | [eval/](./eval/) |
+| **Eval** | 自定义评测 + Trace；LLM 是考试，Agent 是上机 | [eval/](./eval/) |
 | **Model Routing** | 按任务/成本/失败自动选模型 | [model-routing/](./model-routing/) |
 
 ### 产出与推理加速
@@ -112,7 +114,7 @@ ai/
 ## 技术栈怎么叠
 
 ```
-应用：Computer Use / Voice / RAG / Skills
+应用：Computer Use / Voice / RAG / Skills / Harness
 编排：LangGraph · 循环工程 · Memory · Context Engineering
 协议：MCP（工具） · A2A（Agent 互操作）
 治理：Guardrails · Eval · Model Routing
