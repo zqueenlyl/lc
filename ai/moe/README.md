@@ -64,6 +64,7 @@ DeepSeek 路线还叠加 **MLA**（压缩 KV）和更激进的稀疏注意力，
 
 | 技术 | 关系 |
 |---|---|
+| [Transformer](../transformer/) | MoE 换的是块里的 FFN；注意力仍是 self-attention |
 | [Reasoning](../reasoning/) | 推理模型常建在 MoE 底座上 |
 | [Speculative Decoding](../speculative-decoding/) | 加速解码；与动态专家缓存是 2026 热点组合 |
 | [SLM](../slm/) | 小稠密模型 vs 稀疏大模型，路由策略见 [model-routing](../model-routing/) |

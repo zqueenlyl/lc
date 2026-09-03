@@ -76,6 +76,7 @@
 
 | 技术 | 关系 |
 |---|---|
+| [Transformer](../transformer/) | 图/音切成 token 后，进同一套 self-attention |
 | [Computer Use](../computer-use/) | 像素感知的上游能力 |
 | [Voice Realtime](../voice-realtime/) | 音频进、音频出的会话形态 |
 | [Diffusion](../diffusion/) | 生成图像/视频的主路径 |

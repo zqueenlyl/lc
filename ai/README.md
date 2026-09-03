@@ -26,6 +26,7 @@ ai/
 ├── agent-skills/             # Agent Skills 技能包
 ├── harness/                  # 编码 Agent 运行时外壳
 │
+├── transformer/              # Transformer / 自注意力 / RNN
 ├── reasoning/                # 推理模型 / Test-time Scaling
 ├── moe/                      # Mixture of Experts
 ├── multimodal/               # 多模态
@@ -89,6 +90,7 @@ ai/
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
+| **Transformer** | 自注意力骨架；RNN/LSTM 为何被取代；因果 vs 双向 | [transformer/](./transformer/) |
 | **Reasoning** | 推理模型 + 测试时算力缩放（第三条缩放律） | [reasoning/](./reasoning/) |
 | **MoE** | 稀疏专家混合：总参大、激活小 | [moe/](./moe/) |
 | **Multimodal** | 文本 / 图 / 音 / 视频原生一体 | [multimodal/](./multimodal/) |
@@ -121,7 +123,7 @@ ai/
 编排：LangGraph · 循环工程 · Memory · Context Engineering
 协议：MCP（工具） · A2A（Agent 互操作）
 治理：Guardrails · Eval · Model Routing
-模型：Reasoning · Multimodal · SLM · MoE · PEFT
+模型：Transformer · Reasoning · Multimodal · SLM · MoE · PEFT
 加速：Speculative Decoding · 量化
 生成：Diffusion · World Models
 ```

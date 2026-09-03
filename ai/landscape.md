@@ -40,7 +40,8 @@
 
 | 技术 | 一句话 | 市面代表 | 本仓库 |
 |---|---|---|---|
-| **LLM** | 大语言模型，下一个 token 预测 | GPT / Claude / Qwen | — |
+| **Transformer** | 自注意力序列骨架，取代 RNN | 几乎所有 LLM / ViT | [transformer/](./transformer/) |
+| **LLM** | 大语言模型，下一个 token 预测 | GPT / Claude / Qwen | [transformer/](./transformer/) |
 | **Reasoning / 推理模型** | 先想再答，测试时多花算力 | o 系列思路、R1 蒸馏、各家 Thinking 档 | [reasoning/](./reasoning/) |
 | **MoE** | 总参很大、每次只激活一小撮专家 | Mixtral、Qwen-MoE、DeepSeek、Llama 4 | [moe/](./moe/) |
 | **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./multimodal/) |
@@ -535,6 +536,7 @@ Agent 要大规模调工具
 | Agent 怎么转起来 | [agent/](./agent/)、[loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/)、[harness/](./harness/) |
 | 知识怎么塞进模型 | [rag/](./rag/)、[知识库/](./知识库/)、[memory/](./memory/) |
 | 工具和多 Agent | [mcp/](./mcp/)、[a2a/](./a2a/)、[agent-skills/](./agent-skills/) |
+| 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./transformer/) |
 | 模型内部在升级什么 | [reasoning/](./reasoning/)、[moe/](./moe/)、[multimodal/](./multimodal/) |
 | 怎么上线别炸 | [guardrails/](./guardrails/)、[eval/](./eval/)、[model-routing/](./model-routing/) |
 
