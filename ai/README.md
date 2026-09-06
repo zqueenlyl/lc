@@ -16,6 +16,7 @@ ai/
 ├── loop-engineering.md       # 循环工程（已有）
 │
 ├── rag/                      # RAG 检索增强（已有）
+├── vector-db/                # 向量数据库（Milvus 等）
 ├── 知识库/                   # 知识库形态（已有）
 ├── memory/                   # Agent 记忆（已有）
 ├── langgraph/                # 图编排框架（已有）
@@ -25,6 +26,7 @@ ai/
 ├── computer-use/             # 电脑/浏览器操控
 ├── agent-skills/             # Agent Skills 技能包
 ├── harness/                  # 编码 Agent 运行时外壳
+├── agent-projects/           # 开源 Agent 项目案例（commerce-agents / pi / trpc-agent-go）
 │
 ├── transformer/              # Transformer / 自注意力 / RNN
 ├── reasoning/                # 推理模型 / Test-time Scaling
@@ -71,6 +73,7 @@ ai/
 |---|---|---|
 | **循环工程** | 从提示工程到「规划-执行-验证」闭环 | [loop-engineering.md](./loop-engineering.md) |
 | **RAG** | 检索增强生成：Naive → Agentic 全谱系 | [rag/](./rag/) |
+| **向量数据库** | Milvus/Qdrant/pgvector 等：ANN 索引 + 语义检索底座 | [vector-db/](./vector-db/) |
 | **知识库** | 知识库类型五维整理 | [知识库/](./知识库/) |
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./memory/) |
 | **LangGraph** | 图编排 + 8 个 demo | [langgraph/](./langgraph/) |
@@ -85,6 +88,14 @@ ai/
 | **Computer Use** | 看屏幕、点鼠标、操作浏览器/桌面 | [computer-use/](./computer-use/) |
 | **Agent Skills** | 把领域流程打成可发现、可复用技能包 | [agent-skills/](./agent-skills/) |
 | **Harness** | 编码 Agent 的循环外壳：工具 / 插件 / 子 Agent | [harness/](./harness/) |
+
+### 开源 Agent 项目案例（把理论拼成生产）
+
+| 项目 | 一句话 | 入口 |
+|---|---|---|
+| **commerce-agents** | Anthropic 电商 Agent 范本：门禁 + 围栏 + 人审，安全靠代码强制 | [agent-projects/](./agent-projects/) |
+| **pi** | 极简编码 harness：最小核（4 工具）+ 外部沙箱 | [agent-projects/](./agent-projects/) |
+| **trpc-agent-go** | 腾讯 Go 生产级 Agent 框架：GraphAgent + 自我进化 + 可观测 | [agent-projects/](./agent-projects/) |
 
 ### Foundation（模型、训练、能力）
 
