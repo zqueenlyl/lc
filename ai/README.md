@@ -38,6 +38,7 @@ ai/
 ├── context-engineering/      # 上下文工程
 ├── structured-output/        # 结构化输出 / Function Calling
 ├── guardrails/               # 护栏与安全
+├── sandbox/                  # 沙箱隔离执行
 ├── eval/                     # 评测与可观测
 ├── model-routing/            # 多模型路由
 │
@@ -115,6 +116,7 @@ ai/
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 | **Structured Output** | JSON Schema / Function Calling，让输出可机器消费 | [structured-output/](./structured-output/) |
 | **Guardrails** | 输入过滤、工具门禁、输出校验、人审 | [guardrails/](./guardrails/) |
+| **Sandbox** | 沙箱隔离执行：不可信代码/命令关进受控环境跑 | [sandbox/](./sandbox/) |
 | **Eval** | 自定义评测 + Trace；LLM 是考试，Agent 是上机 | [eval/](./eval/) |
 | **Model Routing** | 按任务/成本/失败自动选模型 | [model-routing/](./model-routing/) |
 

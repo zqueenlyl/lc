@@ -517,6 +517,7 @@ Agent 要大规模调工具
 | **MaaS** | Model as a Service，按 Token 卖模型 |
 | **Agent** | 能调用工具、多步完成目标的系统，不只是聊天 |
 | **Harness** | 编码 Agent 的运行时：工具、权限、插件、子循环 |
+| **Sandbox** | 沙箱：把 Agent 的代码/命令隔离在受控环境里跑 |
 | **MCP** | 工具与数据源的标准插头 |
 | **RAG** | 检索增强生成 |
 | **Embedding** | 把文本变成向量，供检索 |
@@ -538,7 +539,7 @@ Agent 要大规模调工具
 | 工具和多 Agent | [mcp/](./mcp/)、[a2a/](./a2a/)、[agent-skills/](./agent-skills/) |
 | 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./transformer/) |
 | 模型内部在升级什么 | [reasoning/](./reasoning/)、[moe/](./moe/)、[multimodal/](./multimodal/) |
-| 怎么上线别炸 | [guardrails/](./guardrails/)、[eval/](./eval/)、[model-routing/](./model-routing/) |
+| 怎么上线别炸 | [guardrails/](./guardrails/)、[sandbox/](./sandbox/)、[eval/](./eval/)、[model-routing/](./model-routing/) |
 
 专题总索引见 [README.md](./README.md)。
 
