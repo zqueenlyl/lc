@@ -103,6 +103,7 @@ Host                Client                 Server
 ## 七、延伸阅读
 
 - 规范与 SDK：https://modelcontextprotocol.io
+- 协议版本演进：[版本演进.md](./版本演进.md)（2024-11 → 2026-07 五个修订版的变更特性与迁移建议）
 - Anthropic 公告与 Cursor / Claude Desktop 接入文档
 - 对比：[A2A](../a2a/)、[structured-output](../structured-output/)、[guardrails](../guardrails/)
 

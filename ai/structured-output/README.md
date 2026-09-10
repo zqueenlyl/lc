@@ -80,6 +80,7 @@
 ## 七、延伸阅读
 
 - OpenAI Structured Outputs；JSON Schema；Outlines / xgrammar
+- 正确率评测（无约束 vs 约束、跨模型 JSON 正确率数据）→ [正确率评测.md](./正确率评测.md)
 - 对比：[mcp](../mcp/)、[guardrails](../guardrails/)
 
 ---
