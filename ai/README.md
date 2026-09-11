@@ -41,6 +41,7 @@ ai/
 ├── sandbox/                  # 沙箱隔离执行
 ├── eval/                     # 评测与可观测
 ├── model-routing/            # 多模型路由
+├── local-inference/          # 本地推理运行时实操（llama.cpp / Ollama / LM Studio / MLX）
 │
 ├── voice-realtime/           # 实时语音
 ├── world-models/             # 世界模型
@@ -124,6 +125,7 @@ ai/
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
+| **本地推理运行时** | llama.cpp / Ollama / LM Studio / MLX：安装、参数、本地 API、实测（原理见环节11） | [local-inference/](./local-inference/) |
 | **Voice / Realtime** | 双向音视频流，延迟预算 &lt; 500ms | [voice-realtime/](./voice-realtime/) |
 | **World Models** | 预测「世界如何演化」，而不只是下一个 token | [world-models/](./world-models/) |
 | **Speculative Decoding** | 小模型草稿 + 大模型一次校验，加速解码 | [speculative-decoding/](./speculative-decoding/) |
@@ -138,6 +140,7 @@ ai/
 治理：Guardrails · Eval · Model Routing
 模型：Transformer · Reasoning · Multimodal · SLM · MoE · PEFT
 加速：Speculative Decoding · 量化
+本地运行：llama.cpp · Ollama · LM Studio · MLX
 生成：Diffusion · World Models
 ```
 
