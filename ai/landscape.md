@@ -534,7 +534,7 @@ Agent 要大规模调工具
 
 | 你想搞懂 | 去 |
 |---|---|
-| **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](../model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
+| **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](./model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
 | Agent 怎么转起来 | [agent/](./agent/)、[loop-engineering.md](./agent/loop-engineering.md)、[langgraph/](./agent/langgraph/)、[harness/](./agent/harness/) |
 | 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[memory/](./knowledge/memory/) |
 | 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |

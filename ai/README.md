@@ -2,8 +2,8 @@
 
 按**大类**整理的 AI / LLM 学习文档与可运行 MVP。每个专题一个文件夹：讲解（原理 / 功能 / 场景）+ 尽量无外部 API 依赖的 `mvp.py`。
 
-> **本目录 = 技术手册层 + 原理层，同树**：横向、可跳读、速查 + MVP 在此；原理纵深（环节式长文、须按序读）也已并入同一棵树，散落在各专题内（`环节NN-*.md`），不再单列 `llm/`。
-> 产业扫盲见 [landscape.md](./landscape.md)（2026-09 快照）；三大域学习地图见 [learning-path.md](./learning-path.md)。
+> **本目录 = 技术手册层 + 原理层 + 案例层，同树**：横向、可跳读、速查 + MVP 在此；原理纵深（环节式长文、须按序读）也已并入同一棵树，散落在各专题内（`环节NN-*.md`），不再单列 `llm/`。
+> 产业扫盲见 [landscape.md](./landscape.md)（2026-09 快照）；三大域学习地图见 [learning-path.md](./learning-path.md)；按厂商纵向深挖见 [model-cases/](./model-cases/)（快照型，会过期）。
 
 ## 目录结构
 
@@ -12,6 +12,9 @@ ai/
 ├── README.md                 # 本索引
 ├── landscape.md              # 产业扫盲：产品 / 公司 / 模型家族（六层坐标系）
 ├── learning-path.md          # 学习地图：基模 / Agent 工程化 / 后端 三大域
+│
+├── model-cases/              # 案例层：按厂商 / 产品纵向深挖（快照型，模型 ID / 端点 / 价格会过期）
+│   └── deepseek/  qwen/  glm/  doubao/  providers/
 │
 ├── foundation/               # ① 基模：模型是什么 / 怎么造 / 怎么变强 / 怎么生成
 │   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RL 对齐 + RNN
@@ -46,6 +49,8 @@ ai/
 | [knowledge](./knowledge/) | 塞什么进窗口 | 「讲检索 / 记忆 / 裁剪」→ 归这 |
 | [reliability](./reliability/) | 能不能上生产 | 「讲拦错 / 打分 / 隔离 / 降级」→ 归这 |
 | [runtime](./runtime/) | 跑多快多省 | 「讲引擎 / 显存 / 延迟 / 量化 / 实时」→ 归这 |
+
+> **案例层 [model-cases/](./model-cases/) 不在这五类里**：五类按**技术维度**分，案例层按**厂商维度**分（纵向深挖单个模型 / 产品），与 [landscape.md](./landscape.md)、[learning-path.md](./learning-path.md) 同属横向入口。
 
 ## 怎么读
 
@@ -137,6 +142,18 @@ ai/
 | **Speculative Decoding** | 小模型草稿 + 大模型一次校验，加速解码 | [speculative-decoding/](./runtime/speculative-decoding/) |
 | **Voice / Realtime** | 双向音视频流，延迟预算 &lt; 500ms | [voice-realtime/](./runtime/voice-realtime/) |
 
+### ⑥ model-cases · 模型案例（按厂商纵向深挖）
+
+> 内容为**带日期的检索快照**（模型 ID / 上下文 / 端点 / 字段 / 价格），迭代极快——**上线前务必以 `GET /v1/models` 或官方模型页校准**。分工：产业扫盲层看 [landscape.md](./landscape.md)（不记版本号），工程可操作层看这里。
+
+| 主题 | 一句话 | 入口 |
+|---|---|---|
+| **DeepSeek** | 模型谱系 + 三代注意力架构（MLA → DSA → CSA/HCA）+ 三协议接入与成本优化 | [deepseek/](./model-cases/deepseek/) |
+| **Qwen-Omni** | 三条产品线（开源权重 / API 离线 / API 实时）+ 实时接入工程实践 | [qwen/](./model-cases/qwen/) |
+| **GLM-Realtime** | 实时音视频通话：WebSocket 事件协议 / VAD / 成本估算 | [glm/](./model-cases/glm/) |
+| **豆包 / Seed** | 视频交互体系（Seedance / SeedEdit / Seedream / SeedRealtime） | [doubao/](./model-cases/doubao/) |
+| **providers（横切）** | 各厂商代表模型总览 + 服务 API 协议对比与「假兼容」陷阱 | [providers/](./model-cases/providers/) |
+
 ---
 
 ## 技术栈怎么叠
@@ -151,9 +168,10 @@ ai/
 生成：Diffusion · Video · Audio/Speech · World Models
 加速：Speculative Decoding · 量化
 本地运行：llama.cpp · Ollama · LM Studio · MLX
+案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed（model-cases/）
 ```
 
-MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，Guardrails / Eval 解决「能不能上线」。
+MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
 
 ## 跑 MVP
 

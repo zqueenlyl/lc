@@ -158,7 +158,7 @@ Bedrock Converse  → { "system": [{"text": "..."}] }                 // 数组�
 | 火山方舟 | 支持结构化输出（beta），官方**推荐 `json_schema` 模式** |
 | **不支持时的行为** | 有的报 400（部分提供方接受 JSON 但不接受 `json_schema`），有的静默降级 —— **必须显式探测** |
 
-详见 [structured-output 专题](../../ai/reliability/structured-output/README.md)。
+详见 [structured-output 专题](../../reliability/structured-output/README.md)。
 
 ### 4.5 流式：SSE 的三处不一致
 
@@ -255,7 +255,7 @@ Bedrock Converse  → { "system": [{"text": "..."}] }                 // 数组�
 - 对外暴露的**内部契约**应取"最小公共子集"（messages + tools + stream），厂商独有能力通过 `extra_body` 透传。
 - **协议归属要显式建模**：把"是否支持有状态续接"作为能力位，而不是假设所有厂商都能 `previous_response_id`。
 - **降级链**要按能力声明，而不是按厂商名硬编码。
-- **路由策略与协议转换是两层**：选哪个模型 / 哪个档位 / 失败切谁属于 [model-routing](../../ai/reliability/model-routing/README.md)（含 fallback 防重试风暴）；本文只负责"跨厂商字段怎么翻译"。
+- **路由策略与协议转换是两层**：选哪个模型 / 哪个档位 / 失败切谁属于 [model-routing](../../reliability/model-routing/README.md)（含 fallback 防重试风暴）；本文只负责"跨厂商字段怎么翻译"。
 
 ---
 
@@ -311,10 +311,10 @@ Bedrock Converse  → { "system": [{"text": "..."}] }                 // 数组�
 ## 相关笔记
 
 - [各大厂商代表模型总览.md](./各大厂商代表模型总览.md) —— 模型层：谁有什么模型
-- [model-routing](../../ai/reliability/model-routing/README.md) —— 路由层：选模型、失败切换、升级策略
-- [环节04-工具调用详解](../../ai/agent/环节04-工具调用详解.md) —— 工具调用的原理与设计
-- [structured-output 专题](../../ai/reliability/structured-output/README.md) —— 结构化输出的工程实践
-- [环节11-服务化与推理引擎详解](../../ai/foundation/transformer/环节11-服务化与推理引擎详解.md) —— 自托管服务化协议栈
+- [model-routing](../../reliability/model-routing/README.md) —— 路由层：选模型、失败切换、升级策略
+- [环节04-工具调用详解](../../agent/环节04-工具调用详解.md) —— 工具调用的原理与设计
+- [structured-output 专题](../../reliability/structured-output/README.md) —— 结构化输出的工程实践
+- [环节11-服务化与推理引擎详解](../../foundation/transformer/环节11-服务化与推理引擎详解.md) —— 自托管服务化协议栈
 - [Qwen-Omni 实时接入与工程实践](../qwen/Qwen-Omni实时接入与工程实践.md) ｜ [GLM 音视频通话接入与工程实践](../glm/音视频通话接入与工程实践.md) —— WebSocket 实时协议的两种范式
 
 ---
