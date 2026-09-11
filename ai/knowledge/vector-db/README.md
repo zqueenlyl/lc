@@ -125,7 +125,7 @@
 | [RAG](../rag/) | 向量库是 RAG 的「语义召回层」，混合检索/重排在库里或库外做 |
 | [知识库](../knowledge-base/) | 「向量数据库」是知识库底层存储的一类，本篇是对其展开 |
 | [Memory](../memory/) | Agent 长期记忆的向量检索常落在这（如 Mem0 用向量库存记忆） |
-| [agent-projects](../../agent/case-studies/) | 三个项目里，RAG/知识/记忆的底座都是向量库 |
+| [开源 Agent 项目案例](../../agent/case-studies/) | 三个项目里，RAG/知识/记忆的底座都是向量库 |
 
 ---
 

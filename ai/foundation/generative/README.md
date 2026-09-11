@@ -5,7 +5,7 @@
 代表：Stable Diffusion / FLUX / Midjourney（文生图）、Sora / 可灵 / Veo / Vidu（文生视频）、Whisper（ASR）/ CosyVoice / Seed-TTS（语音）、GPT-4o / Gemini / Qwen-VL（多模态理解）。
 
 > **先读**：[00-AIGC总揽与多模态地图.md](./00-AIGC总揽与多模态地图.md)（模态矩阵 + 两大范式 + 公共底座），把骨架搭好再进专题。
-> **本目录没有 `mvp.py`**：生成模型无法用标准库最小实现，各专题以"原理 + 工程要点 + 成本账"为主。
+> **`mvp.py` 只在两处**：`diffusion/`（一维加噪-去噪）与 `world-models/`（格子世界学转移）——真实生成模型无法用标准库最小实现，其余专题以"原理 + 工程要点 + 成本账"为主。
 
 ---
 

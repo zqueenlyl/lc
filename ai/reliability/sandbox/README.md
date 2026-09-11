@@ -87,7 +87,7 @@ Agent 和普通程序最大的区别：**它按自然语言意图产生代码和
 | [Eval](../eval/) | 评测要可复现隔离环境，沙箱是底座 |
 | [MCP](../../agent/mcp/) | MCP 工具在沙箱里跑，权限由沙箱兜底 |
 
-参考 [agent-projects](../../agent/case-studies/) 里 Pi 的三种隔离路径（Gondolin / Docker / OpenShell）与 commerce-agents 的「代码强制门禁」，是同一问题的两种哲学。
+参考 [开源 Agent 项目案例](../../agent/case-studies/) 里 Pi 的三种隔离路径（Gondolin / Docker / OpenShell）与 commerce-agents 的「代码强制门禁」，是同一问题的两种哲学。
 
 ---
 

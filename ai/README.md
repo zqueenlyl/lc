@@ -99,15 +99,15 @@ ai/
 | **Agent Skills** | 把领域流程打成可发现、可复用技能包 | [agent-skills/](./agent/agent-skills/) |
 | **Harness** | 编码 Agent 的循环外壳：工具 / 插件 / 子 Agent | [harness/](./agent/harness/) |
 
-**原理长文（环节 01–10，按序读）**：决策与推理范式 → 提示与上下文 → 记忆与状态 → 工具调用 → MCP → RAG → 编排与循环 → 多 Agent 协作 → 评测与可观测 → 生产级工程化，全部在 [agent/](./agent/)；关卡地图见 [环节00-总揽与环节导航](./agent/环节00-总揽与环节导航.md)。
+**原理长文（环节 01–10，按序读）**：决策与推理范式 → 提示与上下文 → 记忆与状态 → 工具调用 → MCP → RAG → 编排与循环 → 多 Agent 协作 → 评测与可观测 → 生产级工程化，全部在 [agent/](./agent/)；关卡地图见 [环节00-总揽与环节导航](./agent/环节00-总揽与环节导航.md)。另有 [langgraph/01–04](./agent/langgraph/) 为**框架实操教程**（自带 4 篇教程 + 8 个 demo，编号独立于环节系列）。
 
-**开源 Agent 项目案例**（把理论拼成生产）：
+**开源 Agent 项目案例**（把理论拼成生产，目录见 [case-studies/](./agent/case-studies/)）：
 
 | 项目 | 一句话 | 入口 |
 |---|---|---|
-| **commerce-agents** | Anthropic 电商 Agent 范本：门禁 + 围栏 + 人审，安全靠代码强制 | [case-studies/](./agent/case-studies/) |
-| **pi** | 极简编码 harness：最小核（4 工具）+ 外部沙箱 | [case-studies/](./agent/case-studies/) |
-| **trpc-agent-go** | 腾讯 Go 生产级 Agent 框架：GraphAgent + 自我进化 + 可观测 | [case-studies/](./agent/case-studies/) |
+| **commerce-agents** | Anthropic 电商 Agent 范本：门禁 + 围栏 + 人审，安全靠代码强制 | [commerce-agents](./agent/case-studies/commerce-agents.md) |
+| **pi** | 极简编码 harness：最小核（4 工具）+ 外部沙箱 | [pi](./agent/case-studies/pi.md) |
+| **trpc-agent-go** | 腾讯 Go 生产级 Agent 框架：GraphAgent + 自我进化 + 可观测 | [trpc-agent-go](./agent/case-studies/trpc-agent-go.md) |
 
 ### ③ knowledge · 知识与记忆
 
