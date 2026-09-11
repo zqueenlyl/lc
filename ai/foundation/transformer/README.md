@@ -139,3 +139,10 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 ## 八、本目录 MVP
 
 `mvp.py` 用「猫 吃 了 鱼 它」演示：打印双向注意力「谁看谁」（吃同时看猫和鱼）、加上因果掩码后变成下三角，再对比 RNN 隐状态衰减——句尾代词「它」仍可一步回指「猫」。不依赖 numpy / torch。
+
+环节 01–04 另配 notebook：
+
+- [环节01-Tokenizer分词演示.ipynb](./环节01-Tokenizer分词演示.ipynb)：从零实现字符级 / 字节级 BPE，复现手推合并表，实测词表大小与压缩率的边际收益、字节兜底与 bytes/token。
+- [环节02-Embedding查表演示.ipynb](./环节02-Embedding查表演示.ipynb)：编号的三个假象、查表 ≡ one-hot × W_E、梯度只回传命中的行，并用共现 + PPMI 亲手把"猫狗"训近。
+- [环节03-位置编码演示.ipynb](./环节03-位置编码演示.ipynb)：排列等变、绝对位置"没卡"、实验 A/B 与通用验证、单档撞车与多档频率表、PI 频率重映射。
+- [环节04-Attention演示.ipynb](./环节04-Attention演示.ipynb)：纯 Python 复现 §5 走查、√d_k 饱和实验、并行 ≡ 逐词、多头切维、KV Cache 显存账、FlashAttention 在线 softmax。
