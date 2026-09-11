@@ -55,11 +55,11 @@
 |---|---|---|
 | [llama-cpp.md](./llama-cpp.md) | ✅ **已完成**。v0.4.0 语义化版本与新 `llama` 统一入口、`-hf` 直拉 HF、server 参数全表（含 `--load-mode` 取代 `--no-mmap` 等变迁）、端点全清单、`llama-bench` 基线、**同模型 vs Ollama 横向对比**、13 条坑 | 2026-09-11 |
 | [ollama.md](./ollama.md) | ✅ **已完成**。CLI 速查、Modelfile 指令（含文档未收录的 `RENDERER`/`PARSER`）、原生 `/api/*` 与 OpenAI 兼容层、环境变量、思考型模型 `think` 实测、12 条坑、本机 0.33.3 实测数据 | 2026-09-11 |
-| `lm-studio.md` | 模型目录与下载、GUI 关键设置（上下文长度 / GPU offload / KV 量化）、内置 server 与 Local Server API、跨机访问 | 待写 |
-| `mlx.md` | `mlx-lm` 安装、HF 模型转换与 4-bit 量化、`generate` / `server` / `lora` 微调、与 GGUF 路线的取舍 | 待写 |
-| `benchmark.md` | 跨运行时对比方法：TTFT / TPOT / 峰值内存 怎么测才可比、同模型同 prompt 的实测记录表、Mac 内存档位矩阵 | 待写 |
+| [lm-studio.md](./lm-studio.md) | ✅ **已完成**。三个工具辨析（LM Studio / llmster / `lms`）、13 个加载参数全表、`lms` CLI 全命令、投机解码与连续批处理、13 条坑。⚠️ **无本机实测**（本机未装 LM Studio，内容全部来自官方文档仓库 `lmstudio-ai/docs`，文档未写的标「文档未给出」） | 2026-09-12 |
+| [mlx.md](./mlx.md) | ✅ **已完成**。概念辨析（`mlx` vs `mlx-lm`）、17 个子命令地图、镜像下载"假死"坑与 `curl` 解法、`convert` 量化（`affine`/`mxfp4`/`mixed_*`）、`generate`/`benchmark`/`server` 参数全表与端点清单、**QLoRA 本机微调实测**（可训练参数 0.121%、20 iters / 8.4s）、`fuse --export-gguf` 的架构限制、14 条坑 | 2026-09-12 |
+| [benchmark.md](./benchmark.md) | ✅ **已完成**。五个"不可比"陷阱（prefill/decode 混用、上下文预算、同模型≠同精度、冷热态、版本漂移）、TTFT/TPOT 测法、**Qwen3-0.6B 三后端实测对照**、量化档位与 batch 扩展、KV Cache 公式验证、4-bit 体积经验值、Mac 内存档位矩阵、经验式 `t ≈ 1.6 + W/261` | 2026-09-12 |
 
-> **未加链接 = 尚未创建**：待写文档只写文件名（行内代码），不做 Markdown 链接，否则点击时会报「无法解析不存在的文件」；写完后改回相对链接。
+> **未加链接 = 尚未创建**：新增（还没写完的）文档，在上表只写文件名（行内代码），不做 Markdown 链接，否则点击时会报「无法解析不存在的文件」；写完后再改回相对链接。**本目录当前 5 篇均已创建，无待写项。**
 >
 > 新增运行时（如 vLLM 本地试跑、`candle`、MLC-LLM）时，按同格式加一篇并在上表登记。
 
@@ -71,7 +71,7 @@
 2. `/v1/chat/completions` 非流式能返回完整 JSON；
 3. `"stream": true` 能逐块吐出（前端打字机效果的前提）；
 4. 中文与代码 prompt 各跑一次，检查**对话模板**是否正确（模板错了表现为答非所问或乱码重复）；
-5. 记录**峰值内存占用**与 **tok/s**，填进 `benchmark.md`（待写）；
+5. 记录**峰值内存占用**与 **tok/s**，填进 [benchmark.md](./benchmark.md)；
 6. 把进程按文档里的方式**优雅停掉**（否则端口被占，下次启动报错）。
 
 ---

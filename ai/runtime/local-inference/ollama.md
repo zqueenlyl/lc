@@ -395,4 +395,5 @@ export OLLAMA_KEEP_ALIVE=30m
 - 原理与选型对比：[环节11-服务化与推理引擎详解](../../foundation/transformer/环节11-服务化与推理引擎详解.md)（§2.1 Mac 选型、§2.2 GGUF）
 - KV Cache 与上下文成本：[环节10-推理解码与KV缓存详解](../../foundation/transformer/环节10-推理解码与KV缓存详解.md)
 - 姊妹篇（同模型横向对比）：[llama-cpp.md](./llama-cpp.md)
-- 同系列待写（尚未创建，故不做链接）：`lm-studio.md` ｜ `mlx.md` ｜ `benchmark.md`
+- 同系列：[lm-studio.md](./lm-studio.md)（GUI 优先的对照选手）、[mlx.md](./mlx.md)（Apple 原生 + 本机微调）
+- 跨运行时实测数据与测法：[benchmark.md](./benchmark.md)（本文 §7 环境变量里的并发默认值、§9 坑清单的完整版）

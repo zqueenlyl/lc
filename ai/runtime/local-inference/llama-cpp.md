@@ -416,4 +416,5 @@ stop_type                none / eos / limit / word
 - 原理与选型：[环节11-服务化与推理引擎详解](../../foundation/transformer/环节11-服务化与推理引擎详解.md)（§2.1 Mac 选型、§2.2 GGUF 与量化命名）
 - KV Cache 与上下文成本：[环节10-推理解码与KV缓存详解](../../foundation/transformer/环节10-推理解码与KV缓存详解.md)
 - 投机解码参数（`--spec-*`）：[Speculative Decoding](../speculative-decoding/README.md)
-- 同系列待写（尚未创建，故不做链接）：`lm-studio.md` ｜ `mlx.md` ｜ `benchmark.md`
+- 同系列：[lm-studio.md](./lm-studio.md)（GUI 优先的对照选手）、[mlx.md](./mlx.md)（Apple 原生 + 本机微调）
+- 跨运行时实测数据与测法：[benchmark.md](./benchmark.md)（本文 §9.3 横向对比的完整版）
