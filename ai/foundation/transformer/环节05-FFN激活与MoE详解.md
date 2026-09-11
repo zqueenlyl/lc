@@ -3,6 +3,7 @@
 > 全链路第五站：Attention 负责"搬运信息"，FFN 负责"加工信息"——参数量大头在这里。
 > 所属总揽：[环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) 环节 05。
 > 相邻环节：上一站 [环节 04 · Attention](./环节04-Attention注意力详解.md) → 下一站 [环节 06 · 残差连接与归一化](./环节06-残差连接与归一化详解.md)（结构上 FFN 与 Attention 同在一个 Block 内）。
+> 配套 Notebook：[环节05-FFN与MoE演示.ipynb](./环节05-FFN与MoE演示.ipynb)——把"FFN 占每层参数 66.8%""SwiGLU 的阀门机制""MoE 路由与专家坍缩"全部算成数（纯 Python 零依赖）。
 
 ---
 
@@ -89,6 +90,7 @@ DeepSeek 的工程变体（DeepSeekMoE，V3 采用）：**细粒度（fine-grain
 ## 6. 相关链接
 
 - 入口总揽：[环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)
+- 配套 Notebook：[环节05-FFN与MoE演示.ipynb](./环节05-FFN与MoE演示.ipynb)（FFN 参数占比手算 / 三种激活数值 / SwiGLU 门控 / Router Top-K / aux-loss 与专家坍缩 / 稠密 vs MoE 参数账）
 - 上一站：[环节 04 · Attention 注意力](./环节04-Attention注意力详解.md)
 - 下一站：[环节 06 · 残差连接与归一化](./环节06-残差连接与归一化详解.md)
 - 主流模型落点：DeepSeek（MoE + MLA）见 [learning-path.md](../../learning-path.md) 1.2 / 1.7

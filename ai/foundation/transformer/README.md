@@ -140,9 +140,18 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 
 `mvp.py` 用「猫 吃 了 鱼 它」演示：打印双向注意力「谁看谁」（吃同时看猫和鱼）、加上因果掩码后变成下三角，再对比 RNN 隐状态衰减——句尾代词「它」仍可一步回指「猫」。不依赖 numpy / torch。
 
-环节 01–04 另配 notebook：
+环节 01–11 **各配一份 notebook**（全部纯 Python 标准库实现，零依赖、可逐格运行）：
 
-- [环节01-Tokenizer分词演示.ipynb](./环节01-Tokenizer分词演示.ipynb)：从零实现字符级 / 字节级 BPE，复现手推合并表，实测词表大小与压缩率的边际收益、字节兜底与 bytes/token。
-- [环节02-Embedding查表演示.ipynb](./环节02-Embedding查表演示.ipynb)：编号的三个假象、查表 ≡ one-hot × W_E、梯度只回传命中的行，并用共现 + PPMI 亲手把"猫狗"训近。
-- [环节03-位置编码演示.ipynb](./环节03-位置编码演示.ipynb)：排列等变、绝对位置"没卡"、实验 A/B 与通用验证、单档撞车与多档频率表、PI 频率重映射。
-- [环节04-Attention演示.ipynb](./环节04-Attention演示.ipynb)：纯 Python 复现 §5 走查、√d_k 饱和实验、并行 ≡ 逐词、多头切维、KV Cache 显存账、FlashAttention 在线 softmax。
+| 环节 | Notebook | 一句话 |
+|---|---|---|
+| 01 Tokenizer | [环节01-Tokenizer分词演示.ipynb](./环节01-Tokenizer分词演示.ipynb) | 从零实现字符级 / 字节级 BPE，压缩率的边际收益、字节兜底与 bytes/token |
+| 02 Embedding | [环节02-Embedding查表演示.ipynb](./环节02-Embedding查表演示.ipynb) | 编号的三个假象、查表 ≡ one-hot × W_E、梯度只回传命中行、共现 + PPMI 训出语义近邻 |
+| 03 位置编码 | [环节03-位置编码演示.ipynb](./环节03-位置编码演示.ipynb) | 实验 A/B 与任意位置通用验证、单档撞车与多档频率表、PI 频率重映射 |
+| 04 Attention | [环节04-Attention演示.ipynb](./环节04-Attention演示.ipynb) | §5 走查复现、√d_k 饱和、并行 ≡ 逐词、多头切维、KV 账、在线 softmax |
+| 05 FFN / MoE | [环节05-FFN与MoE演示.ipynb](./环节05-FFN与MoE演示.ipynb) | FFN 占每层 66.8%、SwiGLU 阀门机制、Router Top-K 与专家坍缩、稠密 vs MoE |
+| 06 残差 / 归一化 | [环节06-残差与归一化演示.ipynb](./环节06-残差与归一化演示.ipynb) | LayerNorm vs RMSNorm、残差梯度高速公路、Pre/Post-LN 的 Jacobian 行列式 |
+| 07 Block 堆叠 | [环节07-Block堆叠与整体架构演示.ipynb](./环节07-Block堆叠与整体架构演示.ipynb) | 参数随层数线性增长、RNN/LSTM 数值与梯度连乘、Transformer decode、三种掩码 |
+| 08 输出头 / 目标 | [环节08-输出头与训练目标演示.ipynb](./环节08-输出头与训练目标演示.ipynb) | loss 与 P−y 梯度、用梯度真训一遍（2.18 → 0.007）、标签右移与 MTP |
+| 09 训练管线 | [环节09-训练管线演示.ipynb](./环节09-训练管线演示.ipynb) | LoRA 手算 1678 万 / 0.24%、低秩分解、FFT·LoRA·QLoRA 显存账、Chinchilla |
+| 10 推理 / KV Cache | [环节10-推理解码与KV缓存演示.ipynb](./环节10-推理解码与KV缓存演示.ipynb) | 两阶段的权重搬运量、KV 尺寸与容量判据、四种采样、finish_reason |
+| 11 服务化 | [环节11-服务化与推理引擎演示.ipynb](./环节11-服务化与推理引擎演示.ipynb) | 容量估算、PagedAttention 碎片、连续批处理、前缀缓存、投机解码、延迟-吞吐拉扯 |
