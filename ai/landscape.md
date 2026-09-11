@@ -40,30 +40,30 @@
 
 | 技术 | 一句话 | 市面代表 | 本仓库 |
 |---|---|---|---|
-| **Transformer** | 自注意力序列骨架，取代 RNN | 几乎所有 LLM / ViT | [transformer/](./transformer/) |
-| **LLM** | 大语言模型，下一个 token 预测 | GPT / Claude / Qwen | [transformer/](./transformer/) |
-| **Reasoning / 推理模型** | 先想再答，测试时多花算力 | o 系列思路、R1 蒸馏、各家 Thinking 档 | [reasoning/](./reasoning/) |
-| **MoE** | 总参很大、每次只激活一小撮专家 | Mixtral、Qwen-MoE、DeepSeek、Llama 4 | [moe/](./moe/) |
-| **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./multimodal/) |
-| **Diffusion** | 图像 / 视频生成主路径 | Flux、Midjourney、可灵、Seedance、Veo | [diffusion/](./diffusion/) |
-| **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./rag/) |
+| **Transformer** | 自注意力序列骨架，取代 RNN | 几乎所有 LLM / ViT | [transformer/](./foundation/transformer/) |
+| **LLM** | 大语言模型，下一个 token 预测 | GPT / Claude / Qwen | [transformer/](./foundation/transformer/) |
+| **Reasoning / 推理模型** | 先想再答，测试时多花算力 | o 系列思路、R1 蒸馏、各家 Thinking 档 | [reasoning/](./foundation/reasoning/) |
+| **MoE** | 总参很大、每次只激活一小撮专家 | Mixtral、Qwen-MoE、DeepSeek、Llama 4 | [moe/](./foundation/moe/) |
+| **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./foundation/multimodal/) |
+| **Diffusion** | 图像 / 视频生成主路径 | Flux、Midjourney、可灵、Seedance、Veo | [diffusion/](./foundation/generative/diffusion/) |
+| **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./knowledge/rag/) |
 | **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [agent/](./agent/) |
-| **Harness** | 套在模型外的编码循环外壳 | Claude Code、Codex、Kimi Code、Pi | [harness/](./harness/) |
-| **MCP** | Agent 连工具的 USB-C | Cursor / Claude / ChatGPT 都能插 | [mcp/](./mcp/) |
-| **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./a2a/) |
-| **Computer Use** | 看屏幕、点鼠标、开浏览器 | Claude Computer Use、各家浏览器 Agent | [computer-use/](./computer-use/) |
-| **Function Calling** | 模型按 schema 调工具、吐 JSON | 所有主流 API | [structured-output/](./structured-output/) |
-| **PEFT / LoRA** | 只训少量参数做领域适配 | 开源微调标配 | [peft-lora/](./peft-lora/) |
-| **SLM / 端侧** | 小模型跑在手机 / 笔记本 | Gemma、Phi、Apple 端侧、MiMo | [slm/](./slm/) |
-| **投机解码** | 小模型打草稿、大模型一次校验 | vLLM / SGLang 常见加速 | [speculative-decoding/](./speculative-decoding/) |
-| **World Models** | 预测世界怎么演化，不只预测字 | JEPA、机器人 / 仿真方向 | [world-models/](./world-models/) |
-| **Agent Skills** | 按需加载的 SOP / 程序记忆 | Cursor / Claude SKILL.md | [agent-skills/](./agent-skills/) |
-| **Context Engineering** | 窗口里塞什么、砍什么、如何缓存 | 长上下文 + 前缀缓存产品 | [context-engineering/](./context-engineering/) |
-| **Memory** | 工作 / 短期 / 长期记忆 | Mem0、Zep、各框架 Checkpointer | [memory/](./memory/) |
-| **Guardrails** | 输入筛、工具门禁、输出校验、人审 | 云 Moderations、自建策略平面 | [guardrails/](./guardrails/) |
-| **Eval / Trace** | 学校考试评模型；上机考试评模型×Harness | LangSmith、Langfuse、SWE-bench、AA Coding Agents | [eval/](./eval/) |
-| **Model Routing** | 按难度/模态/故障选模型 | AI Gateway、LiteLLM、OpenRouter | [model-routing/](./model-routing/) |
-| **Voice / Realtime** | 双向音视频流，中途护栏 | Realtime / Live API、电话 Agent | [voice-realtime/](./voice-realtime/) |
+| **Harness** | 套在模型外的编码循环外壳 | Claude Code、Codex、Kimi Code、Pi | [harness/](./agent/harness/) |
+| **MCP** | Agent 连工具的 USB-C | Cursor / Claude / ChatGPT 都能插 | [mcp/](./agent/mcp/) |
+| **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./agent/a2a/) |
+| **Computer Use** | 看屏幕、点鼠标、开浏览器 | Claude Computer Use、各家浏览器 Agent | [computer-use/](./agent/computer-use/) |
+| **Function Calling** | 模型按 schema 调工具、吐 JSON | 所有主流 API | [structured-output/](./reliability/structured-output/) |
+| **PEFT / LoRA** | 只训少量参数做领域适配 | 开源微调标配 | [peft-lora/](./foundation/peft-lora/) |
+| **SLM / 端侧** | 小模型跑在手机 / 笔记本 | Gemma、Phi、Apple 端侧、MiMo | [slm/](./foundation/slm/) |
+| **投机解码** | 小模型打草稿、大模型一次校验 | vLLM / SGLang 常见加速 | [speculative-decoding/](./runtime/speculative-decoding/) |
+| **World Models** | 预测世界怎么演化，不只预测字 | JEPA、机器人 / 仿真方向 | [world-models/](./foundation/generative/world-models/) |
+| **Agent Skills** | 按需加载的 SOP / 程序记忆 | Cursor / Claude SKILL.md | [agent-skills/](./agent/agent-skills/) |
+| **Context Engineering** | 窗口里塞什么、砍什么、如何缓存 | 长上下文 + 前缀缓存产品 | [context-engineering/](./knowledge/context-engineering/) |
+| **Memory** | 工作 / 短期 / 长期记忆 | Mem0、Zep、各框架 Checkpointer | [memory/](./knowledge/memory/) |
+| **Guardrails** | 输入筛、工具门禁、输出校验、人审 | 云 Moderations、自建策略平面 | [guardrails/](./reliability/guardrails/) |
+| **Eval / Trace** | 学校考试评模型；上机考试评模型×Harness | LangSmith、Langfuse、SWE-bench、AA Coding Agents | [eval/](./reliability/eval/) |
+| **Model Routing** | 按难度/模态/故障选模型 | AI Gateway、LiteLLM、OpenRouter | [model-routing/](./reliability/model-routing/) |
+| **Voice / Realtime** | 双向音视频流，中途护栏 | Realtime / Live API、电话 Agent | [voice-realtime/](./runtime/voice-realtime/) |
 
 2026 年工程侧的共识：
 
@@ -230,7 +230,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 
 选型极简：日常在编辑器里写 → Cursor 或 Copilot；要啃大重构 → Claude Code；公司已经 all-in GitHub → Copilot；要私有模型 → 开源插件 + vLLM。
 
-产品（你打开的窗口）和 **Harness**（循环怎么转：默认工具、插件、子 Agent）不是一层。六款外壳对照见 [harness/](./harness/)：DeepSeek / Claude Code / Codex / Kimi Code / Pi / OpenClaw。Tool 个数不代表强弱。
+产品（你打开的窗口）和 **Harness**（循环怎么转：默认工具、插件、子 Agent）不是一层。六款外壳对照见 [harness/](./agent/harness/)：DeepSeek / Claude Code / Codex / Kimi Code / Pi / OpenClaw。Tool 个数不代表强弱。
 
 ### 4.3 搜索、研究、知识
 
@@ -242,7 +242,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **元宝 / 搜狗等** | 腾讯等 | 国内搜索入口 |
 | **Notion AI / 飞书 / 钉钉 / 企微智能** | 各办公套件 | 知识在工作区里，不在公网 |
 
-企业知识问答很少「只调一个模型」，标准形态是 **RAG**：文档 → 切片 → 向量库 → 检索 → LLM。详见 [rag/](./rag/) 与 [知识库/](./知识库/)。
+企业知识问答很少「只调一个模型」，标准形态是 **RAG**：文档 → 切片 → 向量库 → 检索 → LLM。详见 [rag/](./knowledge/rag/) 与 [知识库/](./knowledge/knowledge-base/)。
 
 ### 4.4 图像生成
 
@@ -285,7 +285,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **讯飞开放平台** | 科大讯飞 | 中文语音、教育医疗 |
 | **豆包语音 / MiniMax 语音** | 字节 / MiniMax | 国内 C 端音色 |
 
-实时对话的硬约束是延迟（常要 &lt; 500ms），见 [voice-realtime/](./voice-realtime/)。
+实时对话的硬约束是延迟（常要 &lt; 500ms），见 [voice-realtime/](./runtime/voice-realtime/)。
 
 ### 4.7 垂直与「AI+」
 
@@ -352,7 +352,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | 数据平台 | Databricks、Snowflake |
 | 标注 / 评测数据 | Scale AI、国内众包与合成数据厂 |
 | Agent 观测 | LangSmith、Langfuse、Arize、各云 Trace |
-| 护栏 | 云厂商内容安全 + 开源 Guardrails，见 [guardrails/](./guardrails/) |
+| 护栏 | 云厂商内容安全 + 开源 Guardrails，见 [guardrails/](./reliability/guardrails/) |
 
 ### 5.5 开发框架与协议
 
@@ -361,7 +361,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | 训练 | PyTorch（绝对主流）、JAX | 造模型用 |
 | 编排 | LangGraph、LangChain、LlamaIndex、语义内核 | 把模型编成系统 |
 | 协议 | **MCP**（工具）、**A2A**（Agent 互操作） | 2025–2026 标准层 |
-| Agent 技能包 | Cursor Skills、Claude Skills 等 | 见 [agent-skills/](./agent-skills/) |
+| Agent 技能包 | Cursor Skills、Claude Skills 等 | 见 [agent-skills/](./agent/agent-skills/) |
 
 ---
 
@@ -397,7 +397,7 @@ Artificial Analysis 首页还能进 **Search Index**（比搜索 API）和 **Opt
 | **OpenCompass** | 国内开源评测套件 + 公开榜，中文和多模态覆盖好 | [rank.opencompass.org.cn](https://rank.opencompass.org.cn/) |
 | **SuperCLUE** | 中文综合能力横评，看国内对话体感 | [superclueai.com](https://www.superclueai.com/) |
 
-写代码不要只看 HumanEval。有区分度的公开上机榜是 [SWE-bench](https://www.swebench.com/)（Full / Verified / Lite / Bash Only / 多语言 / 多模态）、Terminal-Bench、LiveCodeBench。SWE-bench Pro / Live 是后续变体，和官网这几张表不要混成一行。再往上是你自己的仓库 + CI。子集怎么读见 [eval 专题](./eval/)。
+写代码不要只看 HumanEval。有区分度的公开上机榜是 [SWE-bench](https://www.swebench.com/)（Full / Verified / Lite / Bash Only / 多语言 / 多模态）、Terminal-Bench、LiveCodeBench。SWE-bench Pro / Live 是后续变体，和官网这几张表不要混成一行。再往上是你自己的仓库 + CI。子集怎么读见 [eval 专题](./reliability/eval/)。
 
 ### 6.3 真实用量、价格、一键试用 API
 
@@ -496,7 +496,7 @@ Agent 要大规模调工具
 
 **三条反直觉**
 
-1. 把模型名写死在代码里会过期。做成配置 + 路由，见 [model-routing/](./model-routing/)。
+1. 把模型名写死在代码里会过期。做成配置 + 路由，见 [model-routing/](./reliability/model-routing/)。
 2. Embedding / 重排对 RAG 的影响，常常大于换生成模型。
 3. 「开源模型」若走国外托管 API，和「权重下载到自己机房」是两种合规画像。
 
@@ -535,12 +535,12 @@ Agent 要大规模调工具
 | 你想搞懂 | 去 |
 |---|---|
 | **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](../model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
-| Agent 怎么转起来 | [agent/](./agent/)、[loop-engineering.md](./loop-engineering.md)、[langgraph/](./langgraph/)、[harness/](./harness/) |
-| 知识怎么塞进模型 | [rag/](./rag/)、[知识库/](./知识库/)、[memory/](./memory/) |
-| 工具和多 Agent | [mcp/](./mcp/)、[a2a/](./a2a/)、[agent-skills/](./agent-skills/) |
-| 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./transformer/) |
-| 模型内部在升级什么 | [reasoning/](./reasoning/)、[moe/](./moe/)、[multimodal/](./multimodal/) |
-| 怎么上线别炸 | [guardrails/](./guardrails/)、[sandbox/](./sandbox/)、[eval/](./eval/)、[model-routing/](./model-routing/) |
+| Agent 怎么转起来 | [agent/](./agent/)、[loop-engineering.md](./agent/loop-engineering.md)、[langgraph/](./agent/langgraph/)、[harness/](./agent/harness/) |
+| 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[memory/](./knowledge/memory/) |
+| 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |
+| 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./foundation/transformer/) |
+| 模型内部在升级什么 | [reasoning/](./foundation/reasoning/)、[moe/](./foundation/moe/)、[multimodal/](./foundation/multimodal/) |
+| 怎么上线别炸 | [guardrails/](./reliability/guardrails/)、[sandbox/](./reliability/sandbox/)、[eval/](./reliability/eval/)、[model-routing/](./reliability/model-routing/) |
 
 专题总索引见 [README.md](./README.md)。
 
@@ -551,4 +551,4 @@ Agent 要大规模调工具
 - 网站总表见 [§6 常用网站](#6-常用网站)，最小书签从 Artificial Analysis 和 Hugging Face Papers 起。
 - 国内调用与备案：各云 MaaS 控制台、网信办生成式 AI 备案列表。
 - 编程 Agent：直接试用 Cursor / Claude Code / Copilot，比看评测快。
-- 本页不追踪具体分数；需要验收时用**自己的任务集**，不要用公开榜单代替 [eval/](./eval/)。
+- 本页不追踪具体分数；需要验收时用**自己的任务集**，不要用公开榜单代替 [eval/](./reliability/eval/)。

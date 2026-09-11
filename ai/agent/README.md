@@ -3,7 +3,7 @@
 > **Agent = 有目标、能感知环境、能调工具、能根据反馈再试的循环系统。**
 > 聊天机器人答一句就停；工作流按固定箭头走；Agent 在中间——箭头是自己选的，停不停看验证结果。
 
-本页是总图。MCP / 记忆 / Harness / 评测等细拆见文末导航，不要在这里找协议字段或框架 API。
+本页是总图：**怎么理解 Agent、什么时候该用**。环节主线（01–10 关卡地图）见 [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)；MCP / 记忆 / Harness / 评测等细拆见文末导航，不要在这里找协议字段或框架 API。
 
 配套 MVP：[mvp.py](./mvp.py)（ReAct：Thought → Action → Observation，规则策略当模型，无外部 API）。
 
@@ -30,7 +30,7 @@ L3  长程闭环        测红就改，直到绿或预算耗尽
 L4  舰队            编排者拆任务，专家 + 子 Agent 并行
 ```
 
-L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环工程](../loop-engineering.md)。
+L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环工程](loop-engineering.md)。
 
 ---
 
@@ -56,16 +56,16 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 
 | 块 | 干什么 | 本仓库 |
 |---|---|---|
-| **模型** | 想、选工具、写产物 | [reasoning](../reasoning/)、[model-routing](../model-routing/) |
-| **Harness** | 循环怎么转、默认工具、沙箱 | [harness](../harness/) |
-| **工具协议** | 手怎么接上 | [mcp](../mcp/)、[structured-output](../structured-output/) |
-| **技能 / SOP** | 这类任务按什么做 | [agent-skills](../agent-skills/) |
-| **记忆** | 这轮 / 这会话 / 跨会话记什么 | [memory](../memory/) |
-| **上下文** | 窗口里塞谁、砍谁 | [context-engineering](../context-engineering/) |
-| **知识** | 仓库外的事实从哪召回 | [rag](../rag/)、[知识库](../知识库/) |
-| **无 API 的环境** | 看屏幕点鼠标 | [computer-use](../computer-use/) |
-| **多 Agent** | 同事之间派工单 | [a2a](../a2a/)、[langgraph 04](../langgraph/04-多智能体与高级模式.md) |
-| **治理** | 别把生产删了；分数要可复现 | [guardrails](../guardrails/)、[eval](../eval/) |
+| **模型** | 想、选工具、写产物 | [reasoning](../foundation/reasoning/)、[model-routing](../reliability/model-routing/) |
+| **Harness** | 循环怎么转、默认工具、沙箱 | [harness](harness/) |
+| **工具协议** | 手怎么接上 | [mcp](mcp/)、[structured-output](../reliability/structured-output/) |
+| **技能 / SOP** | 这类任务按什么做 | [agent-skills](agent-skills/) |
+| **记忆** | 这轮 / 这会话 / 跨会话记什么 | [memory](../knowledge/memory/) |
+| **上下文** | 窗口里塞谁、砍谁 | [context-engineering](../knowledge/context-engineering/) |
+| **知识** | 仓库外的事实从哪召回 | [rag](../knowledge/rag/)、[知识库](../knowledge/knowledge-base/) |
+| **无 API 的环境** | 看屏幕点鼠标 | [computer-use](computer-use/) |
+| **多 Agent** | 同事之间派工单 | [a2a](a2a/)、[langgraph 04](langgraph/04-多智能体与高级模式.md) |
+| **治理** | 别把生产删了；分数要可复现 | [guardrails](../reliability/guardrails/)、[eval](../reliability/eval/) |
 
 记一句：**模型不会「自己变 Agent」**。缺循环、缺工具、缺验证，它只是会说话的补全器。
 
@@ -86,12 +86,12 @@ Thought  →  Action(tool, args)  →  Observation  →  再 Thought …
 |---|---|---|---|
 | **ReAct / Tool loop** | 走一步看一步 | 工具结果不确定、要探索 | 无验证会空转；上下文膨胀 |
 | **Plan-and-Execute** | 先出步骤清单再逐条执行 | 任务结构清楚 | 计划过时，要能重规划 |
-| **发现→规划→执行→验证→迭代** | [循环工程](../loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
+| **发现→规划→执行→验证→迭代** | [循环工程](loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
 | **Supervisor** | 一个编排者分发给专家 | 角色边界清（研究 / 码 / 测） | 编排者变成单点，prompt 膨胀 |
 | **Swarm / 对等交接** | Agent 之间移交控制权 | 探索、对话式转交 | 难审计、易 ping-pong |
 | **Fleet（舰队）** | 每层都跑同一套五段循环 | 大目标可拆 | 成本数量级上升 |
 
-编排落地常用图状态机：[LangGraph](../langgraph/)（节点=动作，条件边=路由，checkpointer=记忆，interrupt=人审）。
+编排落地常用图状态机：[LangGraph](langgraph/)（节点=动作，条件边=路由，checkpointer=记忆，interrupt=人审）。
 
 ---
 
@@ -128,13 +128,13 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | 知识库 | 检索 + 引用 | 答案能在命中块里溯源 |
 | 其他 Agent | A2A Task | Artifact schema、hop 超时 |
 
-**验证者不要等于执行者。** 模型说「已修好」不算完；`pytest`、schema、人审才算。这是 Agent 评测难于 LLM 评测的原因：考的是模型 × Harness × 环境。见 [eval](../eval/)、[SWE-bench](https://www.swebench.com/)。
+**验证者不要等于执行者。** 模型说「已修好」不算完；`pytest`、schema、人审才算。这是 Agent 评测难于 LLM 评测的原因：考的是模型 × Harness × 环境。见 [eval](../reliability/eval/)、[SWE-bench](https://www.swebench.com/)。
 
 工具设计要点：
 
 1. 名字和 schema 让模型能选对（含「何时不要用」）。
 2. 失败返回**可行动的观察**（缺字段、权限拒绝），不要只丢栈。
-3. 写操作要幂等或带确认；删除 / 转账进 [Guardrails](../guardrails/) L2。
+3. 写操作要幂等或带确认；删除 / 转账进 [Guardrails](../reliability/guardrails/) L2。
 4. 工具一多就分组：Skill 规定本组、或拆子 Agent。
 
 ---
@@ -146,7 +146,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | **空转** | 同一工具同一参数连打 | 循环检测 + 步数上限 |
 | **目标漂移** | 修 bug 修成重构半个仓 | 完成定义写进循环；diff 门禁 |
 | **假装成功** | 「测试应该过了」 | 程序验收，禁止自评 |
-| **上下文中毒** | 早期错误观察一直留在窗口 | 摘要、丢弃失败尝试、[上下文工程](../context-engineering/) |
+| **上下文中毒** | 早期错误观察一直留在窗口 | 摘要、丢弃失败尝试、[上下文工程](../knowledge/context-engineering/) |
 | **工具幻觉** | 编造不存在的 API 结果 | 只把真实 Observation 写进状态 |
 | **权限过大** | 一次 `bash` 能干掉生产 | 目录 / 命令白名单、人审 |
 | **账单爆炸** | 舰队 × 推理模型 × 无缓存 | Flash 打下手、路由、缓存前缀 |
@@ -171,13 +171,13 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
         → Computer Use（实在没有 API）
 ```
 
-每一步用 [Eval](../eval/) 证明有增益再加层。
+每一步用 [Eval](../reliability/eval/) 证明有增益再加层。
 
 ---
 
 ## 八、产品侧（你每天打开的那些）
 
-编码：[Claude Code](../harness/)、Codex、Cursor Agent、Kimi Code、Pi、OpenClaw——比的是 Harness，不是聊天窗。办公：千问办公、豆包、Copilot Agent 模式。通用：ChatGPT / Claude / Gemini 里的「深度研究 / 电脑使用」。
+编码：[Claude Code](harness/)、Codex、Cursor Agent、Kimi Code、Pi、OpenClaw——比的是 Harness，不是聊天窗。办公：千问办公、豆包、Copilot Agent 模式。通用：ChatGPT / Claude / Gemini 里的「深度研究 / 电脑使用」。
 
 地图见 [landscape §4.2](../landscape.md#42-编程-agent--ide2026-主战场)。公开干活榜看 [SWE-bench](https://www.swebench.com/) 和 [AA Coding Agents](https://artificialanalysis.ai/?coding-agents=execution-time)，记住坐标要写全：模型 + 外壳 + 环境。
 
@@ -206,16 +206,17 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | 你想搞懂 | 去 |
 |---|---|
 | Agent 是什么、何时用（本页） | [agent/](./) |
-| 循环怎么设计 | [loop-engineering.md](../loop-engineering.md) |
-| 图画出来怎么跑 | [langgraph/](../langgraph/) |
-| 工具插头 | [mcp/](../mcp/) |
-| Agent 互委托 | [a2a/](../a2a/) |
-| 菜谱 | [agent-skills/](../agent-skills/) |
-| 编码外壳 | [harness/](../harness/) |
-| 记忆 | [memory/](../memory/) |
-| 知识外挂 | [rag/](../rag/) |
-| 看屏幕动手 | [computer-use/](../computer-use/) |
-| 上线别炸 / 怎么打分 | [guardrails/](../guardrails/)、[eval/](../eval/) |
+| 全链路环节主线（01–10 关卡地图） | [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) |
+| 循环怎么设计 | [loop-engineering.md](loop-engineering.md) |
+| 图画出来怎么跑 | [langgraph/](langgraph/) |
+| 工具插头 | [mcp/](mcp/) |
+| Agent 互委托 | [a2a/](a2a/) |
+| 菜谱 | [agent-skills/](agent-skills/) |
+| 编码外壳 | [harness/](harness/) |
+| 记忆 | [memory/](../knowledge/memory/) |
+| 知识外挂 | [rag/](../knowledge/rag/) |
+| 看屏幕动手 | [computer-use/](computer-use/) |
+| 上线别炸 / 怎么打分 | [guardrails/](../reliability/guardrails/)、[eval/](../reliability/eval/) |
 
 ---
 
@@ -224,7 +225,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 1. 先写 **完成定义**（哪条命令绿、哪个字段必填），再写循环。
 2. 工具从只读开始，写操作加确认；生产凭证不要进模型上下文。
 3. 默认 L2：步数、超时、花费、循环检测四条上限。
-4. Trace 从第一天打：每次 tool 的参数、观察、耗时，否则无法 [eval](../eval/)。
+4. Trace 从第一天打：每次 tool 的参数、观察、耗时，否则无法 [eval](../reliability/eval/)。
 5. 模型可换，循环和验收不要绑死在一家 API 上。
 
 ---
