@@ -21,6 +21,8 @@
 
 和 MCP 的关系：MCP 的 `inputSchema` 就是这一层；Host 把 schema 交给模型，再把 arguments 丢给 server。
 
+**机制上要分清两条通道**：schema 是**经 chat template 序列化进输入序列**的（如塞进 `<tools>…</tools>` 段），模型再从 `<tool_call>` 之后继续吐结构化 token。也就是说 —— **「告诉模型有哪些工具」走输入侧，「保证输出合法」走解码侧**：前者是 prompt 软约束，后者才是约束解码（[约束解码原理.md](./约束解码原理.md)）。schema 约束本身又分四层：**语法 / 字段形状 / 类型 / 值域**（Syntax / Shape / Types / Values）。
+
 ---
 
 ## 二、功能作用
@@ -53,6 +55,8 @@
 - **枚举过长**：上百个 enum 不如先分类再细选。
 - **和思维链抢通道**：有的模型要先 think 再出 JSON，解析时只取最后一个对象。
 - **日期 / 货币**：写清时区和最小单位（分 vs 元）。
+- **工具协议各模型不通用**：Qwen / Mistral / DeepSeek 的工具调用序列化格式各不相同，换模型就要换解析器（[约束解码原理.md §一](./约束解码原理.md)）。
+- **代码类工具约束不住**：schema 只能保证「是合法代码」，兜底要靠 [Sandbox](../sandbox/)（[约束解码原理.md §6.7](./约束解码原理.md)）。
 
 ---
 
@@ -62,6 +66,7 @@
 |---|---|
 | [MCP](../../agent/mcp/) | tools 的入参层 |
 | [Guardrails](../guardrails/) | schema 过了还有业务规则与安全 |
+| [Sandbox](../sandbox/) | 代码类工具：约束管语法，沙箱管后果 |
 | [Eval](../eval/) | 字段级准确率比 BLEU 有用 |
 | [Agent Skills](../../agent/agent-skills/) | 输出契约常写成 schema |
 
@@ -80,6 +85,7 @@
 ## 七、延伸阅读
 
 - OpenAI Structured Outputs；JSON Schema；Outlines / xgrammar
+- **CMU《Tool Use for Language Model Agents》Lecture 02**：<https://www.cmu-agents.com/slides/lecture-02-tool-use.pdf>（约束四层与边界、PDA + token mask、模型工具协议差异、BFCL 评测分层）—— 核实于 2026-09-12
 - 原理篇（schema → FSM → token mask、引擎横向对比、代价与冲突）→ [约束解码原理.md](./约束解码原理.md)
 - 正确率评测（无约束 vs 约束、跨模型 JSON 正确率数据）→ [正确率评测.md](./正确率评测.md)
 - 对比：[mcp](../../agent/mcp/)、[guardrails](../guardrails/)
