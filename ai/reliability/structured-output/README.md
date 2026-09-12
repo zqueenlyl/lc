@@ -4,7 +4,7 @@
 
 这是 Agent 工具循环、MCP tools、表单填写、数据抽取的共同底座。
 
-配套 MVP：[mvp.py](./mvp.py)（JSON Schema 校验 + 失败修复循环）。
+配套 MVP：[mvp.py](./mvp.py)（JSON Schema 校验 + 失败修复循环）｜原理篇：[约束解码原理.md](./约束解码原理.md)（非法 token 为什么直接不采样）。
 
 ---
 
@@ -14,7 +14,7 @@
 
 1. **提示约束**：系统里贴 schema，软约束，会破。
 2. **Function / Tool Calling**：模型产出 `name + arguments`，运行时执行。
-3. **JSON Schema / Grammar 约束解码**：非法 token 直接不采样（最硬）。
+3. **JSON Schema / Grammar 约束解码**：非法 token 直接不采样（最硬）→ 原理见 [约束解码原理.md](./约束解码原理.md)。
 4. **校验 + 修复**：先生成，失败把错误喂回去再生成（MVP 这条）。
 
 2026 年厂商 API 普遍支持 `response_format` / `strict` tools。开源侧有 Outlines、xgrammar、guidance 等。
@@ -69,7 +69,7 @@
 
 ## 六、落地建议
 
-1. 能用 **strict / grammar** 就不要只靠「请输出 JSON」。
+1. 能用 **strict / grammar** 就不要只靠「请输出 JSON」——机制见 [约束解码原理.md](./约束解码原理.md)。
 2. 校验失败最多 2 次修复，再转人工或降级。
 3. 对外 API 在边界再验一次，不信任模型。
 4. 日志里存 raw 与 parse 结果，方便回归。
@@ -80,6 +80,7 @@
 ## 七、延伸阅读
 
 - OpenAI Structured Outputs；JSON Schema；Outlines / xgrammar
+- 原理篇（schema → FSM → token mask、引擎横向对比、代价与冲突）→ [约束解码原理.md](./约束解码原理.md)
 - 正确率评测（无约束 vs 约束、跨模型 JSON 正确率数据）→ [正确率评测.md](./正确率评测.md)
 - 对比：[mcp](../../agent/mcp/)、[guardrails](../guardrails/)
 

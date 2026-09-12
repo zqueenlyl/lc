@@ -13,6 +13,8 @@
 | **Speculative Decoding** | 小模型草稿 + 大模型一次校验，加速解码 | [speculative-decoding/](./speculative-decoding/) |
 | **Voice / Realtime** | 双向音视频流，延迟预算 &lt; 500ms | [voice-realtime/](./voice-realtime/) |
 
+> 解码期的改造还有另一类：**不改速度、改合法性** —— 约束解码（每步 mask 掉非法 token）→ [../reliability/structured-output/约束解码原理.md](../reliability/structured-output/约束解码原理.md)。
+
 ## 三件事的分工
 
 | 专题 | 回答的问题 | 手段 |

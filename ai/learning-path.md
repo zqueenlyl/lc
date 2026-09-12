@@ -122,6 +122,7 @@
 
 - 三层闭环：**引导**（JSON Mode / Function Calling）→ **校验**（Pydantic / Zod / JSON Schema）→ **修复**（错误回填重试，2-3 次）→ **兜底**（默认值 / 规则引擎 / 报错）
 - **正确率评测**：无约束解码下跨模型 JSON 正确率、语法合法 vs 内容正确、约束解码的边界 → [结构化输出正确率评测](reliability/structured-output/正确率评测.md)
+- **约束解码原理**：非法 token 为什么直接不采样（FSM → token mask → 引擎对比 → 代价） → [约束解码原理](reliability/structured-output/约束解码原理.md)
 - 校验维度：必填、类型、枚举、范围、格式（正则）、嵌套、业务规则（`@field_validator`）
 - 常见坑：markdown 代码块包裹、字段命名漂移、多余字段（`extra="forbid"`）、数字被输出成字符串（严格模式）
 
@@ -202,6 +203,7 @@
 - **可靠性**：重试、幂等、断点续跑（checkpoint）、降级（无 LLM 时走规则引擎）
 - **成本工程**：模型分级路由、语义缓存、Token 压缩、批处理
 - **安全**：Prompt 注入防护、工具权限最小化、敏感数据脱敏、审计日志
+- **执行隔离（沙箱）**：不可信代码/命令关进受控环境跑（内核原语 / 隔离强度 / 文件系统 / 网络出口 / 凭证 / 逃逸加固，环节 01–08 + 选型总表）→ [reliability/sandbox/](./reliability/sandbox/)
 - **交互体验**：SSE / WebSocket 流式、前端打字机、长任务的进度反馈
 - **上线流程**：灰度、A/B、回滚、效果看板
 
