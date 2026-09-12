@@ -11,7 +11,7 @@
 |---|---|---|
 | **Structured Output** | JSON Schema / Function Calling，让输出可机器消费 | [structured-output/](./structured-output/) |
 | **Guardrails** | 输入过滤、工具门禁、输出校验、人审 | [guardrails/](./guardrails/) |
-| **Sandbox** | 沙箱隔离执行：内核原语 / 隔离强度 / 文件系统 / 网络出口 / 凭证 / 逃逸加固 / 可观测验收 / 数据通道 / 平台化（环节系列 01–11 + 11 notebook） | [sandbox/](./sandbox/) |
+| **Sandbox** | 沙箱隔离执行：内核原语 / 隔离强度 / 文件系统 / 网络出口 / 凭证 / 逃逸加固 / 可观测验收 / 数据通道 / 平台化 / 跨平台机制 / 开销实测（环节系列 01–13 + 13 notebook） | [sandbox/](./sandbox/) |
 | **Eval** | 自定义评测 + Trace；LLM 是考试，Agent 是上机 | [eval/](./eval/) |
 | **Model Routing** | 按任务 / 成本 / 失败自动选模型 | [model-routing/](./model-routing/) |
 
