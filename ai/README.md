@@ -36,7 +36,7 @@ ai/
 │   └── rag/  vector-db/  knowledge-base/  memory/  context-engineering/
 │
 ├── reliability/              # ④ 治理与上线：决定能不能上生产
-│   ├── sandbox/              #    环节系列（README + 环节00–08 + 8 notebook + 选型总表）
+│   ├── sandbox/              #    环节系列（README + 环节00–11 + 11 notebook + 选型总表）
 │   └── guardrails/  eval/  structured-output/  model-routing/
 │
 └── runtime/                  # ⑤ 运行与加速：决定跑得多快 / 多省 / 本地 / 实时
@@ -133,7 +133,7 @@ ai/
 |---|---|---|
 | **Structured Output** | JSON Schema / Function Calling，让输出可机器消费 | [structured-output/](./reliability/structured-output/) ｜ [正确率评测](./reliability/structured-output/正确率评测.md) |
 | **Guardrails** | 输入过滤、工具门禁、输出校验、人审 | [guardrails/](./reliability/guardrails/) |
-| **Sandbox** | 沙箱隔离执行：内核原语 / 隔离强度 / 文件系统 / 网络出口 / 凭证 / 逃逸加固（环节 01–08） | [sandbox/](./reliability/sandbox/) |
+| **Sandbox** | 沙箱隔离执行：内核原语 / 隔离强度 / 文件系统 / 网络出口 / 凭证 / 逃逸加固 / 可观测验收 / 数据通道 / 平台化（环节 01–11） | [sandbox/](./reliability/sandbox/) |
 | **Eval** | 自定义评测 + Trace；LLM 是考试，Agent 是上机 | [eval/](./reliability/eval/) |
 | **Model Routing** | 按任务/成本/失败自动选模型 | [model-routing/](./reliability/model-routing/) |
 
