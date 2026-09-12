@@ -12,7 +12,7 @@
 | **Transformer（手册 + MVP）** | 自注意力骨架；RNN/LSTM 为何被取代；因果 vs 双向 | [transformer/](./transformer/) |
 | **Transformer 全链路（原理）** | 一条主线 + 两个生命周期，11 环节关卡地图 | [总揽](./transformer/环节00-总揽与环节导航.md) |
 | **模型评测与选型（原理）** | 训练产出后「怎么验」、部署前「怎么选」 | [详解](./transformer/模型评测与选型方法详解.md) |
-| **强化学习与模型对齐（原理）** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [详解](./transformer/强化学习与模型对齐详解.md) |
+| **强化学习与模型对齐（原理）** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [总揽](./rl/环节00-总揽与环节导航.md) |
 | **RNN** | Attention 之前的历史：串行、长距离难题 | [RNN知识整理](./transformer/RNN知识整理.md) |
 | **Reasoning** | 推理模型 + 测试时算力缩放（第三条缩放律） | [reasoning/](./reasoning/) |
 | **MoE** | 稀疏专家混合：总参大、激活小 | [moe/](./moe/) |
@@ -30,7 +30,7 @@
 ## 三条读法
 
 - **手册线**（可跳读）：`transformer/README.md` 建骨架 → 按需跳 `reasoning` / `moe` / `slm` / `peft-lora`。
-- **原理线**（须按序）：[`环节00-总揽与环节导航`](./transformer/环节00-总揽与环节导航.md) → `环节01` … `环节11` → 横切两篇（模型评测与选型 / 强化学习与模型对齐）。
+- **原理线**（须按序）：[`环节00-总揽与环节导航`](./transformer/环节00-总揽与环节导航.md) → `环节01` … `环节11` → 横切篇（模型评测与选型）；**RL 是独立专题**：[`rl/环节00-总揽与环节导航`](./rl/环节00-总揽与环节导航.md) → `环节01` … `环节08`。
 - **生成线**：[`generative/README`](./generative/) → `00-AIGC总揽与多模态地图` → `diffusion` / `video` / `audio-speech` / `world-models`。
 
 ## 相邻大类

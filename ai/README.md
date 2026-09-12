@@ -3,7 +3,7 @@
 按**大类**整理的 AI / LLM 学习文档与可运行 MVP。每个专题一个文件夹：讲解（原理 / 功能 / 场景）+ 尽量无外部 API 依赖的 `mvp.py`。
 
 > **本目录 = 技术手册层 + 原理层 + 案例层，同树**：横向、可跳读、速查 + MVP 在此；原理纵深（环节式长文、须按序读）也已并入同一棵树，散落在各专题内（`环节NN-*.md`），不再单列 `llm/`。
-> 产业扫盲见 [landscape.md](./landscape.md)（2026-09 快照）；三大域学习地图见 [learning-path.md](./learning-path.md)；按厂商纵向深挖见 [model-cases/](./model-cases/)（快照型，会过期）。
+> 产业扫盲见 [landscape.md](./landscape.md)（2026-09 快照）；三大域学习地图见 [learning-path.md](./learning-path.md)；外部课程（CMU / Stanford / MIT）优先级与学习产出映射见 [courses.md](./courses.md)（快照型）；按厂商纵向深挖见 [model-cases/](./model-cases/)（快照型，会过期）。
 
 ## 目录结构
 
@@ -12,12 +12,14 @@ ai/
 ├── README.md                 # 本索引
 ├── landscape.md              # 产业扫盲：产品 / 公司 / 模型家族（六层坐标系）
 ├── learning-path.md          # 学习地图：基模 / Agent 工程化 / 后端 三大域
+├── courses.md                # 外部课程路线：CMU 11-768 / CS329Z / CS329A / CS146S / MIT（按优先级）
 │
 ├── model-cases/              # 案例层：按厂商 / 产品纵向深挖（快照型，模型 ID / 端点 / 价格会过期）
 │   └── deepseek/  qwen/  glm/  doubao/  providers/
 │
 ├── foundation/               # ① 基模：模型是什么 / 怎么造 / 怎么变强 / 怎么生成
-│   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RL 对齐 + RNN
+│   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RNN
+│   ├── rl/                   #    强化学习与模型对齐：环节00-08 + 选型总表 + mvp.py
 │   ├── reasoning/            #    推理模型 / test-time scaling
 │   ├── moe/  peft-lora/  slm/  multimodal/
 │   └── generative/           #    生成 + 多模态：README（手册）+ 00-AIGC总揽（模态矩阵 + 两大范式）
@@ -60,7 +62,7 @@ ai/
 |---|---|
 | `README.md` | 技术讲解、功能作用、应用场景、相邻技术对比、落地建议、延伸阅读 |
 | `mvp.py` | 可运行最小实现（`python mvp.py`，默认不调外部模型） |
-| `环节NN-*.md` | 原理长文（仅 `transformer/`、`agent/` 有），须按序读 |
+| `环节NN-*.md` | 原理长文（`transformer/`、`agent/`、`rl/` 有），须按序读 |
 
 已有专题保持原文件名（`rag-types.md`、`agent-memory.md` 等），不强制改名。
 
@@ -75,7 +77,7 @@ ai/
 | **Transformer（手册）** | 自注意力骨架；RNN/LSTM 为何被取代；因果 vs 双向 | [transformer/](./foundation/transformer/) |
 | **Transformer 全链路（原理）** | 一条主线 + 两个生命周期，11 环节关卡地图 | [总揽](./foundation/transformer/环节00-总揽与环节导航.md) |
 | **模型评测与选型（原理）** | 训练产出后「怎么验」、部署前「怎么选」 | [详解](./foundation/transformer/模型评测与选型方法详解.md) |
-| **强化学习与模型对齐（原理）** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [详解](./foundation/transformer/强化学习与模型对齐详解.md) |
+| **强化学习与模型对齐（原理）** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [总揽](./foundation/rl/环节00-总揽与环节导航.md) |
 | **RNN** | Attention 之前的历史：串行、长距离难题 | [RNN知识整理](./foundation/transformer/RNN知识整理.md) |
 | **Reasoning** | 推理模型 + 测试时算力缩放（第三条缩放律） | [reasoning/](./foundation/reasoning/) |
 | **MoE** | 稀疏专家混合：总参大、激活小 | [moe/](./foundation/moe/) |

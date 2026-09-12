@@ -3,6 +3,7 @@
 > 位置：`ai/learning-path.md`（原题 `知识点地图`，原 `llm/知识点.md`，2026-09 并入 `ai/` 时更名）。§1 基模 / §2 Agent 的正文分别落在 [`foundation/`](./foundation/) 与 [`agent/`](./agent/)，§3 后端软件工程为跨域索引。
 > 三大知识域：**基础 LLM（基模）→ Agent 工程化 → 后端软件工程**
 > 学习顺序建议：③ 是地基（已有）→ ① 是认知 → ② 是落地。
+> 外部课程（CMU 11-768 / Stanford CS329Z·CS329A·CS146S / MIT）按优先级排序、并映射回本库模块 → [courses.md](./courses.md)
 
 ---
 ## 1、基础 LLM 知识（基模）
@@ -40,7 +41,7 @@
 
 ### 1.3 训练
 
-- **三阶段范式**：Pre-training（预训练）→ SFT（监督微调）→ 对齐（RLHF / DPO / GRPO）—— 对齐详解（RL 基础 / PPO→DPO→GRPO→RLVR 谱系 / 选型表 / R1 四阶段 / 奖励黑客）见 [强化学习与模型对齐详解.md](./foundation/transformer/强化学习与模型对齐详解.md)
+- **三阶段范式**：Pre-training（预训练）→ SFT（监督微调）→ 对齐（RLHF / DPO / GRPO）—— 对齐专题（RL 基础 / PPO→DPO→GRPO→RLVR 谱系 / 选型表 / R1 四阶段 / 奖励黑客）见 [强化学习与模型对齐专题](./foundation/rl/环节00-总揽与环节导航.md)
 - **预训练**：数据清洗配比、Scaling Law（参数/数据/算力的关系）、涌现能力 —— 详解见 [环节09-训练管线详解.md](./foundation/transformer/环节09-训练管线详解.md)
 - **微调**：全参微调 vs PEFT（LoRA / QLoRA / P-Tuning），何时该微调、何时不该（优先 RAG/Prompt）—— 同上
 - **分布式训练**：数据并行 / 张量并行 / 流水线并行、ZeRO（1/2/3）、Megatron-LM、显存优化（重计算、混合精度）
