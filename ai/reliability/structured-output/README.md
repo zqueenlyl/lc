@@ -4,7 +4,7 @@
 
 这是 Agent 工具循环、MCP tools、表单填写、数据抽取的共同底座。
 
-配套 MVP：[mvp.py](./mvp.py)（JSON Schema 校验 + 失败修复循环）｜原理篇：[约束解码原理.md](./约束解码原理.md)（非法 token 为什么直接不采样）。
+配套 MVP：[mvp.py](./mvp.py)（JSON Schema 校验 + 失败修复循环）、[constrained_decoding.py](./constrained_decoding.py)（每步 token mask 最小实现）｜原理篇：[约束解码原理.md](./约束解码原理.md)（非法 token 为什么直接不采样）。
 
 ---
 
@@ -94,4 +94,5 @@
 
 ## 八、本目录 MVP
 
-`mvp.py` 定义「退款申请」schema，故意先产出缺字段 / 类型错误的 JSON，校验器返回错误，修复器补全，直到通过或次数用尽。
+- **`mvp.py`**（第 4 种手段：校验 + 修复）：定义「退款申请」schema，故意先产出缺字段 / 类型错误的 JSON，校验器返回错误，修复器补全，直到通过或次数用尽。
+- **`constrained_decoding.py`**（第 3 种手段：约束解码）：纯标准库复现每步 token mask —— tiny 词表 + 正则 `[0-9]{3}` 手算字符 DFA，逐步打印「当前状态 → 允许哪些 token」，并验证 mask 后非法 token 概率**恰好为 0**；顺带演示屏蔽 EOS 的两个坑（可无限合法地写下去 / 某状态允许集合为空）。逐格运行即可手算核对。
