@@ -5,6 +5,7 @@
 > 相邻环节：上一站 [环节 03 · 位置编码](./环节03-位置编码详解.md) → 下一站 [环节 05 · FFN / 激活 / MoE](./环节05-FFN激活与MoE详解.md)。
 > 深水区内容：本环节含**全数值手算走查 + 可运行 numpy 验证代码**，想抠细节务必手推一遍。
 > 配套 Notebook：[环节04-Attention演示.ipynb](./环节04-Attention演示.ipynb)——用**纯 Python（不用 numpy）**逐行复现 §5 的走查数字，并验证缩放、Mask 等价性、多头切维、KV Cache 账与 FlashAttention 在线 softmax。
+> 深水区补充：FlashAttention 专题（GPU 存储层级 / 在线 softmax 增量公式与换锚走查 / FA1→FA3 演进 / prefill vs decode 定位）见 [环节04-补充-FlashAttention详解.md](./环节04-补充-FlashAttention详解.md)。
 
 ---
 
@@ -84,7 +85,7 @@ Decoder-only 训练是"整条序列并行前向"，位置 i 只能看 j≤i。�
 | **MQA**（多查询） | H 组 Q，**只共享 1 组 K/V** | KV Cache 降到 1/H | 共享过狠 → 质量略掉；训练不稳 | PaLM（早期探索） |
 | **GQA**（分组查询，**主流**） | K/V 分成 G 组（G<H），组内共享 | 在质量和 KV 省显存间取平衡 | 组数需调；仍是显存大头之一 | LLaMA-2/3、Qwen、Mistral |
 | **MLA**（Multi-head Latent Attention，多头潜在注意力） | 把 K/V 先压缩进低维潜在空间（latent space），做注意力时再展开 | KV Cache 小一个量级、推理省显存省带宽 | 结构复杂、难直接复用社区优化 | DeepSeek V2/V3、Kimi |
-| **FlashAttention** | 不打大矩阵，分块计算（blockwise）+ 在线 softmax（online softmax） | Prefill 快且省显存（I/O 优化） | 属于"怎么算"而非"改结构"，叠加在任意家族上 | 所有现代引擎 |
+| [**FlashAttention**](./环节04-补充-FlashAttention详解.md) | 不打大矩阵，分块计算（blockwise）+ 在线 softmax（online softmax） | Prefill 快且省显存（I/O 优化） | 属于"怎么算"而非"改结构"，叠加在任意家族上 | 所有现代引擎 |
 
 > 记忆钩子：**H > G > 1**。MHA（每头一套 KV）→ GQA（几头共享一套 KV）→ MQA（所有头一套 KV）→ MLA（KV 先压缩再展开）。越往后 KV Cache 越小、结构越复杂。
 
@@ -210,7 +211,7 @@ print("loss =", round(loss, 4))               # 期望 ≈ 2.1838（对应环节
 2. **attention 为什么要除以 √d_k？** 防内积随维度变大而过大，softmax 进入饱和区导致梯度消失。
 3. **训练时整条序列并行，凭什么位置 i 不会偷看位置 i+1？** Mask 把 S 的上三角置 −∞，softmax 后这些位置权重为 0，梯度也不穿过它们。
 4. **MHA / GQA / MQA / MLA 的演化逻辑？** KV Cache 由 `2×层×KV头×头维×长度` 决定，压缩"KV 头数"或先压缩再展开，换来显存与带宽，代价是结构与质量微调。
-5. **FlashAttention 为什么快？** IO 感知：不打大中间矩阵，分块 + 在线 softmax，省显存省读写。
+5. **FlashAttention 为什么快？** IO 感知：不打大中间矩阵，分块 + 在线 softmax，省显存省读写。（在线 softmax 的增量公式与分块走查见 [补充篇](./环节04-补充-FlashAttention详解.md) §2–§3；它加速 prefill 而非 decode 的原因见补充篇 §5。）
 6. **长上下文为什么贵？** 每层注意力矩阵 O(n²)；KV Cache 又线性吃显存——一切长文本优化都从这两条公式出发。
 7. **MHA 凭什么比单头强、还不额外花算力？** 切维：每头只在 d/H 维子空间独立打分，H 份总算力 ≈ 单头全维一次，却拿到 H 个互不干扰视角；头分工由训练自发分化、非预设（§2.4）。
 
@@ -223,4 +224,5 @@ print("loss =", round(loss, 4))               # 期望 ≈ 2.1838（对应环节
 - 上一站：[环节 03 · 位置编码](./环节03-位置编码详解.md)（Q/K 的旋转从哪来）
 - 下一站：[环节 05 · FFN / 激活 / MoE](./环节05-FFN激活与MoE详解.md)（注意力的下游加工）
 - 数值走查的下半场：[环节 08 · 输出头与训练目标](./环节08-输出头与训练目标详解.md)
+- 深水区补充：[环节04-补充-FlashAttention详解.md](./环节04-补充-FlashAttention详解.md)（HBM/SRAM 层级与三次落盘 / 在线 softmax 三量换锚公式 / §5 行 2 分块重算对账 / FA1→FA3 演进表 / 与 PagedAttention·GQA·MLA 的正交关系）
 - 知识地图：[learning-path.md](../../learning-path.md)（1.1 Attention 机制 / 1.4 推理）
