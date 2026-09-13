@@ -225,4 +225,5 @@ print("loss =", round(loss, 4))               # 期望 ≈ 2.1838（对应环节
 - 下一站：[环节 05 · FFN / 激活 / MoE](./环节05-FFN激活与MoE详解.md)（注意力的下游加工）
 - 数值走查的下半场：[环节 08 · 输出头与训练目标](./环节08-输出头与训练目标详解.md)
 - 深水区补充：[环节04-补充-FlashAttention详解.md](./环节04-补充-FlashAttention详解.md)（HBM/SRAM 层级与三次落盘 / 在线 softmax 三量换锚公式 / §5 行 2 分块重算对账 / FA1→FA3 演进表 / 与 PagedAttention·GQA·MLA 的正交关系）
+- 长上下文的续长机制收口（滑窗 / 线性递推 / 稀疏 / KV 压缩 + 成本账）：横切主题 [长上下文工程详解](./长上下文工程详解.md)
 - 知识地图：[learning-path.md](../../learning-path.md)（1.1 Attention 机制 / 1.4 推理）

@@ -24,9 +24,9 @@
 - **RNN/LSTM 前史（本体纵深）**：串行 + 有损压缩 vs 注意力并行 + 无损可见；BPTT 梯度消失是分水岭；现代"类 RNN"（线性注意力 / RWKV / Mamba）借"状态复用"回归 —— 详见 [RNN知识整理.md](./foundation/transformer/RNN知识整理.md)
 - **Attention 机制**：Self-Attention、QKV 投影、缩放点积、Multi-Head Attention（MHA）
   - 变体优化：MQA（多查询）、GQA（分组查询，**现在主流**）、MLA（DeepSeek 的多头潜在注意力）、FlashAttention（IO 优化）
-- **位置编码**：绝对（Sinusoidal/可学习）、相对、RoPE（旋转位置编码，主流）、ALiBi（短训长外推）
+- **位置编码**：绝对（Sinusoidal/可学习）、相对、RoPE（旋转位置编码，主流）、ALiBi（短训长外推）、NoPE（不发位置卡，外推最好但精确检索弱）
 - **其他组件**：FFN / SwiGLU 激活（MoE 在此替换）、LayerNorm / RMSNorm（Pre-LN）、残差连接
-- **关键认知**：Attention 的 \(O(n^2)\) 复杂度 → 长上下文成本、KV Cache 的由来（GQA/MLA 为省它而生）
+- **关键认知**：Attention 的 \(O(n^2)\) 复杂度 → 长上下文成本、KV Cache 的由来（GQA/MLA 为省它而生）；长上下文的四条天花板（位置/结构可见/KV/算力）与四种续长机制系统整理见横切主题 [长上下文工程详解.md](./foundation/transformer/长上下文工程详解.md)
 
 ### 1.2 主流模型（DeepSeek、混元等）
 

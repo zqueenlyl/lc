@@ -207,6 +207,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 |---|---|
 | Agent 是什么、何时用（本页） | [agent/](./) |
 | 全链路环节主线（01–10 关卡地图） | [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) |
+| 窗口满了怎么压（Compaction / 四步策略 / 压缩漂移） | [环节02 · 补充篇](./环节02-补充-上下文压缩与Compaction详解.md) |
 | 循环怎么设计 | [loop-engineering.md](loop-engineering.md) |
 | 图画出来怎么跑 | [langgraph/](langgraph/) |
 | 工具插头 | [mcp/](mcp/) |

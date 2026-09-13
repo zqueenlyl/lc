@@ -130,7 +130,7 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 
 - Vaswani et al., *Attention Is All You Need*（2017）
 - Bahdanau 注意力、LSTM（Hochreiter & Schmidhuber）、GPT / BERT 论文
-- 位置：RoPE；长上下文：稀疏 / 线性注意力、MLA（见 [MoE](../moe/) 里的 DeepSeek 路线）
+- 位置：RoPE；长上下文：稀疏 / 线性注意力、MLA（见 [MoE](../moe/) 里的 DeepSeek 路线）；系统整理见横切主题 [长上下文工程详解](./长上下文工程详解.md)
 - 环节式长文：11 环节关卡地图见 [环节00-总揽与环节导航](./环节00-总揽与环节导航.md)
 - 对比：[moe](../moe/)、[multimodal](../multimodal/)、[context-engineering](../../knowledge/context-engineering/)
 
