@@ -49,7 +49,7 @@
 | **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./knowledge/rag/) |
 | **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [agent/](./agent/) |
 | **Harness** | 套在模型外的编码循环外壳 | Claude Code、Codex、Kimi Code、Pi | [harness/](./agent/harness/) |
-| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | 编码循环 / LangGraph / GraphRAG | [loop-graph-engineering/](./agent/loop-graph-engineering/) |
+| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | 编码循环 / LangGraph / GraphRAG | [loop-graph/](./agent/loop-graph/) |
 | **MCP** | Agent 连工具的 USB-C | Cursor / Claude / ChatGPT 都能插 | [mcp/](./agent/mcp/) |
 | **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./agent/a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、开浏览器 | Claude Computer Use、各家浏览器 Agent | [computer-use/](./agent/computer-use/) |
@@ -536,7 +536,7 @@ Agent 要大规模调工具
 | 你想搞懂 | 去 |
 |---|---|
 | **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](./model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
-| Agent 怎么转起来 | [agent/](./agent/)、[loop-graph-engineering/](./agent/loop-graph-engineering/)、[langgraph/](./agent/case-studies/langgraph/)、[harness/](./agent/harness/) |
+| Agent 怎么转起来 | [agent/](./agent/)、[loop-graph/](./agent/loop-graph/)、[langgraph/](./agent/case-studies/langgraph/)、[harness/](./agent/harness/) |
 | 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[memory/](./knowledge/memory/) |
 | 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |
 | 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./foundation/transformer/) |

@@ -95,7 +95,7 @@
 
 - 入口总揽：[环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)
 - 多 Agent 落地的状态机（嵌套子图/终止护栏）：→ [环节 07 编排与循环控制详解](./环节07-编排与循环控制详解.md)
-- 多 Agent 共享「同一个客户」时不要共用 checkpoint 当事实库：→ [上下文图](./loop-graph-engineering/context-graph.md)
+- 多 Agent 共享「同一个客户」时不要共用 checkpoint 当事实库：→ [上下文图](./loop-graph/context-graph.md)
 - 成员 Agent 的提示/记忆/工具设计：→ [环节 02](./环节02-提示与上下文工程详解.md)、[环节 03](./环节03-记忆与状态详解.md)、[环节 04](./环节04-工具调用详解.md)
 - 逐成员评测与 trace：→ [环节 09 评测与可观测详解](./环节09-评测与可观测详解.md)
 - 知识地图：[learning-path.md](../learning-path.md)（§2.8 Agent 框架与编排）

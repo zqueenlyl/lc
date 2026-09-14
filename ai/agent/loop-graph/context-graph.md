@@ -1,6 +1,6 @@
 # 上下文图（Context Graph）
 
-> 跨会话、跨 Agent，系统**知道什么**（客户 / 合同 / 政策）。图层总览：[graph-engineering.md](./graph-engineering.md)。走路怎么编排 → [execution-graph.md](./execution-graph.md)。窗口里怎么裁 → [上下文工程](./context-engineering.md)（本目录栈内口径）· [knowledge/CE](../../knowledge/context-engineering/)（预算手册）。不是本篇。
+> 跨会话、跨 Agent，系统**知道什么**（客户 / 合同 / 政策）。图层总览：[graph-engineering.md](./graph-engineering.md)。走路怎么编排 → [execution-graph.md](./execution-graph.md)。窗口里怎么裁 → [上下文工程](../../knowledge/context-engineering/)（预算手册）。不是本篇。
 
 ---
 

@@ -223,5 +223,5 @@ mini -c swebench.yaml agent.mode=yolo                       # 换基准配置并
 - 最小 Agent 教程：https://minimal-agent.com/
 - 控制流图解：`https://mini-swe-agent.com/latest/advanced/control_flow/`
 - 上手：`uvx mini-swe-agent`（匿名虚拟环境，不污染当前环境）
-- 相邻专题：[harness](../harness/)、[loop-graph-engineering](../loop-graph-engineering/)、[sandbox](../../reliability/sandbox/)、[eval](../../reliability/eval/)、[guardrails](../../reliability/guardrails/)
+- 相邻专题：[harness](../harness/)、[loop-graph](../loop-graph/)、[sandbox](../../reliability/sandbox/)、[eval](../../reliability/eval/)、[guardrails](../../reliability/guardrails/)
 - 四项目横向对比见本目录 [README](./README.md)

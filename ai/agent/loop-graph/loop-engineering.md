@@ -1,6 +1,6 @@
 # 循环工程（Loop Engineering）
 
-> 一条工作**何时算完**。总览：[README.md](./README.md)。上一层外壳 → [harness-engineering.md](./harness-engineering.md)。并行汇合 / 人审 → [执行图](./execution-graph.md)；跨系统对齐事实 → [上下文图](./context-graph.md)（图层总览：[graph-engineering.md](./graph-engineering.md)）。
+> 一条工作**何时算完**。总览：[README.md](./README.md)。上一层外壳 → [Harness](../harness/)。并行汇合 / 人审 → [执行图](./execution-graph.md)；跨系统对齐事实 → [上下文图](./context-graph.md)（图层总览：[graph-engineering.md](./graph-engineering.md)）。
 >
 > 来源：Rahul《Loops: What Every AI Engineer Needs to Know in 2026》（2026-06-09）。
 
@@ -15,7 +15,7 @@
 | 你 → 提示 → 代理 → 输出 → 你审查 → 你修复 → 重复 | 你设定目标 → 循环运行 → 发现 → 规划 → 执行 → 验证 → 迭代 → 完成 |
 | 提示给代理指令 | 循环给代理一份工作 |
 
-[提示工程](./prompt-engineering.md) 打磨**一次推理**；循环工程打磨**何时再转、凭什么停**。杠杆点从文案移到软件工程。
+[提示工程](../环节02-提示与上下文工程详解.md) 打磨**一次推理**；循环工程打磨**何时再转、凭什么停**。杠杆点从文案移到软件工程。
 
 ---
 

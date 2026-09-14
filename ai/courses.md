@@ -164,7 +164,7 @@
 
 **公开材料**：官网**无视频、无讲义下载**，只有每周论文清单（附 arXiv 链接）。可复用的产出 = **它的 reading list + 客座讲题**。
 
-**读完往本库写哪儿**：[foundation/reasoning/](./foundation/reasoning/)（test-time compute、训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-graph-engineering/](./agent/loop-graph-engineering/)（反思 / 验证器闭环）
+**读完往本库写哪儿**：[foundation/reasoning/](./foundation/reasoning/)（test-time compute、训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-graph/](./agent/loop-graph/)（反思 / 验证器闭环）
 
 ---
 
@@ -183,7 +183,7 @@
 | 学习目标 | 给 agent 正确上下文与能力；把产品需求转成可执行规格；设计人机共同「规划—构建—评估—改进」的迭代工作流 |
 | 公开材料 | 官网未提视频 / 讲义；列出开源合作方（Browserbase、HeyGen、CopilotKit、Semgrep、OpenHands、Milvus、Marimo、pi.dev、CrewAI、Warp、Vercel、Arize Phoenix、Unsloth、Anyscale） |
 
-**重叠度提示（为什么排 P3）**：MCP、Agent Skills、Loop engineering、软件工厂，本库都已有对应笔记（[agent/mcp/](./agent/mcp/)、[agent/agent-skills/](./agent/agent-skills/)、[agent/loop-graph-engineering/](./agent/loop-graph-engineering/)）。它是**流程与协作视角**，不提供 harness 实现 —— **只补差距，不重读**。
+**重叠度提示（为什么排 P3）**：MCP、Agent Skills、Loop engineering、软件工厂，本库都已有对应笔记（[agent/mcp/](./agent/mcp/)、[agent/agent-skills/](./agent/agent-skills/)、[agent/loop-graph/](./agent/loop-graph/)）。它是**流程与协作视角**，不提供 harness 实现 —— **只补差距，不重读**。
 
 <a id="s4-2"></a>
 
@@ -204,8 +204,8 @@
 |---|---|---|
 | CMU 11-768 | [agent/harness/](./agent/harness/) · [reliability/sandbox/](./reliability/sandbox/) · [reliability/eval/](./reliability/eval/) · [agent/agent-skills/](./agent/agent-skills/) | harness 的分模块实现（prompt / loop / 并行工具 / 压缩）、Skill 渐进披露、上下文压缩阈值实测 |
 | CS329Z | [reliability/eval/](./reliability/eval/) · [agent/case-studies/langgraph/](./agent/case-studies/langgraph/) · [agent/mcp/](./agent/mcp/) | **4-tuple 评测框架**、pass@k vs pass^k、三类 grader 与偏差、DSPy 系 prompt 优化 |
-| CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
-| CS146S | [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
+| CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-graph/](./agent/loop-graph/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
+| CS146S | [agent/loop-graph/](./agent/loop-graph/) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
 | MIT MAS.S60 | [foundation/multimodal/](./foundation/multimodal/) · [foundation/generative/](./foundation/generative/) | 跨模态生成的完整讲次顺序 |
 
 ---

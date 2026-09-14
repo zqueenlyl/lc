@@ -47,7 +47,7 @@ RAG（Retrieval-Augmented Generation，检索增强生成）通过在生成前�
 - **优点**：关系推理强、全局理解好、可解释性强、适合多跳问题。
 - **缺点**：图谱构建成本高（大量 LLM 调用）、实时性差、维护复杂。
 
-构图管线、执行图 vs 上下文图、GraphRAG 家族选型见 [循环与图工程](../../agent/loop-graph-engineering/)（构图细则：[context-graph.md](../../agent/loop-graph-engineering/context-graph.md)）。本文只给它在 RAG 谱系里的位置。
+构图管线、执行图 vs 上下文图、GraphRAG 家族选型见 [循环与图工程](../../agent/loop-graph/)（构图细则：[context-graph.md](../../agent/loop-graph/context-graph.md)）。本文只给它在 RAG 谱系里的位置。
 
 ### 5. Agentic RAG（智能体 RAG，2024 下半年）
 

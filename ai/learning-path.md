@@ -112,7 +112,7 @@
 - System Prompt 设计、Few-shot、CoT、指令分层与结构化（思维链原理与变体详解见 [环节01-决策与推理范式详解.md](./agent/环节01-决策与推理范式详解.md)）
 - 结构化输出：JSON Mode、Schema 约束、`tool_choice` 强制
 - Prompt 注入与越狱防护（安全基线）
-- 在工程栈里的位置（何时停在提示、何时升级到 Context / Loop）→ [prompt-engineering.md](./agent/loop-graph-engineering/prompt-engineering.md)
+- 在工程栈里的位置（何时停在提示、何时升级到 Context / Loop）→ [Agent 总图 · 按栈升级](./agent/README.md#七按栈升级从提示到图)
 
 ### 2.3 工具调用（Function Calling / Tool Use）
 
@@ -155,7 +155,7 @@
   | GraphRAG | 知识图谱 + 社区摘要 | 跨实体关系、全局性问题 |
   | Agentic RAG | 检索作为 Agent 工具，自主编排 | 复杂场景（终极形态）|
 - **演进脉络**：Naive → Advanced/Modular → Agentic
-- **构图与维护不在 RAG 变体里讲完**：执行图 vs 上下文图、实体对齐 / 时效 / 来源、GraphRAG 家族选型 → [循环与图工程](./agent/loop-graph-engineering/) · [context-graph.md](./agent/loop-graph-engineering/context-graph.md)
+- **构图与维护不在 RAG 变体里讲完**：执行图 vs 上下文图、实体对齐 / 时效 / 来源、GraphRAG 家族选型 → [循环与图工程](./agent/loop-graph/) · [context-graph.md](./agent/loop-graph/context-graph.md)
 
 ### 2.7 MCP（Model Context Protocol）
 
@@ -184,7 +184,7 @@
   - 定位：**Agent = 状态机编程**——编排从"线性链"升级为"有向图"，循环/分支/并行/中断全部显式可控
   - 为什么生产级：每步状态可见可测、checkpoint 断点续跑、图可序列化版本化、配 LangSmith 全链路 trace；LangGraph Platform 提供部署托管与可视化调试
   - 现状：正在从实验工具进化为**企业级 Agent 编排的事实标准之一**（采用率远高于 LangChain 本体）
-  - **执行图的实现是 LangGraph，上一层见 §2.11**：LangGraph 回答「下一步跑谁」；跨系统共享「同一个客户 / 同一条政策」要另做**上下文图**（checkpoint ≠ 领域本体）→ [loop-graph-engineering/](./agent/loop-graph-engineering/)
+  - **执行图的实现是 LangGraph，上一层见 §2.11**：LangGraph 回答「下一步跑谁」；跨系统共享「同一个客户 / 同一条政策」要另做**上下文图**（checkpoint ≠ 领域本体）→ [loop-graph/](./agent/loop-graph/)
 - **对比速查**：
   | 维度 | LangChain | LangGraph |
   |------|-----------|-----------|
@@ -228,7 +228,7 @@
 
 ### 2.11 循环工程与图工程
 
-> **先读总览再下钻**：[loop-graph-engineering/](./agent/loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）→ [loop-engineering.md](./agent/loop-graph-engineering/loop-engineering.md) → [graph-engineering.md](./agent/loop-graph-engineering/graph-engineering.md)
+> **先读总览再下钻**：[loop-graph/](./agent/loop-graph/)（Prompt → Context → Harness → Loop → Graph）→ [loop-engineering.md](./agent/loop-graph/loop-engineering.md) → [graph-engineering.md](./agent/loop-graph/graph-engineering.md)
 > 执行图落地：[langgraph/](./agent/case-studies/langgraph/) · [环节 07](./agent/环节07-编排与循环控制详解.md)；上下文图检索侧：[rag](./knowledge/rag/) · [环节 06](./agent/环节06-检索增强RAG详解.md)
 
 - **分工**：Loop 管**时间轴**（这一条何时再转、凭什么停）；执行图管**结构轴**（多条谁先谁后）；上下文图管**事实轴**（系统知道什么）。图里每个节点内部仍是一段循环。

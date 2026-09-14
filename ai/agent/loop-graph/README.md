@@ -1,0 +1,100 @@
+# 循环工程与图工程（Loop & Graph）
+
+> 一句话：五层栈 **Prompt → Context → Harness → Loop → Graph** 后两层的深讲。人不做循环本身；图不取代循环——每个节点内部仍是一段循环。
+>
+> 整栈对照、升级信号、场景选型在 [Agent 总图 · 按栈升级](../README.md#七按栈升级从提示到图)；前三层细讲在 [环节 02](../环节02-提示与上下文工程详解.md)、[knowledge/context-engineering](../../knowledge/context-engineering/)、[harness/](../harness/)。
+>
+> 和 [Harness](../harness/) 的关系：Harness 是车（运行时外壳）；Loop 是怎么开（验证闭环）；执行图是立交怎么接；上下文图是地图（领域事实），**不是底盘**。
+>
+> 循环部分来源：Rahul《Loops: What Every AI Engineer Needs to Know in 2026》（2026-06-09）。图部分口径：执行图 vs 上下文图（2026 工程共识；综述 arXiv:2608.21156）。
+
+本页是**深讲索引**。
+
+| 文档 | 主问题 | 读完能判断 |
+|---|---|---|
+| [loop-engineering.md](./loop-engineering.md) | 这一条何时算完？ | 五段循环、开闭环、舰队**定义**、验证器 |
+| [graph-engineering.md](./graph-engineering.md) | 何时从 loop 转到 graph？ | 执行图 vs 上下文图；一张图一种东西 |
+| [execution-graph.md](./execution-graph.md) | 多条谁先谁后？ | 边 / checkpoint / 人审 / 子图；舰队**接线** |
+| [context-graph.md](./context-graph.md) | 系统知道什么？ | 构图管线、身份 / 时效 / 来源、GraphRAG 家族 |
+| [mvp.py](./mvp.py) | 两张图怎么分工？ | 关键词漏政策；图路径走出不可退；退款停人审 |
+
+最小 ReAct 循环见 [../mvp.py](../mvp.py)。运行本目录 MVP：`cd ai/agent/loop-graph && python3 mvp.py`。
+
+---
+
+## 一、与相邻技术
+
+| 技术 | 关系 |
+|---|---|
+| [Agent 总图 · 按栈升级](../README.md#七按栈升级从提示到图) | 整栈对照、升级信号、场景选型 |
+| [环节 02](../环节02-提示与上下文工程详解.md) | Prompt + 窗口的技法讲义 |
+| [knowledge/context-engineering](../../knowledge/context-engineering/) | 窗口预算本体 |
+| [Harness](../harness/) | 车：工具、权限、验证门、产品形态 |
+| [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | 执行图落地；State / Node / Edge 讲义在那边 |
+| [环节 08](../环节08-多Agent协作详解.md) | 舰队的协作模式；接线仍用执行图 |
+| [环节 01](../环节01-决策与推理范式详解.md) | ReAct 是微观骨架；五段是宏观阶段 |
+| [RAG](../../knowledge/rag/) · [环节 06](../环节06-检索增强RAG详解.md) | GraphRAG 是 RAG 谱系一支；构图与契约在 [context-graph.md](./context-graph.md) |
+| [Memory](../../knowledge/memory/) | 图式记忆 = 上下文图用在长期记忆上 |
+| [知识库](../../knowledge/knowledge-base/) | 五维里的图存储 / Graph RAG / Ontology |
+| [MCP](../mcp/) | 插件进循环；图库以 Tool / Resource 暴露 |
+| [Eval](../../reliability/eval/) | 循环评验证器与轨迹；上下文图评多跳路径是否走对 |
+| [structured-output](../../reliability/structured-output/) | 提示层的格式闭环 |
+
+---
+
+## 二、落地建议
+
+1. **先写完成定义，再写循环。** 哪条命令绿、哪个字段必填，写不出来就不要上 Agent。一次调用能交差就停在提示。
+2. **验证者与执行者分离。** 模型说「已修好」不算完。
+3. **默认闭环 + L2 护栏**：步数、超时、花费、重复动作检测。
+4. **按栈升级，不要跳级**（[总览](../README.md#七按栈升级从提示到图)）：提示稳了再管窗口，窗口稳了再上 Harness，循环跑绿再画执行图，最后才决定要不要上下文图。
+5. **一张图只表示一种东西。** 工作流节点不要和「客户」节点混 Schema。上下文工程 ≠ 上下文图。
+6. **抽取要可增量**；来源和置信度分开存；图查询默认只读。
+7. **构图账单单列。** GraphRAG 的钱常常花在抽取，不在问答。
+8. **循环加速的是你已理解的工作。** 两套相同循环，一套放大理解、一套逃避理解——循环不区分，人要区分。
+
+---
+
+## 三、面试速记
+
+1. 提示工程和循环工程差在哪？→ 提示打磨一次输出；循环打磨反馈与停止条件，人退出调度。
+2. 提示工程和上下文工程差在哪？→ 措辞 vs 窗口里选什么、砍什么。
+3. 上下文工程和上下文图差在哪？→ 窗口预算 vs 领域事实；图召回之后仍要裁。
+4. 五段里哪一段最不能省？→ VERIFY；省了就是开环。
+5. 舰队是不是另一种循环？→ 不是。每层还是五段；变的是复制份数。接线归执行图。
+6. 什么时候从 loop 升级到 graph？→ 并行汇合 / 人审节点 / 按边重试 / 共享领域事实。
+7. Harness 和循环是不是一回事？→ 循环是设计；Harness 是带工具和权限的运行时。Loop + 执行图是外壳要交付的；上下文图是地图。
+8. 执行图和上下文图差在哪？→ 控制流 vs 领域事实；checkpoint ≠ 本体。
+9. 什么时候上 GraphRAG？→ 有跨实体多跳或全局总结的失败案例；先 Hybrid + Rerank。
+10. 为什么持久化了还对不齐客户？→ 缺稳定 ID、时效、来源和冲突规则。
+
+---
+
+## 四、本目录 MVP
+
+[mvp.py](./mvp.py) 演示执行图与上下文图如何分工（规则抽取，不调模型）：
+
+1. 从三份短文档抽出「订单 / 客户 / 政策」属性图。
+2. **关键词检索**答「订单 8821 为什么拒退」会漏掉政策节点。
+3. **图上局部遍历**走出 `订单 → 许可证 → 不可退条款`。
+4. **迷你执行图**：关键词不够就走图检索；退款是写操作，停在人审。
+
+```bash
+cd ai/agent/loop-graph
+python3 mvp.py
+```
+
+要点：checkpoint 能记下这条 run；条款本身住在上下文图，不在 State 里。细则见 [execution-graph.md](./execution-graph.md)、[context-graph.md](./context-graph.md)。
+
+---
+
+## 五、延伸阅读
+
+- 整栈：[Agent 总图 · 按栈升级](../README.md#七按栈升级从提示到图)
+- 提示 / 窗口技法：[环节 02](../环节02-提示与上下文工程详解.md) · [knowledge/context-engineering](../../knowledge/context-engineering/)
+- 循环原文：Rahul, *Loops: What Every AI Engineer Needs to Know in 2026* → [loop-engineering.md](./loop-engineering.md)
+- 图综述：arXiv:2608.21156；GraphRAG（Microsoft 2024）；LightRAG / HippoRAG / LazyGraphRAG → [context-graph.md](./context-graph.md)
+- 时序图式记忆：Zep Graphiti、Cognee
+- 实现：[Harness](../harness/) · [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md)
+- 零件：[Skills](../agent-skills/) · [MCP](../mcp/) · [Memory](../../knowledge/memory/) · [RAG](../../knowledge/rag/) · [Eval](../../reliability/eval/)
+- 上级：[Agent 总图](../README.md) ｜ 总索引 [../../README.md](../../README.md)

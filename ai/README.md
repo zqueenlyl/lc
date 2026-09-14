@@ -30,7 +30,7 @@ ai/
 │   ├── README.md             #    总图
 │   ├── 环节00-总揽与环节导航.md   # 原理：一条主循环 + 10 环节
 │   ├── 环节01-*.md ~ 环节10-*.md      # 原理长文（按序读）
-│   ├── loop-graph-engineering/  #    循环工程 + 图工程
+│   ├── loop-graph/  #    循环与图深讲（栈总览在 agent/README §七）
 │   ├── mcp/  a2a/  agent-skills/  computer-use/  harness/
 │   └── case-studies/            #    案例层：commerce-agents / pi / trpc-agent-go / langgraph
 │
@@ -101,7 +101,7 @@ ai/
 |---|---|---|
 | **Agent（总图）** | 有目标、调工具、看反馈再试；聊天/工作流/Agent 三分 | [agent/](./agent/) |
 | **Agent 全链路（原理）** | 一条主循环 + 支撑面 / 横切的宏观总揽与环节导航 | [总揽](./agent/环节00-总揽与环节导航.md) |
-| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | [loop-graph-engineering/](./agent/loop-graph-engineering/) |
+| **循环与图** | 五层栈总览（agent/README §七）+ Loop / Graph 深讲 | [agent/README](./agent/README.md) · [loop-graph/](./agent/loop-graph/) |
 | **LangGraph** | 图编排 + 8 个 demo（案例层） | [langgraph/](./agent/case-studies/langgraph/) |
 | **MCP** | Agent ↔ 工具 / 数据源的 USB-C | [mcp/](./agent/mcp/) ｜ [版本演进](./agent/mcp/版本演进.md) |
 | **A2A** | Agent ↔ Agent 的对等委托协议 | [a2a/](./agent/a2a/) |
@@ -178,7 +178,7 @@ ai/
 案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed（model-cases/）
 ```
 
-MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图工程](./agent/loop-graph-engineering/) 管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
+MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图](./agent/loop-graph/)（[栈总览](./agent/README.md#七按栈升级从提示到图)）管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
 
 ## 跑 MVP
 

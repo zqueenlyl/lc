@@ -89,7 +89,7 @@
 | [../vector-db/](../vector-db/) | 向量记忆的存储底座 |
 | [agent 环节 03](../../agent/环节03-记忆与状态详解.md) | 原理纵深：记忆与状态在 Agent 循环里的位置 |
 | [../../agent/case-studies/langgraph/](../../agent/case-studies/langgraph/) | Checkpointer / 状态图的工程实现 |
-| [../../agent/loop-graph-engineering/](../../agent/loop-graph-engineering/) | 图式记忆属于上下文图；跨系统对齐客户 / 政策时不要把 checkpoint 当事实库 |
+| [../../agent/loop-graph/](../../agent/loop-graph/) | 图式记忆属于上下文图；跨系统对齐客户 / 政策时不要把 checkpoint 当事实库 |
 
 ---
 

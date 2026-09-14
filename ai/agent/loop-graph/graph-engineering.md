@@ -7,7 +7,7 @@
 | 文档 | 主问题 | 不是 |
 |---|---|---|
 | [execution-graph.md](./execution-graph.md) | 多条循环谁先谁后、汇合 / 重试 / 人审 | 领域本体 |
-| [context-graph.md](./context-graph.md) | 跨会话、跨 Agent，客户 / 合同 / 政策是什么 | 窗口裁剪（那是 [上下文工程](./context-engineering.md)） |
+| [context-graph.md](./context-graph.md) | 跨会话、跨 Agent，客户 / 合同 / 政策是什么 | 窗口裁剪（那是 [上下文工程](../../knowledge/context-engineering/)） |
 
 ---
 
@@ -41,4 +41,4 @@ Loop 还在转。Graph 负责**编排这些 loop**，并在需要时给它们一
 
 ## 三、和上下文工程的分界
 
-[上下文工程](./context-engineering.md) 决定这一跳窗口装什么。[上下文图](./context-graph.md) 决定系统里有哪些实体和边。图查询的结果仍要按 token 预算裁进窗口，两层接力，不是互相替代。
+[上下文工程](../../knowledge/context-engineering/) 决定这一跳窗口装什么。[上下文图](./context-graph.md) 决定系统里有哪些实体和边。图查询的结果仍要按 token 预算裁进窗口，两层接力，不是互相替代。

@@ -2,7 +2,7 @@
 
 > Harness 是套在模型外面的 **运行时**：组上下文、暴露工具、跑命令、验证结果、决定要不要再转一圈。一句话：**模型是发动机，Harness 是底盘和方向盘。**
 
-Claude Code / Codex / Cursor Agent / DeepSeek Harness 比的往往不是「谁家模型分数高」，而是这层循环怎么设计。栈内口径见 [harness-engineering.md](../loop-graph-engineering/harness-engineering.md)；设计与接线见 [循环与图工程](../loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）。运行时细讲就是本专题。
+Claude Code / Codex / Cursor Agent / DeepSeek Harness 比的往往不是「谁家模型分数高」，而是这层循环怎么设计。栈总览见 [Agent 总图 · 按栈升级](../README.md#七按栈升级从提示到图)；循环与图深讲见 [loop-graph/](../loop-graph/)。运行时细讲就是本专题。
 
 配套 MVP：[mvp.py](./mvp.py)（`read` / `write` / `edit` / `bash` 四件套 + 插件槽，不调外部 API）。
 
@@ -90,7 +90,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 
 1. **最小核 vs 全家桶**：Pi / DeepSeek 最小预设 vs Claude Code 默认工具很全。核小则安全面小、插件生态要自己长；核大则开箱能干活、和厂商绑定深。
 2. **插件 vs 内置**：一切皆插件 = 默认几乎只有执行原语，编码能力是装上去的。
-3. **单循环 vs 子 Agent**：Kimi 的 `explore` / `plan` / `coder` 是把舰队循环做成一等公民——**每层仍是五段循环**，fan-out / 人审走执行图，见 [循环与图工程](../loop-graph-engineering/)。
+3. **单循环 vs 子 Agent**：Kimi 的 `explore` / `plan` / `coder` 是把舰队循环做成一等公民——**每层仍是五段循环**，fan-out / 人审走执行图，见 [循环与图工程](../loop-graph/)。
 4. **人从哪发指令**：纯 CLI、IDE（ACP）、Web、IM 网关，决定权限模型和上下文从哪来。
 5. **开源的是哪一层**：Codex 开的是 CLI；Claude Code 外壳不开；DeepSeek / Kimi / Pi / OpenClaw 外壳可改。模型往往仍是 API。
 
@@ -100,7 +100,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 
 | 技术 | 关系 |
 |---|---|
-| [循环与图工程](../loop-graph-engineering/) | 设计：一条工作何时停、多条怎么接线、事实怎么共享；Harness 是运行时 |
+| [循环与图工程](../loop-graph/) | 设计：一条工作何时停、多条怎么接线、事实怎么共享；Harness 是运行时 |
 | [MCP](../mcp/) | 很多 Harness 用 MCP 扩工具；有的用私有 tool schema |
 | [Agent Skills](../agent-skills/) | 菜谱；Harness 决定何时加载、能否跑脚本 |
 | [Computer Use](../computer-use/) | 无 API 时用键鼠；有仓库时优先文件工具 + `bash` |
@@ -123,7 +123,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 
 ## 八、延伸阅读
 
-- 本仓库：[loop-graph-engineering](../loop-graph-engineering/)、[mcp](../mcp/)、[agent-skills](../agent-skills/)
+- 本仓库：[loop-graph](../loop-graph/)、[mcp](../mcp/)、[agent-skills](../agent-skills/)
 - 评测：[SWE-bench](https://www.swebench.com/)、[Terminal-Bench](https://www.tbench.ai/)、AA Coding Agents
 - 产品文档：Claude Code、Codex CLI、各开源仓库 README（以当时上游为准）
 

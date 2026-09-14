@@ -30,7 +30,7 @@ L3  长程闭环        测红就改，直到绿或预算耗尽
 L4  舰队            编排者拆任务，专家 + 子 Agent 并行
 ```
 
-L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环与图工程](loop-graph-engineering/)。
+L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环与图](loop-graph/)。
 
 ---
 
@@ -58,7 +58,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 |---|---|---|
 | **模型** | 想、选工具、写产物 | [reasoning](../foundation/reasoning/)、[model-routing](../reliability/model-routing/) |
 | **Harness** | 循环怎么转、默认工具、沙箱 | [harness](harness/) |
-| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | [loop-graph-engineering](loop-graph-engineering/) |
+| **循环与图** | 循环何时算完；执行图接线、事实共享（整栈见[§七](#七按栈升级从提示到图)） | [loop-graph](loop-graph/) |
 | **工具协议** | 手怎么接上 | [mcp](mcp/)、[structured-output](../reliability/structured-output/) |
 | **技能 / SOP** | 这类任务按什么做 | [agent-skills](agent-skills/) |
 | **记忆** | 这轮 / 这会话 / 跨会话记什么 | [memory](../knowledge/memory/) |
@@ -75,7 +75,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 | 要素 | 回答什么 | 本目录 | 深入去哪 |
 |---|---|---|---|
 | **模型**（脑） | 谁在想、窗口装什么 | [环节 01](./环节01-决策与推理范式详解.md)、[环节 02](./环节02-提示与上下文工程详解.md)（+[补充篇](./环节02-补充-上下文压缩与Compaction详解.md)） | [foundation/reasoning](../foundation/reasoning/)、[context-engineering](../knowledge/context-engineering/)、[model-routing](../reliability/model-routing/) |
-| **外壳 Harness**（壳） | 工具 / 权限 / 循环 / 编排 | [harness](harness/)、[loop-graph-engineering](loop-graph-engineering/)、[langgraph](case-studies/langgraph/) | 本目录即主场 |
+| **外壳 Harness**（壳） | 工具 / 权限 / 循环 / 编排 | [harness](harness/)、[loop-graph](loop-graph/)、[langgraph](case-studies/langgraph/) | 本目录即主场 |
 | **环境 Env**（世界） | 能碰到什么 | [mcp](mcp/)、[a2a](a2a/)、[computer-use](computer-use/)、[环节 04](./环节04-工具调用详解.md)/[05](./环节05-工具接入协议MCP详解.md)/[06](./环节06-检索增强RAG详解.md) | [rag](../knowledge/rag/)、[memory](../knowledge/memory/)、[sandbox](../reliability/sandbox/) |
 
 本目录的重心是中间那项：模型本体在 [foundation](../foundation/)，环境纵深在 [knowledge](../knowledge/)、[reliability](../reliability/)。注意 [MCP](mcp/)、[A2A](a2a/) 是**接缝**——client 半边长在外壳，server / 对端 Agent 在环境，两边各占一半，所以平铺不塞桶。
@@ -97,12 +97,12 @@ Thought  →  Action(tool, args)  →  Observation  →  再 Thought …
 |---|---|---|---|
 | **ReAct / Tool loop** | 走一步看一步 | 工具结果不确定、要探索 | 无验证会空转；上下文膨胀 |
 | **Plan-and-Execute** | 先出步骤清单再逐条执行 | 任务结构清楚 | 计划过时，要能重规划 |
-| **发现→规划→执行→验证→迭代** | [循环工程](loop-graph-engineering/loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
+| **发现→规划→执行→验证→迭代** | [循环工程](loop-graph/loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
 | **Supervisor** | 一个编排者分发给专家 | 角色边界清（研究 / 码 / 测） | 编排者变成单点，prompt 膨胀 |
 | **Swarm / 对等交接** | Agent 之间移交控制权 | 探索、对话式转交 | 难审计、易 ping-pong |
 | **Fleet（舰队）** | 每层都跑同一套五段循环 | 大目标可拆 | 成本数量级上升 |
 
-编排：整栈见 [循环与图工程](loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）。落地工具 [LangGraph](case-studies/langgraph/)。checkpoint 不等于领域本体。
+编排：整栈升级见 [§七](#七按栈升级从提示到图)。落地工具 [LangGraph](case-studies/langgraph/)。checkpoint 不等于领域本体。
 
 ---
 
@@ -165,12 +165,56 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 
 ---
 
-## 七、什么时候不要上 Agent
+## 七、按栈升级：从提示到图
+
+Agent 工程按层升级——**Prompt → Context → Harness → Loop → Graph**。人不做循环本身；图不取代循环——每个节点内部仍是一段循环。后两层深讲在 [loop-graph/](loop-graph/)。
+
+```
+Prompt（怎么问一次）
+  → Context（窗口里有什么）
+    → Harness（运行时：工具 / 权限 / 验证门）
+      → Loop（同一条工作怎么转完）
+        → Graph
+            ├─ 执行图（多条谁先谁后）
+            └─ 上下文图（系统知道什么）
+```
+
+| | **提示** | **上下文** | **Harness** | **循环** | **执行图** | **上下文图** |
+|---|---|---|---|---|---|---|
+| 主问题 | 这一次怎么问？ | 窗口装什么？ | 外壳怎么跑？ | 这一条何时算完？ | 多条谁先谁后？ | 系统知道什么？ |
+| 形状 | 一次 messages | 多源预算 | 工具 / 权限 / 产品 | 时间上的环 | 路由 / fan-out | 客户、合同、政策 |
+| 杠杆 | 文案 | 编译窗口 | 底盘 | 完成定义 + 验证器 | 工作流边 | Schema / 本体 |
+| 寿命 | 一次调用 | 一次调用 | 产品生命周期 | 一次任务 | 一次 run | 跨工作流 |
+| 细讲 | [环节 02](./环节02-提示与上下文工程详解.md) | [knowledge/CE](../knowledge/context-engineering/) | [harness](harness/) | [loop-graph](loop-graph/loop-engineering.md) | [LangGraph](case-studies/langgraph/) · [环节 07](./环节07-编排与循环控制详解.md) | [RAG](../knowledge/rag/) · [Memory](../knowledge/memory/) |
+
+**升级信号**（什么时候加层）：
+
+- 一次调用能稳住格式 → **停在提示**，不要上 Agent。升级之后提示变成循环里**每一跳**的局部指令（系统提示、工具 schema、节点 prompt），不再是整份工作的调度器。
+- 多源抢窗口、要压缩 / 缓存、每轮重复付费 → **上下文工程**。图召回的只是一小束关系；CE 决定这束关系占多少 token、放窗口哪段。
+- 要工具、权限、沙箱、产品形态 → **Harness**。Tool 数量 ≠ Harness 强弱（Pi 四个核心工具、Claude Code 工具很全、DeepSeek 一切皆插件——比的是取向）。
+- 验证器能程序化、一条 Agent 转完 → **停在循环**，不要画图。
+- 并行要汇合、人审必须是节点、失败要按边重试、多条循环不能共一段窗口 → **执行图**（不要在 while 里加 `if`）。
+- 多个会话 / 系统必须对「同一个客户、同一版政策」读写一致 → **再加上下文图**。单线程编码、文件 + git + checkpoint 往往够，不必上 GraphRAG。
+
+**反向信号**（什么时候根本不上 Agent）：
 
 - 步骤固定、无分支：写成工作流或脚本，更稳更便宜。
 - 数据在库里、问题是查询：RAG / Text-to-SQL，不必让模型自己探索文件系统。
 - 一次性文案：聊天 + 人改即可。
 - 合规要求每步可预先审计：预定义路径（闭环工作流）优于开放 ReAct。
+
+**场景选型**：
+
+| 场景 | 停在哪 | 为什么 |
+|---|---|---|
+| 分类 / 抽取 / 改写 | **提示** | 一次调用 + 格式校验 |
+| 客服长会话、编码助手打开文件 | + **上下文工程** | 窗口预算，不必上循环 |
+| 单线程编码：写 → 测 → 修 | **循环 + Harness** | 验证器是测试；文件 + git 够当进度 |
+| 编码要并行子 Agent / 人审合入 | + 执行图（常再加代码图） | 汇合与审批是边 |
+| 研究型多 Agent（搜 / 写 / 评） | + 执行图 | fan-out / fan-in，验证者与作者分离 |
+| 企业知识：合同–条款–客户–事故 | + 上下文图 / GraphRAG | 多跳、全局总结、要引用路径 |
+| 客服 / 理赔跨 CRM·工单·政策 | **执行图 + 上下文图** | 走路 vs 「同一客户」 |
+| 步骤固定的审批 | 执行图，甚至普通工作流 | 不必 GraphRAG |
 
 选型梯子（贵的后上）：
 
@@ -185,6 +229,10 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 ```
 
 每一步用 [Eval](../reliability/eval/) 证明有增益再加层。
+
+舰队：**定义**在 [循环](loop-graph/loop-engineering.md)（每层仍是五段）；**接线**在 [执行图](loop-graph/execution-graph.md)。编码 Agent 还有第三张图，别和上面抢词：**代码图**（文件 / 符号 / 调用 / 依赖）给 Harness 当检索底座。两个易混词：**上下文工程**=窗口预算（[knowledge/CE](../knowledge/context-engineering/)），**上下文图**=实体 / 关系 / 时效（[context-graph](loop-graph/context-graph.md)）。
+
+> Peter Steinberger：「你应该设计循环来提示你的代理。」「还在谈 loop，还是已经转到 graph 了？」——loop 还在转，graph 负责编排这些 loop，并（在需要时）给它们一份共享的领域事实。
 
 ---
 
@@ -223,7 +271,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | Agent 是什么、何时用（本页） | [agent/](./) |
 | 全链路环节主线（01–10 关卡地图） | [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) |
 | 窗口满了怎么压（Compaction / 四步策略 / 压缩漂移） | [环节02 · 补充篇](./环节02-补充-上下文压缩与Compaction详解.md) |
-| 循环怎么转完 / 变宽怎么接线 / 事实怎么共享 | [loop-graph-engineering/](loop-graph-engineering/) |
+| 循环怎么转完 / 变宽怎么接线 / 事实怎么共享 | [loop-graph/](loop-graph/) |
 | 执行图画出来怎么跑 | [langgraph/](case-studies/langgraph/) |
 | 工具插头 | [mcp/](mcp/) |
 | Agent 互委托 | [a2a/](a2a/) |

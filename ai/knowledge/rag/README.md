@@ -84,7 +84,7 @@ RAG 的动机：模型参数里只有「训练时见过、且记得住」的知�
 | [../vector-db/](../vector-db/) | RAG 的语义召回层；ANN 索引、过滤、混合检索都在这里 |
 | [../knowledge-base/](../knowledge-base/) | 更上层视角：知识库按存储 / 检索 / 形态 / 建模 / 维护五维分类 |
 | [../context-engineering/](../context-engineering/) | 检索结果如何按 token 预算裁剪、排序、拼进窗口 |
-| [../../agent/loop-graph-engineering/](../../agent/loop-graph-engineering/) | GraphRAG 的构图 / 维护 / 执行图 vs 上下文图；本目录只给检索谱系里的位置 |
+| [../../agent/loop-graph/](../../agent/loop-graph/) | GraphRAG 的构图 / 维护 / 执行图 vs 上下文图；本目录只给检索谱系里的位置 |
 | [../memory/](../memory/) | 长期记忆的召回与 RAG 同构（向量检索 + 写过滤） |
 | [agent 环节 06](../../agent/环节06-检索增强RAG详解.md) | 工程链路纵深：切分策略、评测、失败模式 |
 
@@ -103,6 +103,6 @@ RAG 的动机：模型参数里只有「训练时见过、且记得住」的知�
 ## 八、延伸阅读
 
 - 原论文：RAG（Lewis et al. 2020）、Self-RAG、CRAG、HyDE、RAPTOR、GraphRAG（微软 2024）
-- 构图与图工程：[../../agent/loop-graph-engineering/](../../agent/loop-graph-engineering/)
+- 构图与图工程：[../../agent/loop-graph/](../../agent/loop-graph/)
 - 相邻专题：[../vector-db/](../vector-db/)、[../knowledge-base/](../knowledge-base/)、[../context-engineering/](../context-engineering/)
 - 上级索引：[../README.md](../README.md) ｜ 总索引 [../../README.md](../../README.md)

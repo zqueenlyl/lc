@@ -108,7 +108,7 @@
 | **GraphRAG** | 知识图谱化：实体关系 + 社区摘要 | 跨实体关系、全局性问题（"总结全库主题"） | 图谱型 |
 | **Agentic RAG** | 检索作为 Agent 工具，自主决定查几次/查什么/要不要改查 | 复杂多跳场景（检索决策融入 [环节 01](./环节01-决策与推理范式详解.md) 循环） | **终极形态** |
 
-构图、增量维护、执行图 vs 上下文图（checkpoint ≠ 领域本体）见 [循环与图工程](./loop-graph-engineering/)（构图：[context-graph.md](./loop-graph-engineering/context-graph.md)）。环节 06 只给 GraphRAG 在检索谱系里的位置。
+构图、增量维护、执行图 vs 上下文图（checkpoint ≠ 领域本体）见 [循环与图工程](./loop-graph/)（构图：[context-graph.md](./loop-graph/context-graph.md)）。环节 06 只给 GraphRAG 在检索谱系里的位置。
 
 **演进脉络**：`Naive → Advanced/Modular → Agentic`。Agentic RAG 不是放弃前三者——它是把"混合检索 + Rerank"当作一个**工具**，让 Agent 决定什么时候用、用几次、不够再查（也是 [learning-path.md](../learning-path.md) §2.6 的结论）。
 
@@ -151,4 +151,4 @@
 - Agentic RAG 的决策循环：→ [环节 01 决策与推理范式详解](./环节01-决策与推理范式详解.md)
 - 检索质量怎么评测与回归：→ [环节 09 评测与可观测详解](./环节09-评测与可观测详解.md)
 - 知识地图：[learning-path.md](../learning-path.md)（§2.6 RAG）
-- 循环与图工程（构图 / 两张图 / GraphRAG 家族）：[loop-graph-engineering/](./loop-graph-engineering/) · [context-graph.md](./loop-graph-engineering/context-graph.md)
+- 循环与图工程（构图 / 两张图 / GraphRAG 家族）：[loop-graph/](./loop-graph/) · [context-graph.md](./loop-graph/context-graph.md)
