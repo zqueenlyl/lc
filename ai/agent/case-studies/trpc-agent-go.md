@@ -56,7 +56,7 @@ tRPC-Agent-Go 几乎把本仓库的多个专题「打包成了一个框架」：
 
 | 本仓库专题 | tRPC-Agent-Go 里的对应 |
 |---|---|
-| [langgraph](../langgraph/) | `graph` + `agent/graph`（GraphAgent，类型安全的图） |
+| [langgraph](./langgraph/) | `graph` + `agent/graph`（GraphAgent，类型安全的图） |
 | [mcp](../mcp/) | MCP 工具接入 |
 | [a2a](../a2a/) | A2A server |
 | [memory](../../knowledge/memory/) | `memory` 包（长期记忆、个性化） |
@@ -105,5 +105,5 @@ tRPC-Agent-Go 几乎把本仓库的多个专题「打包成了一个框架」：
 
 - 文档：`trpc-group.github.io/trpc-agent-go/`（含 GraphAgent、AG-UI、Skills、Evaluation 等主题博客）
 - 示例：仓库 `examples/` 下 15 类（tool / llmagent / multiagent / graph / memory / knowledge / telemetry / mcp / agui / evaluation / skills / evolution / artifacts / a2a / gateway）
-- 相邻专题：[langgraph](../langgraph/)、[agent](../)、[mcp](../mcp/)、[a2a](../a2a/)、[eval](../../reliability/eval/)
+- 相邻专题：[langgraph](./langgraph/)、[agent](../)、[mcp](../mcp/)、[a2a](../a2a/)、[eval](../../reliability/eval/)
 - 三项目横向对比见本目录 [README](./README.md)

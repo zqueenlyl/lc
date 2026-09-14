@@ -43,7 +43,7 @@ Prompt（怎么问一次）                 ← prompt-engineering.md
 | 形状 | 一次 messages | 多源预算 | 工具 / 权限 / 产品 | 时间上的环 | 路由 / fan-out | 客户、合同、政策 |
 | 杠杆 | 文案 | 编译窗口 | 底盘 | 完成定义 + 验证器 | 工作流边 | Schema / 本体 |
 | 寿命 | 一次调用 | 一次调用 | 产品生命周期 | 一次任务 | 一次 run | 跨工作流 |
-| 细讲 | [环节 02](../环节02-提示与上下文工程详解.md) | [knowledge/CE](../../knowledge/context-engineering/) | [harness/](../harness/) | 本目录 | [LangGraph](../langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | [RAG](../../knowledge/rag/) · [Memory](../../knowledge/memory/) |
+| 细讲 | [环节 02](../环节02-提示与上下文工程详解.md) | [knowledge/CE](../../knowledge/context-engineering/) | [harness/](../harness/) | 本目录 | [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | [RAG](../../knowledge/rag/) · [Memory](../../knowledge/memory/) |
 
 **升级信号**
 
@@ -92,7 +92,7 @@ Prompt（怎么问一次）                 ← prompt-engineering.md
 | [环节 02](../环节02-提示与上下文工程详解.md) | Prompt + 窗口的技法讲义；栈内口径在本目录前两篇 |
 | [knowledge/context-engineering](../../knowledge/context-engineering/) | 窗口预算本体；本目录 [context-engineering.md](./context-engineering.md) 只写它在栈里的位置 |
 | [Harness](../harness/) | 车：工具、权限、验证门、产品形态。栈内口径：[harness-engineering.md](./harness-engineering.md) |
-| [LangGraph](../langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | 执行图落地；State / Node / Edge 讲义在那边 |
+| [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | 执行图落地；State / Node / Edge 讲义在那边 |
 | [环节 08](../环节08-多Agent协作详解.md) | 舰队的协作模式；接线仍用执行图 |
 | [环节 01](../环节01-决策与推理范式详解.md) | ReAct 是微观骨架；五段是宏观阶段 |
 | [RAG](../../knowledge/rag/) · [环节 06](../环节06-检索增强RAG详解.md) | GraphRAG 是 RAG 谱系一支；构图与契约在 [context-graph.md](./context-graph.md) |
@@ -156,6 +156,6 @@ python3 mvp.py
 - 循环原文：Rahul, *Loops: What Every AI Engineer Needs to Know in 2026* → [loop-engineering.md](./loop-engineering.md)
 - 图综述：arXiv:2608.21156；GraphRAG（Microsoft 2024）；LightRAG / HippoRAG / LazyGraphRAG → [context-graph.md](./context-graph.md)
 - 时序图式记忆：Zep Graphiti、Cognee
-- 实现：[Harness](../harness/) · [LangGraph](../langgraph/) · [环节 07](../环节07-编排与循环控制详解.md)
+- 实现：[Harness](../harness/) · [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md)
 - 零件：[Skills](../agent-skills/) · [MCP](../mcp/) · [Memory](../../knowledge/memory/) · [RAG](../../knowledge/rag/) · [Eval](../../reliability/eval/)
 - 上级：[Agent 总图](../README.md) ｜ 总索引 [../../README.md](../../README.md)

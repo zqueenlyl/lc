@@ -135,7 +135,7 @@
 
 **公开材料**：**讲座录像不公开**（仅注册学生可看 Canvas）；但课表内 reading list 全为 arXiv / Anthropic Engineering Blog / BAIR / OpenReview 等**公开可访问**资源（Compound AI Systems、ReAct、DSPy、SWE-agent、MemGPT、MCP 规范等）→ **自学主打 reading list + 两份作业的公开描述**。
 
-**读完往本库写哪儿**：[reliability/eval/](./reliability/eval/)（HW2 + 4-tuple + pass@k/pass^k）｜ [reliability/sandbox/](./reliability/sandbox/)（工具沙箱与错误重试）｜ [agent/mcp/](./agent/mcp/) ｜ [agent/langgraph/](./agent/langgraph/)（Orchestration 对比）
+**读完往本库写哪儿**：[reliability/eval/](./reliability/eval/)（HW2 + 4-tuple + pass@k/pass^k）｜ [reliability/sandbox/](./reliability/sandbox/)（工具沙箱与错误重试）｜ [agent/mcp/](./agent/mcp/) ｜ [agent/case-studies/langgraph/](./agent/case-studies/langgraph/)（Orchestration 对比）
 
 ---
 
@@ -203,7 +203,7 @@
 | 课程 | 直接对应本库模块 | 能补的具体缺口 |
 |---|---|---|
 | CMU 11-768 | [agent/harness/](./agent/harness/) · [reliability/sandbox/](./reliability/sandbox/) · [reliability/eval/](./reliability/eval/) · [agent/agent-skills/](./agent/agent-skills/) | harness 的分模块实现（prompt / loop / 并行工具 / 压缩）、Skill 渐进披露、上下文压缩阈值实测 |
-| CS329Z | [reliability/eval/](./reliability/eval/) · [agent/langgraph/](./agent/langgraph/) · [agent/mcp/](./agent/mcp/) | **4-tuple 评测框架**、pass@k vs pass^k、三类 grader 与偏差、DSPy 系 prompt 优化 |
+| CS329Z | [reliability/eval/](./reliability/eval/) · [agent/case-studies/langgraph/](./agent/case-studies/langgraph/) · [agent/mcp/](./agent/mcp/) | **4-tuple 评测框架**、pass@k vs pass^k、三类 grader 与偏差、DSPy 系 prompt 优化 |
 | CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
 | CS146S | [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
 | MIT MAS.S60 | [foundation/multimodal/](./foundation/multimodal/) · [foundation/generative/](./foundation/generative/) | 跨模态生成的完整讲次顺序 |
@@ -333,7 +333,7 @@
 
 | 对象 | 本库接口 | 节奏 / 坑 |
 |---|---|---|
-| **[Hugging Face AI Agents Course](https://huggingface.co/learn/agents-course/en/unit0/introduction)** | `agent/langgraph/` · `agent/agent-skills/`（把理论落成能跑的 agent）· `reliability/eval/`（对应 Bonus Unit 2 = Observability and Evaluation） | 官方建议每章 1 周、每周 3–4 小时；短链 `/learn/agents-course` 会跳到 Unit 0 |
+| **[Hugging Face AI Agents Course](https://huggingface.co/learn/agents-course/en/unit0/introduction)** | `agent/case-studies/langgraph/` · `agent/agent-skills/`（把理论落成能跑的 agent）· `reliability/eval/`（对应 Bonus Unit 2 = Observability and Evaluation） | 官方建议每章 1 周、每周 3–4 小时；短链 `/learn/agents-course` 会跳到 Unit 0 |
 | **[Stanford CS25 Transformers United V6](https://web.stanford.edu/class/cs25/)** | `ai/` 全库扫面用（无单一模块，用来挑专题） | — |
 | **[Karpathy《Neural Networks: Zero to Hero》](https://karpathy.ai/zero-to-hero.html)** | `foundation/transformer/`（建「从零」手感） | ⚠️ `LLM101n` 至今未发布（他 2026-05 已加入 Anthropic 做预训练研究）—— **别等** |
 

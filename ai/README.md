@@ -31,7 +31,8 @@ ai/
 │   ├── 环节00-总揽与环节导航.md   # 原理：一条主循环 + 10 环节
 │   ├── 环节01-*.md ~ 环节10-*.md      # 原理长文（按序读）
 │   ├── loop-graph-engineering/  #    循环工程 + 图工程
-│   └── langgraph/  mcp/  a2a/  agent-skills/  computer-use/  harness/  case-studies/
+│   ├── mcp/  a2a/  agent-skills/  computer-use/  harness/
+│   └── case-studies/            #    案例层：commerce-agents / pi / trpc-agent-go / langgraph
 │
 ├── knowledge/                # ③ 知识与记忆：决定往上下文窗口里塞什么
 │   └── rag/  vector-db/  knowledge-base/  memory/  context-engineering/
@@ -101,23 +102,24 @@ ai/
 | **Agent（总图）** | 有目标、调工具、看反馈再试；聊天/工作流/Agent 三分 | [agent/](./agent/) |
 | **Agent 全链路（原理）** | 一条主循环 + 支撑面 / 横切的宏观总揽与环节导航 | [总揽](./agent/环节00-总揽与环节导航.md) |
 | **循环与图工程** | Prompt → Context → Harness → Loop → Graph | [loop-graph-engineering/](./agent/loop-graph-engineering/) |
-| **LangGraph** | 图编排 + 8 个 demo | [langgraph/](./agent/langgraph/) |
+| **LangGraph** | 图编排 + 8 个 demo（案例层） | [langgraph/](./agent/case-studies/langgraph/) |
 | **MCP** | Agent ↔ 工具 / 数据源的 USB-C | [mcp/](./agent/mcp/) ｜ [版本演进](./agent/mcp/版本演进.md) |
 | **A2A** | Agent ↔ Agent 的对等委托协议 | [a2a/](./agent/a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、操作浏览器/桌面 | [computer-use/](./agent/computer-use/) |
 | **Agent Skills** | 把领域流程打成可发现、可复用技能包 | [agent-skills/](./agent/agent-skills/) |
 | **Harness** | 编码 Agent 的循环外壳：工具 / 插件 / 子 Agent | [harness/](./agent/harness/) |
 
-**原理长文（环节 01–10，按序读）**：决策与推理范式 → 提示与上下文 → 记忆与状态 → 工具调用 → MCP → RAG → 编排与循环 → 多 Agent 协作 → 评测与可观测 → 生产级工程化，全部在 [agent/](./agent/)；关卡地图见 [环节00-总揽与环节导航](./agent/环节00-总揽与环节导航.md)。另有 [langgraph/01–04](./agent/langgraph/) 为**框架实操教程**（自带 4 篇教程 + 8 个 demo，编号独立于环节系列）。
+**原理长文（环节 01–10，按序读）**：决策与推理范式 → 提示与上下文 → 记忆与状态 → 工具调用 → MCP → RAG → 编排与循环 → 多 Agent 协作 → 评测与可观测 → 生产级工程化，全部在 [agent/](./agent/)；关卡地图见 [环节00-总揽与环节导航](./agent/环节00-总揽与环节导航.md)。另有 [langgraph/01–04](./agent/case-studies/langgraph/) 为**框架实操教程**（自带 4 篇教程 + 8 个 demo，编号独立于环节系列）。
 
-**开源 Agent 项目案例**（把理论拼成生产，目录见 [case-studies/](./agent/case-studies/)）：
+**开源 Agent 项目 / 框架案例**（把理论拼成生产，目录见 [case-studies/](./agent/case-studies/)）：
 
-| 项目 | 一句话 | 入口 |
+| 项目 / 框架 | 一句话 | 入口 |
 |---|---|---|
 | **commerce-agents** | Anthropic 电商 Agent 范本：门禁 + 围栏 + 人审，安全靠代码强制 | [commerce-agents](./agent/case-studies/commerce-agents.md) |
 | **pi** | 极简编码 harness：最小核（4 工具）+ 外部沙箱 | [pi](./agent/case-studies/pi.md) |
 | **mini-swe-agent** | 约 100 行的编码 Agent：只有 bash、线性历史、无状态执行（SWE-bench Bash Only 榜外壳） | [mini-swe-agent](./agent/case-studies/mini-swe-agent.md) |
 | **trpc-agent-go** | 腾讯 Go 生产级 Agent 框架：GraphAgent + 自我进化 + 可观测 | [trpc-agent-go](./agent/case-studies/trpc-agent-go.md) |
+| **LangGraph** | 图状态机编排框架：State / Node / Edge + checkpoint / interrupt，4 篇教程 + 8 个 demo | [langgraph](./agent/case-studies/langgraph/) |
 
 ### ③ knowledge · 知识与记忆
 
@@ -187,4 +189,4 @@ cd ai/<大类>/<专题>
 python3 mvp.py
 ```
 
-LangGraph 相关 demo 见 [langgraph/demos/requirements.txt](./agent/langgraph/demos/requirements.txt)。
+LangGraph 相关 demo 见 [langgraph/demos/requirements.txt](./agent/case-studies/langgraph/demos/requirements.txt)。

@@ -321,4 +321,4 @@ app.invoke({"messages": [("user", "推荐一个框架")]}, config)
 | 代表框架 | Mem0、Letta、Zep、LangGraph Checkpointer |
 | 落地要点 | 检索比写入更重要；作用域隔离要设计好；生产用混合方案 |
 
-> 相关文档：[RAG 类型全景](../rag/rag-types.md)、[LangGraph 持久化与记忆](../../agent/langgraph/03-持久化-流式-人机协同.md)
+> 相关文档：[RAG 类型全景](../rag/rag-types.md)、[LangGraph 持久化与记忆](../../agent/case-studies/langgraph/03-持久化-流式-人机协同.md)

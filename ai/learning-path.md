@@ -229,7 +229,7 @@
 ### 2.11 循环工程与图工程
 
 > **先读总览再下钻**：[loop-graph-engineering/](./agent/loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）→ [loop-engineering.md](./agent/loop-graph-engineering/loop-engineering.md) → [graph-engineering.md](./agent/loop-graph-engineering/graph-engineering.md)
-> 执行图落地：[langgraph/](./agent/langgraph/) · [环节 07](./agent/环节07-编排与循环控制详解.md)；上下文图检索侧：[rag](./knowledge/rag/) · [环节 06](./agent/环节06-检索增强RAG详解.md)
+> 执行图落地：[langgraph/](./agent/case-studies/langgraph/) · [环节 07](./agent/环节07-编排与循环控制详解.md)；上下文图检索侧：[rag](./knowledge/rag/) · [环节 06](./agent/环节06-检索增强RAG详解.md)
 
 - **分工**：Loop 管**时间轴**（这一条何时再转、凭什么停）；执行图管**结构轴**（多条谁先谁后）；上下文图管**事实轴**（系统知道什么）。图里每个节点内部仍是一段循环。
 - **和 Harness**：Harness 是车；Loop 是怎么开；执行图是立交；上下文图是地图（不是底盘）。

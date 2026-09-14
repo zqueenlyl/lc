@@ -94,7 +94,7 @@ Card 示例字段：`name`、`description`、`url`、`skills[]`（id / 输入输
 
 - A2A 规范与 Agent Card：Google A2A / a2a-protocol
 - 2026 协议栈综述：MCP + A2A + OAuth + OTel GenAI
-- 对比：[mcp](../mcp/)、[agent-skills](../agent-skills/)、[langgraph](../langgraph/)
+- 对比：[mcp](../mcp/)、[agent-skills](../agent-skills/)、[langgraph](../case-studies/langgraph/)
 
 ---
 

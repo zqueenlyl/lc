@@ -65,7 +65,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 | **上下文** | 窗口里塞谁、砍谁 | [context-engineering](../knowledge/context-engineering/) |
 | **知识** | 仓库外的事实从哪召回 | [rag](../knowledge/rag/)、[知识库](../knowledge/knowledge-base/) |
 | **无 API 的环境** | 看屏幕点鼠标 | [computer-use](computer-use/) |
-| **多 Agent** | 同事之间派工单 | [a2a](a2a/)、[langgraph 04](langgraph/04-多智能体与高级模式.md) |
+| **多 Agent** | 同事之间派工单 | [a2a](a2a/)、[langgraph 04](case-studies/langgraph/04-多智能体与高级模式.md) |
 | **治理** | 别把生产删了；分数要可复现 | [guardrails](../reliability/guardrails/)、[eval](../reliability/eval/) |
 
 记一句：**模型不会「自己变 Agent」**。缺循环、缺工具、缺验证，它只是会说话的补全器。
@@ -92,7 +92,7 @@ Thought  →  Action(tool, args)  →  Observation  →  再 Thought …
 | **Swarm / 对等交接** | Agent 之间移交控制权 | 探索、对话式转交 | 难审计、易 ping-pong |
 | **Fleet（舰队）** | 每层都跑同一套五段循环 | 大目标可拆 | 成本数量级上升 |
 
-编排：整栈见 [循环与图工程](loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）。落地工具 [LangGraph](langgraph/)。checkpoint 不等于领域本体。
+编排：整栈见 [循环与图工程](loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）。落地工具 [LangGraph](case-studies/langgraph/)。checkpoint 不等于领域本体。
 
 ---
 
@@ -214,7 +214,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | 全链路环节主线（01–10 关卡地图） | [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) |
 | 窗口满了怎么压（Compaction / 四步策略 / 压缩漂移） | [环节02 · 补充篇](./环节02-补充-上下文压缩与Compaction详解.md) |
 | 循环怎么转完 / 变宽怎么接线 / 事实怎么共享 | [loop-graph-engineering/](loop-graph-engineering/) |
-| 执行图画出来怎么跑 | [langgraph/](langgraph/) |
+| 执行图画出来怎么跑 | [langgraph/](case-studies/langgraph/) |
 | 工具插头 | [mcp/](mcp/) |
 | Agent 互委托 | [a2a/](a2a/) |
 | 菜谱 | [agent-skills/](agent-skills/) |

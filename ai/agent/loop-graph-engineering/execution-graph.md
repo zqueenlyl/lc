@@ -13,7 +13,7 @@
 | **interrupt** | 高危操作暂停等人，State 保持、不重跑前面 |
 | **子图 / Send** | 舰队在图上的接法 |
 
-落地首选 [LangGraph](../langgraph/)。换框架前先写清节点契约：入参 State、出参部分更新、幂等。State / Node / Edge 讲义不在本篇重复。
+落地首选 [LangGraph](../case-studies/langgraph/)。换框架前先写清节点契约：入参 State、出参部分更新、幂等。State / Node / Edge 讲义不在本篇重复。
 
 **最常见混用**：把 checkpoint、会话记录、向量库当成「我们已经有领域模型了」。Checkpointer 能回答「这趟 run 跑到哪」；它不回答「CRM 和工单里的张三是不是同一个人」。那是 [上下文图](./context-graph.md) 的契约。
 

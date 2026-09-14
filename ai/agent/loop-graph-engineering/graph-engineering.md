@@ -22,7 +22,7 @@ Loop 还在转。Graph 负责**编排这些 loop**，并在需要时给它们一
 | 状态 | checkpoint、分支结果 | 事实、来源、时效、决策痕迹 |
 | 含义来自 | 工作流定义 | **应用自己的 Schema / 本体** |
 | 寿命 | 一次 run / 一条 thread | 跨工作流、跨框架 |
-| 落地 | [LangGraph](../langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | [RAG · GraphRAG](../../knowledge/rag/) · [Memory](../../knowledge/memory/) |
+| 落地 | [LangGraph](../case-studies/langgraph/) · [环节 07](../环节07-编排与循环控制详解.md) | [RAG · GraphRAG](../../knowledge/rag/) · [Memory](../../knowledge/memory/) |
 
 **最常见混用**：把 checkpoint、会话记录、向量库当成「我们已经有领域模型了」。Checkpointer 能回答「这趟 run 跑到哪」；它不回答「CRM 和工单里的张三是不是同一个人」。
 
