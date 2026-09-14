@@ -2,7 +2,7 @@
 
 > 调研时间：2026-09-11 ｜ 范围：DeepSeek（深度求索）模型谱系、三代注意力架构演进、V4 架构与训练/推理基础设施
 > 本文基于官方 API 文档（更新日志 / 定价页）与公开技术报告解读整理；**凡第三方转述或官方未披露之处，均在文中显式标注**，不臆造。
-> 与 [`providers/`](../providers/) 的分工：providers 记**可操作的工程事实**（模型 ID / 端点 / 价格 / 字段），本文记**原理与演进逻辑**（为什么这么改、代价是什么）。接入与成本细节见 [《DeepSeek API 接入与成本优化》](./DeepSeek%20API接入与成本优化.md)。
+> 与 [`providers/`](../providers/) 的分工：providers 记**可操作的工程事实**（模型 ID / 端点 / 价格 / 字段），本文记**原理与演进逻辑**（为什么这么改、代价是什么）。接入与成本细节见 [《DeepSeek API 接入与成本优化》](./DeepSeek%20API接入与成本优化.md)。V4.1-Flash 的 KV 再压缩（CED / CSA2 / FP4 / SWA 有界重放）见 [《DeepSeek-V4.1-Flash 通俗解读》](./DeepSeek-V4.1-Flash通俗解读.md)。
 
 ---
 
@@ -43,7 +43,7 @@ DeepSeek 这条线有一条贯穿始终的主线：**在算力受限的前提下
 | 2026-07-31 | V4-Flash 正式版 | **原生 Responses API**，适配 Codex |
 | 2026-08-13 | V4-Pro 更新 | 思考强度**三档 low/high/max**；**峰谷定价**（08-17 生效） |
 | 2026-08-21 | V4-Flash-Vision-Exp | 实验性多模态视觉理解 |
-| 2026-09-10 | **V4.1-Flash** | **原生多模态**；模型名起用 `deepseek-flash`；价格下调 |
+| 2026-09-10 | **V4.1-Flash** | **原生多模态**；模型名起用 `deepseek-flash`；价格下调；KV 再压一档（[通俗解读](./DeepSeek-V4.1-Flash通俗解读.md)） |
 
 ### 模型 ID 沿革（迁移必看）
 
@@ -204,6 +204,7 @@ V4 的另外三处改动：
 
 ## 九、相关笔记
 
+- [《DeepSeek-V4.1-Flash 通俗解读》](./DeepSeek-V4.1-Flash通俗解读.md) —— CED / CSA2 / FP4 KV / SWA 有界重放，全局 KV 约压到 1/4
 - [《DeepSeek API 接入与成本优化》](./DeepSeek%20API接入与成本优化.md) —— 三协议入口、思考模式、硬盘缓存、错峰定价与降本优先级
 - [`providers/各大厂商代表模型总览.md`](../providers/各大厂商代表模型总览.md) —— §3.5 DeepSeek 模型规格速查
 - [`providers/模型服务API协议对比.md`](../providers/模型服务API协议对比.md) —— 三代协议演进与"假兼容"陷阱

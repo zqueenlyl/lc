@@ -31,9 +31,9 @@
 ### 1.2 主流模型（DeepSeek、混元等）
 
 - **DeepSeek**：V3（MoE 基座）、R1（推理模型，GRPO 强化学习）、V3.2 / R1 蒸馏版、V4 / V4-Flash / V4.1-Flash
-  - 关键技术：MLA 注意力、DeepSeekMoE（细粒度专家 + 共享专家）、无辅助损失负载均衡；长上下文两代换代 **DSA**（V3.2）→ **CSA + HCA 序列轴压缩**（V4）
+  - 关键技术：MLA 注意力、DeepSeekMoE（细粒度专家 + 共享专家）、无辅助损失负载均衡；长上下文两代换代 **DSA**（V3.2）→ **CSA + HCA 序列轴压缩**（V4）→ V4.1-Flash 再压 KV（**CED / CSA2 / FP4 / SWA 有界重放**）
   - 注：V4-Flash 官方以 **DeepSeek Harness 极简模式**作为测试框架（模型与 Agent 框架协同演进，见 2.8 / 2.10）
-  - **案例纵深**（[model-cases/deepseek/](./model-cases/deepseek/)）：谱系时间线 + 三代注意力架构 + 长上下文经济学 → [DeepSeek技术路线与架构演进.md](./model-cases/deepseek/DeepSeek技术路线与架构演进.md)；三套协议入口 + 思考模式 + 硬盘缓存 + 峰谷定价 → [DeepSeek API接入与成本优化.md](./model-cases/deepseek/DeepSeek%20API接入与成本优化.md)
+  - **案例纵深**（[model-cases/deepseek/](./model-cases/deepseek/)）：谱系时间线 + 三代注意力架构 + 长上下文经济学 → [DeepSeek技术路线与架构演进.md](./model-cases/deepseek/DeepSeek技术路线与架构演进.md)；三套协议入口 + 思考模式 + 硬盘缓存 + 峰谷定价 → [DeepSeek API接入与成本优化.md](./model-cases/deepseek/DeepSeek%20API接入与成本优化.md)；V4.1-Flash 技术报告通俗解读（Agent 长上下文 KV 压缩）→ [DeepSeek-V4.1-Flash通俗解读.md](./model-cases/deepseek/DeepSeek-V4.1-Flash通俗解读.md)
   - 训练报告精读 **待写**（`DeepSeek-V3训练报告详解.md`：14.8T token / FP8 / DualPipe / $5.6M 总账；`DeepSeek-R1训练报告详解.md`：GRPO 四阶段 / 蒸馏，已刊 Nature）——原 `../deepseek/` 目录已不存在
 - **混元（腾讯）**：Turbo / T1 推理模型，多模态与长文能力
 - **其他必知**：GPT 系列、Claude 系列、Gemini、Qwen（阿里，开源生态强）、Llama（Meta）

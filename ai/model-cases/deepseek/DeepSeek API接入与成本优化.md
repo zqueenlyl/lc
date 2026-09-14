@@ -1,7 +1,7 @@
 # DeepSeek API 接入与成本优化
 
 > 调研时间：2026-09-11 ｜ 来源：DeepSeek 官方 API 文档（定价页 / Anthropic 兼容页 / Responses API 页 / 上下文缓存页），2026-09-11 检索快照
-> 迭代极快，上线前请以 `GET /models` 与官方定价页校准。架构与演进逻辑见 [《DeepSeek 技术路线与架构演进》](./DeepSeek技术路线与架构演进.md)。
+> 迭代极快，上线前请以 `GET /models` 与官方定价页校准。架构与演进逻辑见 [《DeepSeek 技术路线与架构演进》](./DeepSeek技术路线与架构演进.md)；V4.1-Flash KV 压缩见 [《DeepSeek-V4.1-Flash 通俗解读》](./DeepSeek-V4.1-Flash通俗解读.md)。
 
 ---
 

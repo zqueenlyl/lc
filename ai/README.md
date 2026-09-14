@@ -152,7 +152,7 @@ ai/
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
-| **DeepSeek** | 模型谱系 + 三代注意力架构（MLA → DSA → CSA/HCA）+ 三协议接入与成本优化 | [deepseek/](./model-cases/deepseek/) |
+| **DeepSeek** | 模型谱系 + 三代注意力架构（MLA → DSA → CSA/HCA）+ 三协议接入与成本优化 + V4.1-Flash KV 压缩 | [deepseek/](./model-cases/deepseek/) |
 | **Qwen-Omni** | 三条产品线（开源权重 / API 离线 / API 实时）+ 实时接入工程实践 | [qwen/](./model-cases/qwen/) |
 | **GLM-Realtime** | 实时音视频通话：WebSocket 事件协议 / VAD / 成本估算 | [glm/](./model-cases/glm/) |
 | **豆包 / Seed** | 视频交互体系（Seedance / SeedEdit / Seedream / SeedRealtime） | [doubao/](./model-cases/doubao/) |

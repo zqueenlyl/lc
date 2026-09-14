@@ -16,7 +16,7 @@
 | [`doubao/`](./doubao/) | ✅ 已研究 | 字节跳动**豆包 / Seed** 体系视频交互技术栈（豆包 = 产品品牌，Seed = 技术品牌） |
 | [`qwen/`](./qwen/) | ✅ 已研究 | 阿里通义 Qwen-Omni 系列（开源权重 + 百炼 Realtime API） |
 | [`glm/`](./glm/) | ✅ 已研究 | 智谱 GLM-Realtime 实时音视频通话模型 |
-| [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 |
+| [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 + V4.1-Flash KV 压缩通俗解读 |
 | [`providers/`](./providers/) | ✅ 已研究 | **横切层**：各大厂商代表模型 + 模型服务 API 协议对比 |
 
 ### 厂商与协议（providers/）
@@ -65,6 +65,7 @@
 
 - 《DeepSeek技术路线与架构演进.md》—— 官方版本时间线、模型 ID 沿革、**三代注意力架构**（MLA → DSA → CSA + HCA）、V4 双规格与训练课程、长上下文经济学、未披露边界
 - 《DeepSeek API接入与成本优化.md》—— 三套协议入口（Chat Completions / Responses / Anthropic）对照、思考模式三档、硬盘缓存机制、峰谷定价、降本优先级与成本算例、13 条工程坑
+- 《DeepSeek-V4.1-Flash通俗解读.md》—— V4.1-Flash 技术报告通俗解读（CED / CSA2 / FP4 KV / SWA 有界重放），把全局 KV 压到约 1/4
 
 关键事实边界：DeepSeek 是**唯一同时提供三套协议入口**的平台；**最强档 `deepseek-v4-pro` 不支持图像理解**（只有 `deepseek-flash` 支持）；Anthropic 侧**未识别的模型名会静默降级**为 flash，日志模型名 ≠ 真实模型；Responses API **完全无状态**（不支持 `previous_response_id` / `store`）。V4 的架构细节（CSA/HCA、mHC、Muon、FP4 QAT）来自**第三方对技术报告的解读**，官方 API 文档未披露；训练资源、数据构成、Serving 栈均**未披露**。
 
