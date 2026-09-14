@@ -84,7 +84,7 @@ while True:
 几个值得抄的设计：
 
 - **终止条件写在环境里，不写在 prompt 里**：`LocalEnvironment._check_finished()` 检测到输出首行是 `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT` 且 `returncode == 0`，抛 `Submitted`，后续行作为 submission。**「完成」是一次真实的命令执行，不是模型自我声明。**
-- **四类上限全在 `query()` 入口检查**：`step_limit` / `cost_limit`（默认 `$3`）/ `wall_time_limit_seconds` / `max_consecutive_format_errors`（默认 3）——对应本库 [agent README §六](../README.md#六、常见死法比模型笨更常见) 里的「空转」与「账单爆炸」。
+- **四类上限全在 `query()` 入口检查**：`step_limit` / `cost_limit`（默认 `$3`）/ `wall_time_limit_seconds` / `max_consecutive_format_errors`（默认 3）——对应本库 [agent README §六](../README.md#六常见死法比模型笨更常见) 里的「空转」与「账单爆炸」。
 - **异常即消息**：`exceptions.py` 里 `Submitted` / `LimitsExceeded` / `TimeExceeded` / `UserInterruption` / `FormatError` 全部继承 `InterruptAgentFlow`，构造时自带要写进历史的 messages。**「失败」也被序列化进 trajectory**，而不是只在日志里。
 - **每一步都 `save()`**：`finally` 里落盘，进程被 kill 也留得下轨迹。
 
