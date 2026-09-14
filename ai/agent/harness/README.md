@@ -82,6 +82,8 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 
 和 [landscape §4.2](../../landscape.md#42-编程-agent--ide2026-主战场) 的关系：那里列的是用户打开的**产品**（含 Cursor、Copilot）；这里列的是循环怎么转的**外壳**。一个产品里可以嵌一个 Harness。
 
+> 上表未列 **mini-swe-agent**：它不是产品级外壳，而是 SWE-bench Bash Only 榜的**评测基线外壳**——约 100 行、只有 bash 一个工具、历史严格线性。完整分析见 [case-studies/mini-swe-agent](../case-studies/mini-swe-agent.md)。
+
 ---
 
 ## 五、设计取向怎么读

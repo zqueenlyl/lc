@@ -62,7 +62,7 @@ LLM 评测可以把「一道考题」收成 `(prompt, reference)`，离线、可
 
 | 名字 | 和 SWE-bench 的关系 |
 |---|---|
-| **mini-SWE-agent** | 官方约 100 行 Python 的最小外壳；用来证明核可以很瘦（曾在 Verified 上打到可引用的分数） |
+| **mini-SWE-agent** | 官方约 100 行 Python 的最小外壳；用来证明核可以很瘦（曾在 Verified 上打到可引用的分数）→ 完整分析见 [case-studies/mini-swe-agent](../../agent/case-studies/mini-swe-agent.md) |
 | **SWE-agent** | 官方自己的编码 Harness（有历史 SOTA 记录） |
 | **SWE-smith** | 用来**训练**软件工程 Agent 的数据 / 配方 |
 | **CodeClash** | 比的是目标导向开发，不是「修这一张 issue」 |

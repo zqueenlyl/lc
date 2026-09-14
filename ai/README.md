@@ -116,6 +116,7 @@ ai/
 |---|---|---|
 | **commerce-agents** | Anthropic 电商 Agent 范本：门禁 + 围栏 + 人审，安全靠代码强制 | [commerce-agents](./agent/case-studies/commerce-agents.md) |
 | **pi** | 极简编码 harness：最小核（4 工具）+ 外部沙箱 | [pi](./agent/case-studies/pi.md) |
+| **mini-swe-agent** | 约 100 行的编码 Agent：只有 bash、线性历史、无状态执行（SWE-bench Bash Only 榜外壳） | [mini-swe-agent](./agent/case-studies/mini-swe-agent.md) |
 | **trpc-agent-go** | 腾讯 Go 生产级 Agent 框架：GraphAgent + 自我进化 + 可观测 | [trpc-agent-go](./agent/case-studies/trpc-agent-go.md) |
 
 ### ③ knowledge · 知识与记忆
