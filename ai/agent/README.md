@@ -70,6 +70,16 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 
 记一句：**模型不会「自己变 Agent」**。缺循环、缺工具、缺验证，它只是会说话的补全器。
 
+同一张解剖图换个切法——**Agent = 模型 × 外壳 × 环境**（相乘，缺一项归零）：
+
+| 要素 | 回答什么 | 本目录 | 深入去哪 |
+|---|---|---|---|
+| **模型**（脑） | 谁在想、窗口装什么 | [环节 01](./环节01-决策与推理范式详解.md)、[环节 02](./环节02-提示与上下文工程详解.md)（+[补充篇](./环节02-补充-上下文压缩与Compaction详解.md)） | [foundation/reasoning](../foundation/reasoning/)、[context-engineering](../knowledge/context-engineering/)、[model-routing](../reliability/model-routing/) |
+| **外壳 Harness**（壳） | 工具 / 权限 / 循环 / 编排 | [harness](harness/)、[loop-graph-engineering](loop-graph-engineering/)、[langgraph](case-studies/langgraph/) | 本目录即主场 |
+| **环境 Env**（世界） | 能碰到什么 | [mcp](mcp/)、[a2a](a2a/)、[computer-use](computer-use/)、[环节 04](./环节04-工具调用详解.md)/[05](./环节05-工具接入协议MCP详解.md)/[06](./环节06-检索增强RAG详解.md) | [rag](../knowledge/rag/)、[memory](../knowledge/memory/)、[sandbox](../reliability/sandbox/) |
+
+本目录的重心是中间那项：模型本体在 [foundation](../foundation/)，环境纵深在 [knowledge](../knowledge/)、[reliability](../reliability/)。注意 [MCP](mcp/)、[A2A](a2a/) 是**接缝**——client 半边长在外壳，server / 对端 Agent 在环境，两边各占一半，所以平铺不塞桶。
+
 ---
 
 ## 三、一圈怎么转（ReAct 及变体）
