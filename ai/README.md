@@ -32,7 +32,7 @@ ai/
 │   ├── 环节01-*.md ~ 环节10-*.md      # 原理长文（按序读）
 │   ├── loop-graph/  #    循环与图深讲（栈总览在 agent/README §七）
 │   ├── mcp/  a2a/  agent-skills/  computer-use/  harness/
-│   └── case-studies/            #    案例层：commerce-agents / pi / trpc-agent-go / langgraph
+│   └── case-studies/            #    案例层：commerce-agents / pi / mini-swe-agent / trpc-agent-go / langgraph
 │
 ├── knowledge/                # ③ 知识与记忆：决定往上下文窗口里塞什么
 │   └── rag/  vector-db/  knowledge-base/  memory/  context-engineering/
