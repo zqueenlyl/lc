@@ -15,11 +15,13 @@
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 
+> 跨实体 / 多跳 / 「同一个客户」要对齐：不在本目录单开专题，见 [../agent/loop-graph-engineering/](../agent/loop-graph-engineering/)（上下文图 + GraphRAG 家族）。向量库仍然是语义召回底座。
+
 ## 四件事的分工
 
 | 环节 | 干什么 | 对应专题 |
 |---|---|---|
-| **取** | 从外部知识里捞出相关片段 | RAG / 向量库 / 知识库 |
+| **取** | 从外部知识里捞出相关片段 | RAG / 向量库 / 知识库 / 上下文图（见 [循环与图工程](../agent/loop-graph-engineering/)） |
 | **存** | 跨会话保留用户画像与沉淀事实 | Memory |
 | **装配** | 按 token 预算把上面两者裁剪、排序、拼进窗口 | Context Engineering |
 | **可见性** | 只有进了窗口的模型才看得见；长期记忆是「有求才现」 | 见 [../agent/环节03-记忆与状态详解.md](../agent/环节03-记忆与状态详解.md) |

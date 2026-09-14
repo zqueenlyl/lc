@@ -61,6 +61,7 @@
 | [../rag/](../rag/) | 「② 检索方式」的工程落地：链路、切分、重排、评测 |
 | [../memory/](../memory/) | 面向「个人 / 长期」的知识库形态，与 LLM 维护型同源 |
 | [../../agent/环节06-检索增强RAG详解.md](../../agent/环节06-检索增强RAG详解.md) | 检索链路的原理纵深 |
+| [../../agent/loop-graph-engineering/](../../agent/loop-graph-engineering/) | 图存储 / GraphRAG / 领域契约的工程展开 |
 
 ---
 

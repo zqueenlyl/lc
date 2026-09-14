@@ -90,5 +90,5 @@ Pi 在本知识库里已经作为六款 Harness 之一收录（见 [harness §�
 
 - 官网 / 文档：`pi.dev`（docs 在 `pi.dev/docs/latest`）
 - 容器化细节：`packages/coding-agent/docs/containerization.md`
-- 相邻专题：[harness](../harness/)、[guardrails](../../reliability/guardrails/)、[loop-engineering](../loop-engineering.md)
+- 相邻专题：[harness](../harness/)、[guardrails](../../reliability/guardrails/)、[loop-graph-engineering](../loop-graph-engineering/)
 - 三项目横向对比见本目录 [README](./README.md)

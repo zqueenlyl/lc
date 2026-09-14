@@ -112,6 +112,7 @@
 - System Prompt 设计、Few-shot、CoT、指令分层与结构化（思维链原理与变体详解见 [环节01-决策与推理范式详解.md](./agent/环节01-决策与推理范式详解.md)）
 - 结构化输出：JSON Mode、Schema 约束、`tool_choice` 强制
 - Prompt 注入与越狱防护（安全基线）
+- 在工程栈里的位置（何时停在提示、何时升级到 Context / Loop）→ [prompt-engineering.md](./agent/loop-graph-engineering/prompt-engineering.md)
 
 ### 2.3 工具调用（Function Calling / Tool Use）
 
@@ -154,6 +155,7 @@
   | GraphRAG | 知识图谱 + 社区摘要 | 跨实体关系、全局性问题 |
   | Agentic RAG | 检索作为 Agent 工具，自主编排 | 复杂场景（终极形态）|
 - **演进脉络**：Naive → Advanced/Modular → Agentic
+- **构图与维护不在 RAG 变体里讲完**：执行图 vs 上下文图、实体对齐 / 时效 / 来源、GraphRAG 家族选型 → [循环与图工程](./agent/loop-graph-engineering/) · [context-graph.md](./agent/loop-graph-engineering/context-graph.md)
 
 ### 2.7 MCP（Model Context Protocol）
 
@@ -182,6 +184,7 @@
   - 定位：**Agent = 状态机编程**——编排从"线性链"升级为"有向图"，循环/分支/并行/中断全部显式可控
   - 为什么生产级：每步状态可见可测、checkpoint 断点续跑、图可序列化版本化、配 LangSmith 全链路 trace；LangGraph Platform 提供部署托管与可视化调试
   - 现状：正在从实验工具进化为**企业级 Agent 编排的事实标准之一**（采用率远高于 LangChain 本体）
+  - **执行图的实现是 LangGraph，上一层见 §2.11**：LangGraph 回答「下一步跑谁」；跨系统共享「同一个客户 / 同一条政策」要另做**上下文图**（checkpoint ≠ 领域本体）→ [loop-graph-engineering/](./agent/loop-graph-engineering/)
 - **对比速查**：
   | 维度 | LangChain | LangGraph |
   |------|-----------|-----------|
@@ -222,6 +225,18 @@
 
 > 关注点：这些产品背后是同一套技术栈（工具调用 + 上下文工程 + 记忆 + 人机协同），拆解它们的交互设计与工程实现，是最好的反向学习材料。
 > Code Agent 这类编程智能体的完整拆解（验证器闭环 / code retrieval / 安全 / 评估）见 `CodeAgent详解.md`（待写）
+
+### 2.11 循环工程与图工程
+
+> **先读总览再下钻**：[loop-graph-engineering/](./agent/loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）→ [loop-engineering.md](./agent/loop-graph-engineering/loop-engineering.md) → [graph-engineering.md](./agent/loop-graph-engineering/graph-engineering.md)
+> 执行图落地：[langgraph/](./agent/langgraph/) · [环节 07](./agent/环节07-编排与循环控制详解.md)；上下文图检索侧：[rag](./knowledge/rag/) · [环节 06](./agent/环节06-检索增强RAG详解.md)
+
+- **分工**：Loop 管**时间轴**（这一条何时再转、凭什么停）；执行图管**结构轴**（多条谁先谁后）；上下文图管**事实轴**（系统知道什么）。图里每个节点内部仍是一段循环。
+- **和 Harness**：Harness 是车；Loop 是怎么开；执行图是立交；上下文图是地图（不是底盘）。
+- **升级信号**：单线程 + 验证可程序化 → 停在循环 / Harness；并行汇合 / 人审节点 / 按边重试 → 执行图；跨系统对齐「同一个客户」→ 上下文图（checkpoint ≠ 本体）。
+- **舰队**：定义（每层五段）在循环；接线在执行图。
+- **GraphRAG 不上车条件**：先 Naive + Hybrid + Rerank；有跨实体多跳或全局总结的失败案例再构图。账单常在抽取。
+- **红线**：Checkpointer / 会话记录 / 向量库都不是领域契约。
 
 ---
 

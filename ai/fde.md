@@ -251,10 +251,11 @@ Python + Postgres/pgvector + 一个 LLM API（或自架 vLLM）+ MCP 做系统�
 | 沙箱隔离（不可信代码进客户环境） | [reliability/sandbox/](./reliability/sandbox/)（环节 01–13） |
 | 多模型路由 / 成本工程 | [reliability/model-routing/](./reliability/model-routing/) |
 | 上下文工程 / 记忆 | [knowledge/context-engineering/](./knowledge/context-engineering/) · [knowledge/memory/](./knowledge/memory/) |
+| 循环与图工程（验证闭环 + 执行图 + 上下文图 / GraphRAG） | [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) · [agent/langgraph/](./agent/langgraph/) |
 | 私有化 / 数据不出域（合规是头号约束） | [runtime/local-inference/](./runtime/local-inference/)（含 benchmark） · [foundation/slm/](./foundation/slm/) |
 | 模型选型与协议差异 | [foundation/transformer/模型评测与选型方法详解.md](./foundation/transformer/模型评测与选型方法详解.md) · [model-cases/providers/](./model-cases/providers/) |
 | 实时语音（客服 / 电话 Agent 场景） | [runtime/voice-realtime/](./runtime/voice-realtime/) |
-| SOP / 技能包沉淀（自转关） | [agent/agent-skills/](./agent/agent-skills/) · [agent/loop-engineering.md](./agent/loop-engineering.md) |
+| SOP / 技能包沉淀（自转关） | [agent/agent-skills/](./agent/agent-skills/) · [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) |
 | 交付范本（门禁 + 围栏 + 人审） | [agent/case-studies/commerce-agents.md](./agent/case-studies/commerce-agents.md) |
 | 后端地基（有经验者先体系化） | [learning-path.md](./learning-path.md) §3 · [courses.md](./courses.md) §6 |
 

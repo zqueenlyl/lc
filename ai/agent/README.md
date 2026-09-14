@@ -30,7 +30,7 @@ L3  长程闭环        测红就改，直到绿或预算耗尽
 L4  舰队            编排者拆任务，专家 + 子 Agent 并行
 ```
 
-L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环工程](loop-engineering.md)。
+L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放。见 [循环与图工程](loop-graph-engineering/)。
 
 ---
 
@@ -58,6 +58,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 |---|---|---|
 | **模型** | 想、选工具、写产物 | [reasoning](../foundation/reasoning/)、[model-routing](../reliability/model-routing/) |
 | **Harness** | 循环怎么转、默认工具、沙箱 | [harness](harness/) |
+| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | [loop-graph-engineering](loop-graph-engineering/) |
 | **工具协议** | 手怎么接上 | [mcp](mcp/)、[structured-output](../reliability/structured-output/) |
 | **技能 / SOP** | 这类任务按什么做 | [agent-skills](agent-skills/) |
 | **记忆** | 这轮 / 这会话 / 跨会话记什么 | [memory](../knowledge/memory/) |
@@ -86,12 +87,12 @@ Thought  →  Action(tool, args)  →  Observation  →  再 Thought …
 |---|---|---|---|
 | **ReAct / Tool loop** | 走一步看一步 | 工具结果不确定、要探索 | 无验证会空转；上下文膨胀 |
 | **Plan-and-Execute** | 先出步骤清单再逐条执行 | 任务结构清楚 | 计划过时，要能重规划 |
-| **发现→规划→执行→验证→迭代** | [循环工程](loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
+| **发现→规划→执行→验证→迭代** | [循环工程](loop-graph-engineering/loop-engineering.md) 五段 | 编码 / 研究等要「测过才算完」 | Token 贵，必须闭环预算 |
 | **Supervisor** | 一个编排者分发给专家 | 角色边界清（研究 / 码 / 测） | 编排者变成单点，prompt 膨胀 |
 | **Swarm / 对等交接** | Agent 之间移交控制权 | 探索、对话式转交 | 难审计、易 ping-pong |
 | **Fleet（舰队）** | 每层都跑同一套五段循环 | 大目标可拆 | 成本数量级上升 |
 
-编排落地常用图状态机：[LangGraph](langgraph/)（节点=动作，条件边=路由，checkpointer=记忆，interrupt=人审）。
+编排：整栈见 [循环与图工程](loop-graph-engineering/)（Prompt → Context → Harness → Loop → Graph）。落地工具 [LangGraph](langgraph/)。checkpoint 不等于领域本体。
 
 ---
 
@@ -167,8 +168,10 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 提示 → 单次 tool call → RAG
   → 有验证的短循环（L2）
     → Harness + Skills + Memory
-      → 多 Agent / A2A
-        → Computer Use（实在没有 API）
+      → 执行图（分支 / 并行 / 人审）
+        → 上下文图（跨系统共享可变事实）
+          → 多 Agent / A2A
+            → Computer Use（实在没有 API）
 ```
 
 每一步用 [Eval](../reliability/eval/) 证明有增益再加层。
@@ -196,6 +199,8 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | **HITL** | Human in the loop，关键步暂停等人 |
 | **Autonomy** | 无人干预能走多远；不是越高越好 |
 | **% Resolved** | 上机题测绿的比例（SWE-bench） |
+| **执行图** | 控制流：节点=步骤，边=路由；回答「下一步跑谁」 |
+| **上下文图** | 领域事实：实体-关系-时效-来源；回答「系统知道什么」 |
 
 ---
 
@@ -208,8 +213,8 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | Agent 是什么、何时用（本页） | [agent/](./) |
 | 全链路环节主线（01–10 关卡地图） | [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) |
 | 窗口满了怎么压（Compaction / 四步策略 / 压缩漂移） | [环节02 · 补充篇](./环节02-补充-上下文压缩与Compaction详解.md) |
-| 循环怎么设计 | [loop-engineering.md](loop-engineering.md) |
-| 图画出来怎么跑 | [langgraph/](langgraph/) |
+| 循环怎么转完 / 变宽怎么接线 / 事实怎么共享 | [loop-graph-engineering/](loop-graph-engineering/) |
+| 执行图画出来怎么跑 | [langgraph/](langgraph/) |
 | 工具插头 | [mcp/](mcp/) |
 | Agent 互委托 | [a2a/](a2a/) |
 | 菜谱 | [agent-skills/](agent-skills/) |

@@ -30,7 +30,7 @@ ai/
 │   ├── README.md             #    总图
 │   ├── 环节00-总揽与环节导航.md   # 原理：一条主循环 + 10 环节
 │   ├── 环节01-*.md ~ 环节10-*.md      # 原理长文（按序读）
-│   ├── loop-engineering.md
+│   ├── loop-graph-engineering/  #    循环工程 + 图工程
 │   └── langgraph/  mcp/  a2a/  agent-skills/  computer-use/  harness/  case-studies/
 │
 ├── knowledge/                # ③ 知识与记忆：决定往上下文窗口里塞什么
@@ -49,7 +49,7 @@ ai/
 | 大类 | 一句话 | 判断口诀 |
 |---|---|---|
 | [foundation](./foundation/) | 模型本体 | 「讲模型内部 / 权重 / 训练 / 生成范式」→ 归这 |
-| [agent](./agent/) | 模型 → 系统 | 「讲循环 / 工具 / 协议 / 外壳」→ 归这 |
+| [agent](./agent/) | 模型 → 系统 | 「讲循环 / 图编排 / 工具 / 协议 / 外壳」→ 归这 |
 | [knowledge](./knowledge/) | 塞什么进窗口 | 「讲检索 / 记忆 / 裁剪」→ 归这 |
 | [reliability](./reliability/) | 能不能上生产 | 「讲拦错 / 打分 / 隔离 / 降级」→ 归这 |
 | [runtime](./runtime/) | 跑多快多省 | 「讲引擎 / 显存 / 延迟 / 量化 / 实时」→ 归这 |
@@ -100,7 +100,7 @@ ai/
 |---|---|---|
 | **Agent（总图）** | 有目标、调工具、看反馈再试；聊天/工作流/Agent 三分 | [agent/](./agent/) |
 | **Agent 全链路（原理）** | 一条主循环 + 支撑面 / 横切的宏观总揽与环节导航 | [总揽](./agent/环节00-总揽与环节导航.md) |
-| **循环工程** | 从提示工程到「规划-执行-验证」闭环 | [loop-engineering.md](./agent/loop-engineering.md) |
+| **循环与图工程** | Prompt → Context → Harness → Loop → Graph | [loop-graph-engineering/](./agent/loop-graph-engineering/) |
 | **LangGraph** | 图编排 + 8 个 demo | [langgraph/](./agent/langgraph/) |
 | **MCP** | Agent ↔ 工具 / 数据源的 USB-C | [mcp/](./agent/mcp/) ｜ [版本演进](./agent/mcp/版本演进.md) |
 | **A2A** | Agent ↔ Agent 的对等委托协议 | [a2a/](./agent/a2a/) |
@@ -164,10 +164,10 @@ ai/
 
 ```
 应用：Computer Use / Voice / Skills / Harness / 案例
-编排：LangGraph · 循环工程 · Memory · Context Engineering
+编排：LangGraph · 循环与图工程 · Memory · Context Engineering
 协议：MCP（工具） · A2A（Agent 互操作）
 治理：Guardrails · Eval · Model Routing · Structured Output
-知识：RAG · 向量库 · 知识库
+知识：RAG · 向量库 · 知识库 · 上下文图（GraphRAG）
 模型：Transformer · Reasoning · Multimodal · SLM · MoE · PEFT
 生成：Diffusion · Video · Audio/Speech · World Models
 加速：Speculative Decoding · 量化
@@ -175,7 +175,7 @@ ai/
 案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed（model-cases/）
 ```
 
-MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
+MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图工程](./agent/loop-graph-engineering/) 管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
 
 ## 跑 MVP
 

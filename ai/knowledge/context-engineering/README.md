@@ -71,9 +71,11 @@
 
 | 技术 | 关系 |
 |---|---|
-| Prompt Engineering | 子集：怎么措辞；CE 还管选什么、砍什么 |
+| Prompt Engineering | 子集：怎么措辞；CE 还管选什么、砍什么。栈内口径见 [prompt-engineering.md](../../agent/loop-graph-engineering/prompt-engineering.md) |
 | [Memory](../memory/) | 记忆是源，CE 决定召回几条、怎么压缩 |
 | [RAG](../rag/) | 检索是源，CE 决定块数、顺序、是否 HyDE |
+| [栈内 Context Engineering](../../agent/loop-graph-engineering/context-engineering.md) | 本页是窗口预算本体；那边只写这一层相对 Prompt / Loop / 上下文图的位置 |
+| [Graph / 上下文图](../../agent/loop-graph-engineering/context-graph.md) | 上下文图召回结构化的一小束关系，再交给 CE 裁进窗口 |
 | [Agent Skills](../../agent/agent-skills/) | 按需加载的程序记忆 |
 | [Model Routing](../../reliability/model-routing/) | 小窗小模型 / 大窗大模型 |
 | 提示缓存 | 把不变的系统+工具 schema 放前缀 |

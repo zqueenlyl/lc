@@ -1,6 +1,8 @@
 # LangGraph 学习指南与示例合集
 
 > LangGraph 是 LangChain 团队推出的**图状态机（Graph State Machine）编排框架**，用于把 LLM 应用中的多个步骤（节点）、条件跳转（边）、循环与状态用一张「图」清晰地组织起来，尤其擅长构建 **Agent**、**RAG**、**多智能体**、**人机协同** 等需要灵活控制流的应用。
+>
+> 它实现的是 [循环与图工程](../loop-graph-engineering/) 里的**执行图**（下一步跑谁，见 [execution-graph.md](../loop-graph-engineering/execution-graph.md)）。**上下文图**（系统知道什么：客户 / 合同 / 政策）不在本目录——checkpoint 能续跑，并不定义「谁是同一个客户」。
 
 本目录包含一份系统化学习文档，以及覆盖各类典型应用的**可运行 demo**。
 
@@ -80,5 +82,6 @@ python 06_multi_agent.py
 
 ## 相关文档
 
+- 循环与图工程（执行图 vs 上下文图）：[../loop-graph-engineering/](../loop-graph-engineering/) · [execution-graph.md](../loop-graph-engineering/execution-graph.md)
 - 同仓库 RAG 全景：[../rag/rag-types.md](../../knowledge/rag/rag-types.md)、[../rag/rag-mvp.md](../../knowledge/rag/rag-mvp.md)
 - LangGraph 官方文档：https://langchain-ai.github.io/langgraph/

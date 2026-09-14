@@ -2,8 +2,8 @@
 
 > 位置：`ai/courses.md`，与 [landscape.md](./landscape.md)、[learning-path.md](./learning-path.md) 同属**横向入口**。
 > 定位：本库（`ai/`）是**手册 + 原理 + 案例**；本页是**外部课进度表** —— 回答「先看哪门、看它图什么、看完往本库哪块写笔记」。
-> 内容为**带日期的检索快照**（学期 / 公开材料批次 / 讲次都会变），核实日期 **2026-09-12**，文末列来源。
-> **先看 §0 课程总表**（**已收录 5 门 + 候选池 10 门 = 15 门**，优先级 / 学期 / 状态一张表看全）；**要材料直接跳 §7**（讲义直链 / 录播 / 作业仓库 / 中文字幕搬运，逐条标注公开度）；每门课卡片的「公开材料」行只讲**有多少**，链接在 §7；**候选池详情与选课建议在 §8**。
+> 内容为**带日期的检索快照**（学期 / 公开材料批次 / 讲次都会变），核实日期 **2026-09-12**；**链接可用性复测 2026-09-14**，文末列来源。
+> **先看 §0 课程总表**（**已收录 5 门 + 候选池 10 门 = 15 门**，**一行一课**：`#` 是从今天起的执行序，`层` 是 P0–P3 / C1–C3 战略分层）。**要材料直接跳 §7**（讲义直链 / 录播 / 作业仓库 / 中文字幕搬运，逐条标注公开度）；每门课卡片的「公开材料」行只讲**有多少**，链接在 §7；**候选池详情与选课建议在 §8**。
 
 ## 排序原则
 
@@ -13,41 +13,53 @@
 
 ---
 
-## 0. 课程总表（已收录 5 门 + 候选池 10 门）
+<a id="s0"></a>
 
-> 全页**唯一一张「课程」总表**（**15 门**）：**P0–P3 = 已收录**，下有详情节（§1–§4）；**C1–C3 = 候选池**，公开度 / 本库接口 / 「怎么排」见 §8。
+## 0. 课程总表
+
+> 全页**唯一一张课程表**（**15 门**，快照 **2026-09-14**）：**行按从今天起的执行序**；**`层` 列保留战略分层**（P0–P3 = 已收录，下有详情节 §1–§4；C1–C3 = 候选池，公开度 / 本库接口见 §8）。
+> 口径仍是文首三条原则。C1 插在 P1 与 P2 之间，是因为现在就有材料、能反哺本地推理 / 系统层；CS329A 仍是战略 P2，执行序落到第 9（先修没齐、下一轮 2027）。
 > 公开度不在此列（各门差异极大且随周变，见每门课的「公开材料」段与 §7）。
-> **课程官网链接一律挂在详情小节的课程名上**（§1–§4 的节标题、§8 的条目名）；总表里课名保持**纯文字**，只用 `§N` **锚点链接**跳到对应详情小节 —— 汇总表不放官网外链，避免两处维护。
+> **课程官网链接一律挂在详情小节的课程名上**（§1–§4 的节标题、§8 的条目名）；总表课名旁的 `§N` 跳到本页对应小节（用固定锚点 `#s1`…，不依赖标题自动生成的 id）。
 
-| 层 | 课程 | 学期 / 起止 · 状态（截至 2026-09-12） | 为什么排这个位次 |
-|---|---|---|---|
-| **P0** | **CMU 11-768 AI Agents**（[§1](#1-p0--cmu-11-768-ai-agents-fall-2026)） | Fall 2026 · 2026-08-25 ~ 12-03 · **进行中**（第 3 周） | 唯一 **Build → Evaluate → Train 三件套全讲、作业就是实现**；授课人 Neubig 是 OpenHands / SWE-agent 主线 |
-| **P1** | **Stanford CS329Z Engineering AI Agents**（[§2](#2-p1--stanford-cs329z-engineering-ai-agents-fall-2026)） | Fall 2026 · 2026-09-23 ~ 12-11 · **未开课**（差 11 天） | 复合 AI 系统全谱系（组件 → 编排 → 优化 → 评测 → 安全）；HW1/HW2 与 P0 同构，**但评测更成体系**（4-tuple 可直接抄给回测） |
-| **P2** | **Stanford CS329A Self-Improving AI Agents**（[§3](#3-p2--stanford-cs329a-self-improving-ai-agents-autumn-2025)） | Autumn 2025 那一轮 · 2025-09-22 ~ 12-12 · ✅ **已结课**，下一轮 2027 Spring | 自我改进：测试时算力 / 验证器 / 搜索 / 训练时 RL / 长时程评测；研讨课，**要先有 harness / eval 的对照物**才读得动 |
-| **P3-a** | **Stanford CS146S The Modern Software Developer**（[§4.1](#41-stanford-cs146s-the-modern-software-developer)） | 上一轮 2025-26 Autumn ✅ **已结课**；**新一轮 2026-09-22 开课**（差 10 天） | AI 原生开发流程（MCP / Agent Skills / spec-driven / loop engineering）：与本库笔记**重叠度最高**，是流程而非实现视角 → 只补差距 |
-| **P3-b** | **MIT MAS.S60 How to AI (Almost) Anything**（[§4.2](#42-mit-mass60-how-to-ai-almost-anything)） | Spring 2025 · 2025 春 · ✅ **已结课**（OCW 定版） | 多模态 / 跨模态生成与交互；能力面扩展，与 Harness / 沙盒 / 回测无直接接口 |
-| **C1** | **CMU 10-414/714 Deep Learning Systems**（[§8.1](#81-第一梯队--直接反哺手上的四条线)） | Fall 2026 · 2026-08-25 开课 · ⭕ **进行中** | 造 mini 框架 **Needle**（自动微分 → CPU/CUDA 后端的 NDArray → CNN/RNN），补**沙盒下面那一层**；2022 版全套录像公开 |
-| **C1** | **Harvard CS249r · MLSysBook（Machine Learning Systems）**（[§8.1](#81-第一梯队--直接反哺手上的四条线)） | **不是学期课** · 持续更新（2026-09 更新） | 把本库本地推理的实测结论升级成**可计算的公式**（Iron Law）；另含 TinyTorch 手写框架、MLSys·im 性能建模 CLI、StaffML 面试题库 |
-| **C1** | **Berkeley LLM Agents MOOC**（f24 + S25 两期）（[§8.1](#81-第一梯队--直接反哺手上的四条线)） | 两期**均已结束** · 视频 / slides / quiz **全公开保留** | 与 CS329A 同题**但有全套录像** → 补 CS329A「只有论文清单」的短板；⚠️ 2026 秋是否再开未公布 |
-| **C1** | **MIT 6.5940 TinyML and Efficient AI Computing**（[§8.1](#81-第一梯队--直接反哺手上的四条线)） | Fall 2026 · 2026-09-10 开课 · ⭕ **进行中** | 量化 / 剪枝稀疏 / 蒸馏 → **LLM 量化部署**与长上下文，**本地推理那条线最正的一课**；当季逐讲放，往年版本在 Previous Courses |
-| **C2** | **Stanford CS336 Language Modeling from Scratch**（[§8.2](#82-第二梯队--补原理与实现但要留整块时间)） | Spring 2026（3/30–6/3）· ✅ **已结课** | 唯一「从 tokenizer 一路写到 RL 对齐」的公开课（Triton FA2 / 并行 / scaling law / RLVR）；**5 学分、实现量高一个数量级、要 GPU** |
-| **C2** | **Stanford CS224N**（[§8.2](#82-第二梯队--补原理与实现但要留整块时间)） | Winter 2026（1/6–3/12）· ✅ **已结课** | 只取两处增量：**A4 = LLM benchmark 与评估** + 期末改手写精简版 GPT-2；⚠️ 作业每年变，做往年不给分 |
-| **C2** | **Berkeley CS285 Deep RL**（[§8.2](#82-第二梯队--补原理与实现但要留整块时间)） | Spring 2026（1/19–5/1）· ✅ **已结课** | **HW4 = LLM RL、HW5 = Offline RL** + 期末项目可选 LLM RL → 把 RL 骨架补全（视频只有 Fall 2023，讲义全公开） |
-| **C3** | **Hugging Face AI Agents Course**（[§8.3](#83-第三梯队--成本低见效快动手--讲座--别踩的坑)） | **无截止日期** · 随时可做 | 免费、证书也免费；**Bonus Unit 2 = Observability and Evaluation**；覆盖 smolagents / LlamaIndex / LangGraph |
-| **C3** | **Stanford CS25 Transformers United V6**（[§8.3](#83-第三梯队--成本低见效快动手--讲座--别踩的坑)） | Spring 2026 · ✅ 已结课（讲座在 YouTube） | 每周一位顶级嘉宾，**用来扫面与挑专题**，不是系统课（想深入得回论文） |
-| **C3** | **Karpathy《Neural Networks: Zero to Hero》**（[§8.3](#83-第三梯队--成本低见效快动手--讲座--别踩的坑)） | **常青**（YouTube 全公开） | backprop 手写 → 字符级 → GPT 的**最低成本入门**；⚠️ **LLM101n 至今未发布，别等** |
+| # | 层 | 课程 | 学期 / 起止 · 状态 | 为什么是这个位次 |
+|---|---|---|---|---|
+| **1** | **P0** | **CMU 11-768 AI Agents**（[§1](#s1)） | Fall 2026 · 2026-08-25 ~ 12-03 · **进行中**（第 3 周） | 唯一 **Build → Evaluate → Train 三件套全讲、作业就是实现 harness**；Neubig = OpenHands / SWE-agent 主线。只能跟当季 |
+| **2** | **P1** | **Stanford CS329Z Engineering AI Agents**（[§2](#s2)） | Fall 2026 · 2026-09-23 ~ 12-11 · **未开课** | HW1/HW2 与 P0 同构，**评测更成体系**（4-tuple 可直接抄给回测）。先读 reading list |
+| **3** | **C1** | **MIT 6.5940 TinyML and Efficient AI Computing**（[§8.1](#s8-1)） | Fall 2026 · 2026-09-10 开课 · ⭕ **进行中** | 当季第二门能跟直播；量化 / 长上下文 / **本地推理最正**。和 11-768 并行，不抢 harness 主线 |
+| **4** | **C1** | **Harvard CS249r · MLSysBook（Machine Learning Systems）**（[§8.1](#s8-1)） | **不是学期课** · 持续更新（2026-09 更新） | 低成本先补：把本地推理实测升级成可计算的 Iron Law（另含 TinyTorch / MLSys·im / StaffML） |
+| **5** | **C1** | **CMU 10-414/714 Deep Learning Systems**（[§8.1](#s8-1)） | Fall 2026 · 2026-08-25 开课 · ⭕ **进行中** | 造 mini 框架 Needle，补**沙盒下面那一层**。当季公开未说明，先刷 2022 全套录像 |
+| **6** | **C1** | **Berkeley LLM Agents MOOC**（f24 + S25 两期）（[§8.1](#s8-1)） | 两期**均已结束** · 视频 / slides / quiz **全公开保留** | CS329A 同题**但有全套录像**。P0/P1 还没跑通前按主题挑讲，别当系统课刷完 |
+| **7** | **C3** | **Hugging Face AI Agents Course**（[§8.3](#s8-3)） | **无截止日期** · 随时可做 | 成本最低的动手课；**Bonus Unit 2 = Observability and Evaluation**。塞进 11-768 的空隙，不另开战线 |
+| **8** | **P3-a** | **Stanford CS146S The Modern Software Developer**（[§4.1](#s4-1)） | 上一轮 2025-26 Autumn ✅ **已结课**；**新一轮 2026-09-22 开课** | 与本库 MCP / Skills / loop engineering **重叠最高**，只补差距。上一轮材料会被覆盖，先拷档 |
+| **9** | **P2** | **Stanford CS329A Self-Improving AI Agents**（[§3](#s3)） | Autumn 2025 ✅ **已结课**；下一轮 **2027 Spring** | 战略价值高（测试时算力 / 验证器 / 长时程评测），但要先有 harness / eval 对照物。现在只有论文清单；有声版先走第 6 名 MOOC |
+| **10** | **C2** | **Stanford CS336 Language Modeling from Scratch**（[§8.2](#s8-2)） | Spring 2026（3/30–6/3）· ✅ **已结课** | 从 tokenizer 写到 RL 对齐，**5 学分、实现量高一个数量级、要 GPU**。留整块时间再上，现在不要开 |
+| **11** | **C2** | **Berkeley CS285 Deep RL**（[§8.2](#s8-2)） | Spring 2026（1/19–5/1）· ✅ **已结课** | 只取增量：**HW4 = LLM RL、HW5 = Offline RL**。视频停在 Fall 2023，讲义全公开 |
+| **12** | **C2** | **Stanford CS224N**（[§8.2](#s8-2)） | Winter 2026（1/6–3/12）· ✅ **已结课** | 只取 **A4 = LLM benchmark 与评估**。Diyi Yang 也教 CS329Z，评测主线以那门为准 |
+| **13** | **C3** | **Karpathy《Neural Networks: Zero to Hero》**（[§8.3](#s8-3)） | **常青**（YouTube 全公开） | transformer 从零手感，成本最低。⚠️ **LLM101n 至今未发布，别等** |
+| **14** | **C3** | **Stanford CS25 Transformers United V6**（[§8.3](#s8-3)） | Spring 2026 · ✅ 已结课（讲座在 YouTube） | 嘉宾讲座，用来扫面和挑专题，不是系统课 |
+| **15** | **P3-b** | **MIT MAS.S60 How to AI (Almost) Anything**（[§4.2](#s4-2)） | Spring 2025 · ✅ **已结课**（OCW 定版） | 15 门里材料最全，但与 harness / 沙盒 / 回测**无接口**。能力面扩展，最后补 |
 
 **三条可操作结论**
 
 1. **材料已冻结且全公开的只有 MIT MAS.S60**（OCW 定版，不受学期影响）；CS329A / CS146S 的官网仍保留当轮课表与 reading。
-2. **CS329A / CS146S 不是「结束了」，而是「上一轮结束 + 下一轮已排课」**：CS329A 等 **2027 Spring**（2027-03-29 ~ 06-02，周二 / 周四 18:30–19:50，Chowdhery + Mirhoseini 继续教）；**CS146S 新一轮就在 10 天后**（2026-09-22 ~ 12-04，周二/周四 17:30–18:20，370-370，Class #6380）—— 它 2025 秋的官网材料会被新学期覆盖，**想留档现在拷**。
-3. **想跟「正在进行」的只有 CMU 11-768**（8-25 开课、12-03 结课；公开视频滞后 1–2 周，讲义先出）；CS329Z 9-23 才开课，本页对它只能先按 reading list 预习。
+2. **CS329A / CS146S 不是「结束了」，而是「上一轮结束 + 下一轮已排课」**：CS329A 等 **2027 Spring**（2027-03-29 ~ 06-02，周二 / 周四 18:30–19:50，Chowdhery + Mirhoseini 继续教）；**CS146S 新一轮就在 8 天后**（2026-09-22 ~ 12-04，周二/周四 17:30–18:20，370-370，Class #6380）—— 它 2025 秋的官网材料会被新学期覆盖，**想留档现在拷**。
+3. **正在进行、能跟的有两门**：CMU 11-768（主线 harness，录像滞后 1–2 周）+ MIT 6.5940（本地推理，从 L1 跟）；CS329Z 9-23 才开课，此前只按 reading list 预习。
+
+**这周（9-14 起）只做四件事**
+
+1. **占日历**：11-768 跟当季；6.5940 从 L1 跟直播；CS329Z 用公开 reading list 预习，9-23 再切主线。
+2. **别让材料消失**：CS146S 上一轮官网 9-22 可能被覆盖——只拷档、不重读。
+3. **空隙填空**：HF Agents 塞进 11-768 的空隙；MLSysBook 晚上当教材。
+4. **明确不排**：CS336 留整块时间；CS229 / 6.S191 / CS231n 不进池；别等 Karpathy `LLM101n`。
 
 > ⚠️ 课程状态会变：斯坦福课表明确写 "schedule is tentative and subject to change"，上表日期取自 ExploreCourses / 官网快照，动手前回官方核一遍。
 >
-> 上表 **C1–C3 就是候选池**（10 门）：§8 只补**公开度 / 本库接口 / 官网入口 / 「怎么排」**（位次理由不重复）—— 含 2026 秋**正在开**的 MIT 6.5940 与 CMU 10-414。
+> **C1–C3 就是候选池**（10 门）：§8 只补**公开度 / 本库接口 / 官网入口**（位次理由以本表 `#` 列为准，不重复）—— 含 2026 秋**正在开**的 MIT 6.5940 与 CMU 10-414。
 
 ---
+
+<a id="s1"></a>
 
 ## 1. P0 · [CMU 11-768 AI Agents](https://www.cmu-agents.com/) (Fall 2026)
 
@@ -84,11 +96,13 @@
 - 训练面：SFT → RL Basics → Advanced RL → **RL Systems（SkyRL、Miles）**
 - 安全与框架：**Sandboxing and Credential Management**（Lecture 13）｜ Observability and Monitoring（Lecture 16）｜ OpenHands（14）｜ LangGraph（15）
 
-**公开材料**：Neubig YouTube 频道分批上传（**滞后约 1–2 周**）；截至 2026-09-08 公开 **Lecture 1–4 视频（合计约 4h36m）+ Lecture 1–6 slides**；B 站有中英字幕搬运。注册学生另有 Piazza / Canvas、赞助算力、A2/A3 仓库与私有测试。
+**公开材料**：[Neubig YouTube 频道](https://www.youtube.com/@neubig) 分批上传（**滞后约 1–2 周**）；截至 2026-09-14 公开 **Lecture 1–4 视频（合计约 4h36m）+ Lecture 1–6 slides**；B 站有中英字幕搬运。注册学生另有 Piazza / Canvas、赞助算力、A2/A3 仓库与私有测试。
 
 **读完往本库写哪儿**：[agent/harness/](./agent/harness/)（A1 的实现笔记）｜ [reliability/sandbox/](./reliability/sandbox/)（Lecture 13 + Modal）｜ [reliability/eval/](./reliability/eval/)（A2）｜ [agent/agent-skills/](./agent/agent-skills/)（SKILL.md 渐进披露）
 
 ---
+
+<a id="s2"></a>
 
 ## 2. P1 · [Stanford CS329Z Engineering AI Agents](https://cs329z.stanford.edu/) (Fall 2026)
 
@@ -125,6 +139,8 @@
 
 ---
 
+<a id="s3"></a>
+
 ## 3. P2 · [Stanford CS329A Self-Improving AI Agents](https://cs329a.stanford.edu/) (Autumn 2025)
 
 | 项目 | 内容 |
@@ -148,11 +164,13 @@
 
 **公开材料**：官网**无视频、无讲义下载**，只有每周论文清单（附 arXiv 链接）。可复用的产出 = **它的 reading list + 客座讲题**。
 
-**读完往本库写哪儿**：[foundation/reasoning/](./foundation/reasoning/)（test-time compute、训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-engineering.md](./agent/loop-engineering.md)（反思 / 验证器闭环）
+**读完往本库写哪儿**：[foundation/reasoning/](./foundation/reasoning/)（test-time compute、训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-graph-engineering/](./agent/loop-graph-engineering/)（反思 / 验证器闭环）
 
 ---
 
 ## 4. P3 · 拓展（两门）
+
+<a id="s4-1"></a>
 
 ### 4.1 [Stanford CS146S The Modern Software Developer](https://themodernsoftware.dev/)
 
@@ -165,7 +183,9 @@
 | 学习目标 | 给 agent 正确上下文与能力；把产品需求转成可执行规格；设计人机共同「规划—构建—评估—改进」的迭代工作流 |
 | 公开材料 | 官网未提视频 / 讲义；列出开源合作方（Browserbase、HeyGen、CopilotKit、Semgrep、OpenHands、Milvus、Marimo、pi.dev、CrewAI、Warp、Vercel、Arize Phoenix、Unsloth、Anyscale） |
 
-**重叠度提示（为什么排 P3）**：MCP、Agent Skills、Loop engineering、软件工厂，本库都已有对应笔记（[agent/mcp/](./agent/mcp/)、[agent/agent-skills/](./agent/agent-skills/)、[agent/loop-engineering.md](./agent/loop-engineering.md)）。它是**流程与协作视角**，不提供 harness 实现 —— **只补差距，不重读**。
+**重叠度提示（为什么排 P3）**：MCP、Agent Skills、Loop engineering、软件工厂，本库都已有对应笔记（[agent/mcp/](./agent/mcp/)、[agent/agent-skills/](./agent/agent-skills/)、[agent/loop-graph-engineering/](./agent/loop-graph-engineering/)）。它是**流程与协作视角**，不提供 harness 实现 —— **只补差距，不重读**。
+
+<a id="s4-2"></a>
 
 ### 4.2 [MIT MAS.S60 How to AI (Almost) Anything](https://mit-mi.github.io/how2ai-course/spring2025/)
 
@@ -184,8 +204,8 @@
 |---|---|---|
 | CMU 11-768 | [agent/harness/](./agent/harness/) · [reliability/sandbox/](./reliability/sandbox/) · [reliability/eval/](./reliability/eval/) · [agent/agent-skills/](./agent/agent-skills/) | harness 的分模块实现（prompt / loop / 并行工具 / 压缩）、Skill 渐进披露、上下文压缩阈值实测 |
 | CS329Z | [reliability/eval/](./reliability/eval/) · [agent/langgraph/](./agent/langgraph/) · [agent/mcp/](./agent/mcp/) | **4-tuple 评测框架**、pass@k vs pass^k、三类 grader 与偏差、DSPy 系 prompt 优化 |
-| CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-engineering.md](./agent/loop-engineering.md) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
-| CS146S | [agent/loop-engineering.md](./agent/loop-engineering.md) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
+| CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
+| CS146S | [agent/loop-graph-engineering/](./agent/loop-graph-engineering/) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
 | MIT MAS.S60 | [foundation/multimodal/](./foundation/multimodal/) · [foundation/generative/](./foundation/generative/) | 跨模态生成的完整讲次顺序 |
 
 ---
@@ -207,7 +227,7 @@
 
 > **官网 ≠ 材料页。** 下表把「官网 / 讲义直链 / 录播 / 作业仓库 / 中文字幕搬运」分开列，并标公开度。
 > 公开度四级：**① 全公开免登录**（讲义 PDF、MIT 全部）｜ **② 需注册**（Piazza / Canvas 内的录像与私有测试）｜ **③ 只有 reading**（讲座不公开，但论文清单公开）｜ **④ 官方作业仓库公开**（可拿来当 starter）。
-> 下列链接**均在 2026-09-12 实测可达**（讲义 PDF 与 404 结论为实际请求结果）；标 ⚠️ 的是**第三方转述、未逐条验证**的项。
+> 下列链接**2026-09-12 首测、2026-09-14 复测**（讲义 PDF 与 404 结论为实际请求结果）；标 ⚠️ 的是**第三方转述、未逐条验证**的项。
 
 ### 7.1 CMU 11-768 AI Agents
 
@@ -215,11 +235,11 @@
 |---|---|---|
 | 课程官网（时间 / 地点 / 教师 / 入口汇总） | https://www.cmu-agents.com/ | ① |
 | **讲义 PDF 直链**（模式 `/slides/lecture-0N-<slug>.pdf`） | [L1 agents](https://www.cmu-agents.com/slides/lecture-01-agents.pdf)（实测可下）｜ [L5 planning](https://www.cmu-agents.com/slides/lecture-05-planning.pdf)（实测可下，约 18 MB）<br>其余按同一模式拼：`lecture-02-tool-use.pdf`、`lecture-03-long-context.pdf`、`lecture-04-memory-and-skills.pdf`、`lecture-06-coding-agents.pdf` | ① 无需登录 |
-| **录播（YouTube 单集，截至 9-08 仅 L1–L4）** | L1 `https://www.youtube.com/watch?v=UwfjzyLnvMg` ｜ L2 `...?v=jXChFB4JSyw` ｜ L3 `...?v=AiwCCvFW1uE` ｜ L4 `...?v=6zigF2a-2Pw` | ① 滞后 1–2 周 |
-| 播放列表 ⚠️ | https://www.youtube.com/playlist?list=PLSN0qpDfUvTM —— 该 ID 为第三方转述且**长度异常（疑似被截断）**，打不开就以单集链接或 Neubig 频道为准 | ① |
+| **录播（YouTube 单集，截至 9-14 仅 L1–L4）** | [L1](https://www.youtube.com/watch?v=UwfjzyLnvMg) ｜ [L2](https://www.youtube.com/watch?v=jXChFB4JSyw) ｜ [L3](https://www.youtube.com/watch?v=AiwCCvFW1uE) ｜ [L4](https://www.youtube.com/watch?v=6zigF2a-2Pw) | ① 滞后 1–2 周 |
+| 播放列表 | [playlist](https://www.youtube.com/playlist?list=PLSN0qpDfUvTM)（2026-09-14 实测可开，目前 L1–L4）｜ 频道 [youtube.com/@neubig](https://www.youtube.com/@neubig)（**不是** `@gneubig`，那个 404） | ① |
 | **中文字幕搬运（B 站）** | 全课合集（4 条，对应 L1–L4）https://www.bilibili.com/video/BV1ynYt6MEcb/ ｜ 单讲双语 + 资料 https://www.bilibili.com/video/BV1oGYm6LELX/ | 第三方转载 |
-| **作业 1 起步代码（官方）** | https://github.com/cmu-agents/assignment-1（公开：README / 说明 / 100 分 rubric；**私有测试与 reference patch 不公开**）｜ 配套应用 https://github.com/cmu-agents/chess-app | ④ 部分 |
-| 第三方复盘仓库 ⚠️ | https://github.com/daniellaah/cmu-11-768-ai-agents（含 `assignments/03-training`） | 第三方 |
+| **作业 1 起步代码（官方）** | [cmu-agents/assignment-1](https://github.com/cmu-agents/assignment-1)（公开：README / 说明 / 100 分 rubric；**私有测试与 reference patch 不公开**）｜ 配套应用 [cmu-agents/chess-app](https://github.com/cmu-agents/chess-app) | ④ 部分 |
+| 第三方复盘仓库 ⚠️ | [daniellaah/cmu-11-768-ai-agents](https://github.com/daniellaah/cmu-11-768-ai-agents)（含 `assignments/03-training`） | 第三方 |
 | 注册后才有的 | Piazza https://piazza.com/cmu/fall2026/11768/home ｜ Canvas https://canvas.cmu.edu/courses/55126 | ② |
 | 讲师主页 | Graham Neubig https://www.phontron.com/ ｜ Daniel Fried https://dpfried.github.io/ | ① |
 | 逐讲拆解（第三方，含各讲材料公开状态） | https://www.heyuan110.com/posts/ai/2026-09-08-cmu-11-768-ai-agents-course/ | 第三方 |
@@ -230,7 +250,7 @@
 |---|---|---|
 | 课程官网 —— **单页站，日程 + 作业权重 + 全部 reading 都在这页** | https://cs329z.stanford.edu/ | ① |
 | ⚠️ 无独立日程页（实测结论） | `https://cs329z.stanford.edu/schedule` 与 `/sitemap.xml` **均返回 404**（GitHub Pages），别再试；日程就在首页 | — |
-| Stanford Online 课程页 | https://online.stanford.edu/courses/cs329z-engineering-ai-agents | ① |
+| Stanford Online 课程页 | https://online.stanford.edu/courses/cs329z-engineering-ai-agents （部分爬虫 / 网络会 **403**，浏览器一般可开；更稳的是上面官网） | ① 偶发 403 |
 | Bulletin 官方课程描述 | https://bulletin.stanford.edu/courses/2283761 | ① |
 | 讲座录像 | **不公开**（仅注册学生，Canvas 内；官网原文：教室后方摄像头只录教师讲授部分，需登录 Canvas 访问） | ② |
 | 课表核验（Stanford ExploreCourses） | 2026-27 学年 CS329Z：[catalog 查询](https://explorecourses.stanford.edu/search?q=CS329Z&view=catalog&academicYear=20262027)（Session 显示 `2026-2027 Autumn 1`，起止 9/23–12/11） | ① |
@@ -240,7 +260,7 @@
 | 材料 | 链接 | 公开度 |
 |---|---|---|
 | 课程官网 —— **单页站，全部 reading 的 arXiv 直链就挂在日程里**（Test-time Compute / Robust Verification / ReAct / STaR / DAPO / AlphaEvolve / MemGPT / 长时程评测等） | https://cs329a.stanford.edu/ | ③（材料只有论文） |
-| 讲师主页 | https://www.achowdhery.com/ ｜ http://azaliamirhoseini.com/ | ① |
+| 讲师主页 | https://www.achowdhery.com/ ｜ https://www.azaliamirhoseini.com/ （旧 `http://azaliamirhoseini.com/` 会跳到这里） | ① |
 | 视频 / 讲义 | **无**，官网未提供；也不允许旁听 | — |
 | 课表核验（Stanford ExploreCourses） | 2026-27 学年 CS329A：[catalog 查询](https://explorecourses.stanford.edu/search?q=CS329A&view=catalog&academicYear=20262027)（已排 **Spring 2027**：2027-03-29 ~ 06-02，Chowdhery + Mirhoseini 继续教） | ① |
 
@@ -251,7 +271,7 @@
 | 课程官网 | https://themodernsoftware.dev/ | ① |
 | **作业仓库（官方）** | https://github.com/mihail911/modern-software-dev-assignments | ④ |
 | 中文版作业 ⚠️ | https://github.com/ShouZhengAI/CS146S_CN ｜ https://github.com/CaptainRhett/CS146S-CN | 第三方 |
-| 他人解答参考 ⚠️ | https://github.com/baoziwu2/CS146S ｜ https://github.com/WeizhengLiang/Stanford-CS146S-Assignments | 第三方 |
+| 他人解答参考 ⚠️ | https://github.com/TokenLimitExceeded/CS146S （原 `baoziwu2/CS146S`，GitHub 已改名）｜ https://github.com/WeizhengLiang/Stanford-CS146S-Assignments | 第三方 |
 | Bulletin 官方课程描述 | https://bulletin.stanford.edu/courses/2274401 | ① |
 | 课表核验（Stanford ExploreCourses） | 上一轮 2025-26 Autumn：[catalog 查询](https://explorecourses.stanford.edu/search?q=CS146S&view=catalog&academicYear=20252026)（2025-09-22 ~ 12-05，Class #28883）｜ 新一轮 2026-27 Autumn：[catalog 查询](https://explorecourses.stanford.edu/search?q=CS146S&view=catalog&academicYear=20262027)（**2026-09-22 ~ 12-04，Class #6380**） | ① |
 
@@ -281,8 +301,10 @@
 
 ## 8. 候选池：还没收录、但值得学的 AI 课程
 
-> **位次 / 学期 / 状态见 §0（C1–C3 行），本节只补 §0 不写的三样** —— **公开度 / 本库接口 / 官网入口**（2026-09-12 快照；**⭕ = 当季**，材料随周更新）。
+> **位次 / 学期 / 状态见 §0 总表（`#` = 执行序，`层` = P/C 分层），本节只补 §0 不写的三样** —— **公开度 / 本库接口 / 官网入口**（2026-09-12 快照；**⭕ = 当季**，材料随周更新）。
 > 筛选口径 = **能否反哺手上的「agent harness + 代码沙盒 + 回测/评测 + 本地推理」**；纯入门课（CS229 / 6.S191）与偏视觉课（CS231n）不进池。
+
+<a id="s8-1"></a>
 
 ### 8.1 第一梯队 · 直接反哺手上的四条线
 
@@ -290,8 +312,10 @@
 |---|---|---|---|
 | **[CMU 10-414/714 Deep Learning Systems](https://dlsyscourse.org/)** ⭕ | 2022 版全套录像 YouTube 公开；当季录像走课程站、讲义每讲前发，**当季是否对公众开放未说明** | `agent/harness/`（工具执行底座）· `runtime/local-inference/`（算子与后端） | — |
 | **[Harvard CS249r · MLSysBook（Machine Learning Systems）](https://mlsysbook.ai/)** | **全免费开源**（MIT Press 2026）：教材 HTML / PDF / EPUB + 仓库 `harvard-edge/cs249r_book` | `runtime/local-inference/benchmark.md`（正面对偶）· `reliability/eval/` | Iron Law 原文：`T = D/BW + O/(R·η) + L`；MLSys·im CLI 例 `mlsysim eval Llama3_70B H100 --batch-size 1`（区分 mem-bound / compute-bound）；另含 Marimo Labs |
-| **[Berkeley LLM Agents MOOC](https://llmagents-learning.org/)**（f24 + S25） | **视频 + slides + quiz 全部保留公开**：f24 `rdi.berkeley.edu/llm-agents/f24` · S25 `llmagents-learning.org` | `foundation/reasoning/` · `reliability/eval/` | f24 课号 = CS294/194-196《Large Language Model Agents》；主题≈CS329A（推理时技术 / 后训练 / 搜索规划 / agentic workflow / 代码生成与验证 / 数学与定理证明 / agent 安全） |
-| **[MIT 6.5940 TinyML and Efficient AI Computing](https://efficientml.ai/)** ⭕ | **目前只公开 L1**（视频 + 讲义），L2–L25 是占位符会逐讲放；直播入口 `live.efficientml.ai` | `runtime/local-inference/` · `runtime/speculative-decoding/` | 主题谱系：量化 / 剪枝稀疏 / NAS / 蒸馏 / MCUNet / TinyEngine → LLM 量化部署 / 后训练 / 长上下文 / ViT / diffusion → 分布式与端上训练；授课 **Han Song**（这条路线的源头） |
+| **[Berkeley LLM Agents MOOC](https://agenticai-learning.org/sp25)**（f24 + S25 两期） | **视频 + slides + quiz 全部保留公开**：f24 [agenticai-learning.org/f24](https://agenticai-learning.org/f24)（旧站 [rdi.berkeley.edu/llm-agents/f24](https://rdi.berkeley.edu/llm-agents/f24) 仍在）· S25 [agenticai-learning.org/sp25](https://agenticai-learning.org/sp25)。旧域名 `llmagents-learning.org` 会跳到新站，**HTTPS 根路径部分环境 403**，别停在那一页 | `foundation/reasoning/` · `reliability/eval/` | f24 课号 = CS294/194-196《Large Language Model Agents》；主题≈CS329A（推理时技术 / 后训练 / 搜索规划 / agentic workflow / 代码生成与验证 / 数学与定理证明 / agent 安全） |
+| **[MIT 6.5940 TinyML and Efficient AI Computing](https://hanlab.mit.edu/courses/2026-fall-65940)** ⭕ | 当季页 [hanlab.mit.edu/courses/2026-fall-65940](https://hanlab.mit.edu/courses/2026-fall-65940)；短链 `efficientml.ai` 会跳到 HAN Lab。**目前只公开 L1**（视频 + 讲义），L2–L25 占位符会逐讲放；直播 [live.efficientml.ai](https://live.efficientml.ai/) → [YouTube @MITHANLab](https://www.youtube.com/@MITHANLab) | `runtime/local-inference/` · `runtime/speculative-decoding/` | 主题谱系：量化 / 剪枝稀疏 / NAS / 蒸馏 / MCUNet / TinyEngine → LLM 量化部署 / 后训练 / 长上下文 / ViT / diffusion → 分布式与端上训练；授课 **Han Song**（这条路线的源头） |
+
+<a id="s8-2"></a>
 
 ### 8.2 第二梯队 · 补原理与实现，但要留整块时间
 
@@ -301,19 +325,23 @@
 | **[Stanford CS224N](https://web.stanford.edu/class/cs224n/)** | 2026 录像**只在 Canvas**；**公开的是 Spring 2024 全套 YouTube**；slides 与 4 个作业 zip 公开 | `reliability/eval/`（当「评测视角的一课」用，别从头刷） | 授课 **Diyi Yang + Yejin Choi** |
 | **[Berkeley CS285 Deep RL](http://rail.eecs.berkeley.edu/deeprlcourse/)** | **视频只有 Fall 2023**；**25 讲讲义 PDF + HW1–5 + 期末项目说明全公开** | `foundation/reasoning/`（补 RL 骨架；CS336 A5 只算练手，这门是系统学） | 授课 **Sergey Levine** |
 
+<a id="s8-3"></a>
+
 ### 8.3 第三梯队 · 成本低、见效快（动手 / 讲座 / 别踩的坑）
 
 > 三门都免费公开、无截止限制，因此本表**不设公开度列**（§0 已列），只记**本库接口**与**上手节奏 / 坑**。
 
 | 对象 | 本库接口 | 节奏 / 坑 |
 |---|---|---|
-| **[Hugging Face AI Agents Course](https://huggingface.co/learn/agents-course)** | `agent/langgraph/` · `agent/agent-skills/`（把理论落成能跑的 agent）· `reliability/eval/`（对应 Bonus Unit 2 = Observability and Evaluation） | 官方建议每章 1 周、每周 3–4 小时 |
+| **[Hugging Face AI Agents Course](https://huggingface.co/learn/agents-course/en/unit0/introduction)** | `agent/langgraph/` · `agent/agent-skills/`（把理论落成能跑的 agent）· `reliability/eval/`（对应 Bonus Unit 2 = Observability and Evaluation） | 官方建议每章 1 周、每周 3–4 小时；短链 `/learn/agents-course` 会跳到 Unit 0 |
 | **[Stanford CS25 Transformers United V6](https://web.stanford.edu/class/cs25/)** | `ai/` 全库扫面用（无单一模块，用来挑专题） | — |
 | **[Karpathy《Neural Networks: Zero to Hero》](https://karpathy.ai/zero-to-hero.html)** | `foundation/transformer/`（建「从零」手感） | ⚠️ `LLM101n` 至今未发布（他 2026-05 已加入 Anthropic 做预训练研究）—— **别等** |
 
 > ⚠️ **DeepLearning.AI / Anthropic 官方短课**（MCP、agent 评测、prompt caching 之类 1–3 小时专题）本轮**未逐条核实课程名与时效**，也没有画得出的入口链接 —— **不计入候选池 10 门**，要用时自行核一遍。
 
 ### 8.4 怎么排（与已收录 5 门的关系）
+
+完整 1–15 队形见 [§0 课程总表](#s0)，此处只留三条操作口诀（位次理由不重复）：
 
 1. **当季能跟直播**：CMU 11-768（P0，进行中）+ MIT 6.5940（从 L1 开始）——两门材料都随周更新。
 2. **低成本先补**：MLSysBook（免费，给 `runtime/local-inference/benchmark.md` 补理论层）→ 10-414（先刷 2022 录像，再决定做不做 HW）→ Berkeley LLM Agents MOOC（CS329A 的**有声版**，按主题挑讲）。
@@ -327,11 +355,11 @@
 |---|---|
 | CMU 11-768 | https://www.cmu-agents.com/ （官方，含时间 / 教师，无日程）｜ 讲义直链、YouTube 单集、作业仓库、公开度状态来自第三方逐讲分析（2026-09-08）｜ 官网 404 结论（`/schedule`、`/lectures`、`/sitemap.xml`、`/robots.txt`）与两份讲义 PDF 为本轮**实测**结果 |
 | CS329Z | https://cs329z.stanford.edu/ （官方 schedule / 作业权重 / 公开性）｜ https://online.stanford.edu/courses/cs329z-engineering-ai-agents ｜ https://bulletin.stanford.edu/courses/2283761 ｜ 无 `/schedule` 子页为**实测**结果 |
-| CS329A | https://cs329a.stanford.edu/ （官方 schedule / 评分 / 旁听政策 / 全部 reading 直链）｜ 讲师主页 https://www.achowdhery.com/ |
+| CS329A | https://cs329a.stanford.edu/ （官方 schedule / 评分 / 旁听政策 / 全部 reading 直链）｜ 讲师主页 https://www.achowdhery.com/ ｜ https://www.azaliamirhoseini.com/ |
 | CS146S | https://themodernsoftware.dev/ ｜ 官方作业仓库 https://github.com/mihail911/modern-software-dev-assignments ｜ https://bulletin.stanford.edu/courses/2274401 |
 | MIT MAS.S60 | https://ocw.mit.edu/courses/mas-s60-how-to-ai-almost-anything-spring-2025/ ｜ 课程主页 https://mit-mi.github.io/how2ai-course/spring2025/ ｜ **日程页（讲义 PDF + 录播）** https://mit-mi.github.io/how2ai-course/spring2025/schedule/ |
 | 课程状态（已结课 / 进行中 / 未开课） | 斯坦福三门的学期与起止用 **ExploreCourses** 核验：https://explorecourses.stanford.edu/ （参数形式 `search?q=CSxxx&view=catalog&academicYear=20252026`，学年可换 `20262027`）｜ Bulletin https://bulletin.stanford.edu/ ｜ 11-768 用官网 https://www.cmu-agents.com/ ｜ 均为本轮**实测**查询 |
-| 候选池（§8） | 10 门课的**官网入口已挂在 §8 表的课程名上**（链接只在 §8 一处维护）｜ 除 DeepLearning.AI / Anthropic 短课（§8.3 末注，未核实）外，均为 2026-09-12 **实测**抓取 |
+| 候选池（§8） | 10 门课的**官网入口已挂在 §8 表的课程名上**（链接只在 §8 一处维护）｜ 除 DeepLearning.AI / Anthropic 短课（§8.3 末注，未核实）外，课程内容为 2026-09-12 **实测**；**链接于 2026-09-14 复测**：LLM Agents 迁到 `agenticai-learning.org`、6.5940 当季页在 `hanlab.mit.edu/courses/2026-fall-65940`、CS146S 参考仓改名、11-768 播放列表可用 |
 
 > 版本提醒：**课程号、学期、公开材料批次都会变**。引用本页结论时带上「2026-09 快照」；重看前先回官网核一遍公开进度（尤其 11-768 的视频上传）。
 > 材料链接的可用性同理：**SPA 站点的静态直链（如 `/slides/*.pdf`）通常稳定，但课程改版后路径会变**；标 ⚠️ 的第三方链接只作入口参考。
