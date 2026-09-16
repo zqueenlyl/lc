@@ -24,7 +24,7 @@
 |---|---|---|---|---|---|
 | 文本 / 代码 | GPT、DeepSeek、Claude、Qwen | 自回归 Transformer | token（BPE） | 成熟 | 低（按 token） |
 | 图像 | Stable Diffusion、FLUX、Midjourney | **扩散（DDPM/DiT）** | 像素 ↔ 潜空间 | 成熟 | 中（步数驱动） |
-| 视频 | Sora、可灵、Veo、Vidu | DiT + 时空建模 | 时空 patch ↔ 视频 VAE | 迭代期 | 高（≈帧数 × 图像成本） |
+| 视频 | Sora、可灵、Veo、Vidu、**MiniMax H3** | DiT + 时空建模（H3 为单流 Omni Transformer，音画同环去噪） | 时空 patch ↔ 视频 VAE | 迭代期 | 高（≈帧数 × 图像成本） |
 | 语音 | Whisper（ASR）、CosyVoice/Seed-TTS | 自回归 / 非自回归（流匹配） | 波形 → 帧/离散 token | 成熟 | 低-中 |
 | 音乐 / 3D | Suno、Udio / TripoSR 等 | 自回归 + 扩散混合 | 音频 token / 多视图+重建 | 早期 | 中-高 |
 | 多模态 LLM | GPT-4o、Gemini、Qwen-VL/Omni | 统一 Transformer | 视觉/音频 patch + token | 主流方向 | 视模态而定 |
@@ -94,3 +94,4 @@
 - 工程落点与 Agent/多模态 RAG 实践：[`../../agent/`](../../agent/)（[环节06-检索增强RAG详解.md](../../agent/环节06-检索增强RAG详解.md) 等）
 - 知识地图：[learning-path.md](../../learning-path.md)（1.6 多模态）
 - 待扩展位：`DiT详解.md` / `音乐与3D生成详解.md` / `视频音频联合生成详解.md`（按需拆出，登记进 §0 导航表）
+- 视频-音频联合的开源案例：[MiniMax-H3](../../model-cases/minimax/MiniMax-H3全景与架构.md)（单 Transformer、同环去噪出片+立体声）

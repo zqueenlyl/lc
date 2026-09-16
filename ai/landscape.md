@@ -108,7 +108,7 @@
 | **阿里巴巴** | Qwen（通义千问）开源档 | 多为 Apache 2.0 | 尺寸最全、多语言、HF 下载量最大之一；**Max 档是 API 闭源** |
 | **月之暗面 Moonshot** | Kimi K2 / K3 | 改版 MIT | Agent 编程、长工具循环、超长上下文 |
 | **智谱 Zhipu / Z.ai** | GLM | MIT | 长程编程、企业私有化 |
-| **MiniMax** | M 系列 | 开权重 | 低成本吞吐 + 原生多模态；视频线 Hailuo |
+| **MiniMax** | M 系列 + **H 系列（Hailuo / H3）** | 开权重 | 低成本吞吐 + 原生多模态；视频线 H3 开源 768p Base |
 | **Mistral AI** | Large / Small / Ministral | Apache 2.0 | 欧洲数据驻留、多语言、真能自托管 |
 | **Google** | Gemma | 较友好 | 西方实验室里最干净的本地选项之一 |
 | **Meta** | Llama 3.3 / 4 | 社区许可 | 生态与工具链最深，但 2026 前沿转向闭源 Muse |
@@ -143,7 +143,7 @@
 | **DeepSeek** | 对话 + API + 开源权重 | 2025 R1 震惊行业；2026 比拼 Flash 效率与推理 |
 | **月之暗面** | Kimi | 长文档起家，转向 Agent / 编程 |
 | **智谱** | 清言 / GLM API / 私有化 | 高校基因，企业部署盘大 |
-| **MiniMax** | 海螺 / 语音 / 视频 | 多模态生成公司里产品最全之一 |
+| **MiniMax** | 海螺 H3（开源 Base）/ 语音 / M 系对话 | 多模态生成里产品面最全之一；H3 案例见 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
 | **零一万物 01.AI** | Yi | 早期开源玩家，份额已被前几家挤压 |
 | **百川 / 阶跃星辰** 等 | 各有对话与多模态线 | 第二梯队，跟节奏即可 |
 
@@ -176,6 +176,7 @@
 | Kimi | 月之暗面 | 开权重 | Agent 编程、超长上下文 |
 | GLM | 智谱 | 开权重 | 开源里的长程编程 |
 | MiniMax M | MiniMax | 开权重 | 便宜吞吐 + 图视频理解 |
+| MiniMax H / Hailuo | MiniMax | 开权重（H3-Base）+ API | 原生立体声音视频；本地 768p，2K 走托管 Regenerator |
 | 豆包 / Seed | 字节 | 以 API / 应用为主 | 中文 C 端与调用量 |
 | 混元 | 腾讯 | 混合 | 腾讯生态内嵌 |
 | 文心 | 百度 | 闭源为主 | 搜索 / 政务企业 |
@@ -268,7 +269,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **可灵 Kling** | 快手 | 人物运动、性价比、国内最出圈的视频产品之一 |
 | **Veo** | Google | 物理真实感、口型/对白 |
 | **Runway** | Runway | 控制与后期工作流，不只是一条生成 |
-| **Hailuo / 海螺** | MiniMax | 迭代快、有开权重尝试 |
+| **Hailuo / 海螺 / H3** | MiniMax | H3-Base 开源（768p + 立体声）；2K 与 Context-IR 仍走 API。案例 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
 | **Wan 万相视频** | 阿里 | API 管线 |
 | **Pika** | Pika | 短视频、首尾帧 |
 | **Grok Imagine Video** | xAI | 偏便宜、快 |

@@ -78,3 +78,4 @@
 - 正文：[视频生成详解.md](./视频生成详解.md)
 - 前置：[../diffusion/图像扩散模型详解.md](../diffusion/图像扩散模型详解.md)
 - 地图：[../00-AIGC总揽与多模态地图.md](../00-AIGC总揽与多模态地图.md) ｜ 上级 [../README.md](../README.md)
+- 案例：[MiniMax-H3](../../../model-cases/minimax/MiniMax-H3全景与架构.md)（开源 768p Base + 托管 2K）｜ [豆包 Seedance](../../../model-cases/doubao/豆包视频交互技术深度调研报告.md)

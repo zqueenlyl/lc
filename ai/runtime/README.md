@@ -9,7 +9,7 @@
 
 | 专题 | 一句话 | 入口 |
 |---|---|---|
-| **本地推理运行时** | llama.cpp / Ollama / LM Studio / MLX：安装、参数、本地 API、实测 | [local-inference/](./local-inference/) |
+| **本地推理运行时** | llama.cpp / Ollama / LM Studio / MLX：安装、参数、本地 API、实测 + 操作向 notebook 01–04 | [local-inference/](./local-inference/) ｜ [总揽](./local-inference/环节00-总揽与环节导航.md) |
 | **Speculative Decoding** | 小模型草稿 + 大模型一次校验，加速解码 | [speculative-decoding/](./speculative-decoding/) |
 | **Voice / Realtime** | 双向音视频流，延迟预算 &lt; 500ms | [voice-realtime/](./voice-realtime/) |
 

@@ -17,6 +17,7 @@
 | [`qwen/`](./qwen/) | ✅ 已研究 | 阿里通义 Qwen-Omni 系列（开源权重 + 百炼 Realtime API） |
 | [`glm/`](./glm/) | ✅ 已研究 | 智谱 GLM-Realtime 实时音视频通话模型 |
 | [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 + V4.1-Flash KV 压缩通俗解读 |
+| [`minimax/`](./minimax/) | ✅ 已研究 | MiniMax **H3**（海螺视频线）：三模块系统 + 33B Omni Transformer 开源 Base；本地 768p / API 2K |
 | [`providers/`](./providers/) | ✅ 已研究 | **横切层**：各大厂商代表模型 + 模型服务 API 协议对比 |
 
 ### 厂商与协议（providers/）
@@ -26,7 +27,7 @@
 - 《各大厂商代表模型总览.md》—— 海外 / 国内 / 开源权重 / 聚合分发四组的**代表模型、上下文、模态、协议族、端点**速查；工程选型维度；未核实清单
 - 《模型服务API协议对比.md》—— **三代协议演进**（Completions → Chat Completions → Responses/Interactions）、逐家协议速查表、十类字段差异、**"假兼容"陷阱清单**、多厂商接入架构、Chat Completions → Responses 迁移清单
 
-关键事实边界：模型 ID 均为 **2026-09-11 检索快照**，迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax、火山方舟官方文档为 JS 单页应用，正文未能抓取，相关细节在文中标注为「未核实」。
+关键事实边界：模型 ID 均为 **2026-09-11 检索快照**（H3 为 **2026-09-16**），迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax **对话**文档与火山方舟官方文档为 JS 单页应用，聊天接口细节在 providers 文中标注「未核实」；H3 视频线已按 Hugging Face / GitHub 正文落 [minimax/](./minimax/)。
 
 ### 豆包 / Seed（doubao/）
 
@@ -68,6 +69,15 @@
 - 《DeepSeek-V4.1-Flash通俗解读.md》—— V4.1-Flash 技术报告通俗解读（CED / CSA2 / FP4 KV / SWA 有界重放），把全局 KV 压到约 1/4
 
 关键事实边界：DeepSeek 是**唯一同时提供三套协议入口**的平台；**最强档 `deepseek-v4-pro` 不支持图像理解**（只有 `deepseek-flash` 支持）；Anthropic 侧**未识别的模型名会静默降级**为 flash，日志模型名 ≠ 真实模型；Responses API **完全无状态**（不支持 `previous_response_id` / `store`）。V4 的架构细节（CSA/HCA、mHC、Muon、FP4 QAT）来自**第三方对技术报告的解读**，官方 API 文档未披露；训练资源、数据构成、Serving 栈均**未披露**。
+
+### MiniMax（minimax/）
+
+内容清单：
+
+- 《MiniMax-H3全景与架构.md》—— H 系列 ≠ M 系列；Hailuo 01/02 → H3；三模块（Context-IR / Base / Regenerator-2K）；33B 稠密单流 + 联合音画去噪；许可证领土与蒸馏禁令
+- 《MiniMax-H3本地部署与API接入.md》—— `FL2VA` / `Ref2VA` 双 checkpoint；SGLang / vLLM / diffusers / ComfyUI；本地 768p 与 IR+Regen 拼 2K；官方拓扑时延
+
+关键事实边界：开源的是 **H3-Base（默认 768p）**，Context-IR 与 2K Regeneration **仍托管**；完整 Tech Report 官方预告但本快照未见。Community License **排除美 / 欧 / 英 / 韩**。M 系对话模型（`MiniMax-M3`）不在本目录，接口见 [`providers/`](./providers/各大厂商代表模型总览.md)。
 
 ### 三家横向速查（实时音视频交互赛道）
 

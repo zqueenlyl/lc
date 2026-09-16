@@ -16,7 +16,7 @@ ai/
 ├── fde.md                    # 职业与落地视角：FDE 岗位要求 / 三支柱能力模型 / 现场五关 / 转型路径
 │
 ├── model-cases/              # 案例层：按厂商 / 产品纵向深挖（快照型，模型 ID / 端点 / 价格会过期）
-│   └── deepseek/  qwen/  glm/  doubao/  providers/
+│   └── deepseek/  qwen/  glm/  doubao/  minimax/  providers/
 │
 ├── foundation/               # ① 基模：模型是什么 / 怎么造 / 怎么变强 / 怎么生成
 │   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RNN
@@ -145,7 +145,7 @@ ai/
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
-| **本地推理运行时** | llama.cpp / Ollama / LM Studio / MLX：安装、参数、本地 API、实测（原理见环节11） | [local-inference/](./runtime/local-inference/) |
+| **本地推理运行时** | llama.cpp / Ollama / LM Studio / MLX：安装、参数、本地 API、实测 + 操作向 notebook 01–04（原理见环节11） | [local-inference/](./runtime/local-inference/) ｜ [总揽](./runtime/local-inference/环节00-总揽与环节导航.md) |
 | **Speculative Decoding** | 小模型草稿 + 大模型一次校验，加速解码 | [speculative-decoding/](./runtime/speculative-decoding/) |
 | **Voice / Realtime** | 双向音视频流，延迟预算 &lt; 500ms | [voice-realtime/](./runtime/voice-realtime/) |
 
@@ -159,6 +159,7 @@ ai/
 | **Qwen-Omni** | 三条产品线（开源权重 / API 离线 / API 实时）+ 实时接入工程实践 | [qwen/](./model-cases/qwen/) |
 | **GLM-Realtime** | 实时音视频通话：WebSocket 事件协议 / VAD / 成本估算 | [glm/](./model-cases/glm/) |
 | **豆包 / Seed** | 视频交互体系（Seedance / SeedEdit / Seedream / SeedRealtime） | [doubao/](./model-cases/doubao/) |
+| **MiniMax H3** | 海螺视频线开源 Base：33B Omni Transformer、本地 768p / API 2K、FL2VA·Ref2VA | [minimax/](./model-cases/minimax/) |
 | **providers（横切）** | 各厂商代表模型总览 + 服务 API 协议对比与「假兼容」陷阱 | [providers/](./model-cases/providers/) |
 
 ---
@@ -175,7 +176,7 @@ ai/
 生成：Diffusion · Video · Audio/Speech · World Models
 加速：Speculative Decoding · 量化
 本地运行：llama.cpp · Ollama · LM Studio · MLX
-案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed（model-cases/）
+案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax-H3（model-cases/）
 ```
 
 MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图](./agent/loop-graph/)（[栈总览](./agent/README.md#七按栈升级从提示到图)）管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
