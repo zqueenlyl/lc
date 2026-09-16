@@ -44,7 +44,7 @@
 
 - **三阶段范式**：Pre-training（预训练）→ SFT（监督微调）→ 对齐（RLHF / DPO / GRPO）—— 对齐专题（RL 基础 / PPO→DPO→GRPO→RLVR 谱系 / 选型表 / R1 四阶段 / 奖励黑客）见 [强化学习与模型对齐专题](./foundation/rl/环节00-总揽与环节导航.md)
 - **预训练**：数据清洗配比、Scaling Law（参数/数据/算力的关系）、涌现能力 —— 详解见 [环节09-训练管线详解.md](./foundation/transformer/环节09-训练管线详解.md)
-- **微调**：全参微调 vs PEFT（LoRA / QLoRA / P-Tuning），何时该微调、何时不该（优先 RAG/Prompt）—— 同上
+- **微调**：全参微调 vs PEFT（LoRA / QLoRA / P-Tuning），何时该微调、何时不该（优先 RAG/Prompt）—— 工程账见 [环节09](./foundation/transformer/环节09-训练管线详解.md) §4.3；**低秩为什么够用**的几何直觉（森林寻宝 / 秩 / `ΔW=BA`）→ [PEFT/LoRA 环节00](./foundation/peft-lora/环节00-总揽与环节导航.md)
 - **分布式训练**：数据并行 / 张量并行 / 流水线并行、ZeRO（1/2/3）、Megatron-LM、显存优化（重计算、混合精度）
 
 ### 1.4 推理

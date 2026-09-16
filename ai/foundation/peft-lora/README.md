@@ -4,6 +4,8 @@
 
 代表：LoRA / QLoRA、DoRA、AdaLoRA、Prefix/Prompt Tuning、厂商「微调 API」。
 
+**先读总揽**：[环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) —— Serrano 直觉课（森林寻宝 / 最小 Transformer / 秩 / `ΔW=BA`）的关卡地图。工程选型看本文；显存与 7B 手算看 [环节09](../transformer/环节09-训练管线详解.md) §4.3。
+
 配套 MVP：[mvp.py](./mvp.py)（低秩增量的矩阵算术 + 多适配器热插拔）。
 
 ---
@@ -88,7 +90,10 @@ PEFT 家族不止 LoRA：Adapter 插层、Prefix Tuning 改 KV、BitFit 只训 b
 
 ## 七、延伸阅读
 
+- 直觉课（本目录）：[环节00](./环节00-总揽与环节导航.md) → [01 自由度](./环节01-森林寻宝与自由度详解.md) → [02 信任底座](./环节02-最小Transformer与信任底座详解.md) → [03 秩](./环节03-矩阵的秩与张成空间详解.md) → [04 公式](./环节04-低秩适配公式详解.md)
+- 视频底本：Luis Serrano，《Low Rank Adaptation (LoRA)》（[B 站 BV1PLhw6fEaB](https://www.bilibili.com/video/BV1PLhw6fEaB/) · [YouTube](https://www.youtube.com/watch?v=Gy9jrVQTY4Q)）
 - LoRA (Hu et al.)、QLoRA、HuggingFace PEFT
+- 工程深水：[环节09-训练管线详解](../transformer/环节09-训练管线详解.md) §4.3–§4.4
 - 对比：[slm](../slm/)、[rag](../../knowledge/rag/)、[eval](../../reliability/eval/)
 
 ---
@@ -96,3 +101,12 @@ PEFT 家族不止 LoRA：Adapter 插层、Prefix Tuning 改 KV、BitFit 只训 b
 ## 八、本目录 MVP
 
 `mvp.py` 用 3×3 矩阵当 W，两个 rank-1 LoRA（「正式语气」「海盗语气」）热插拔，演示 W+BA 与合并结果，以及切换适配器不必复制 W。
+
+环节 01–04 **各配一份 notebook**（纯 Python 标准库，零依赖）：
+
+| 环节 | Notebook | 一句话 |
+|---|---|---|
+| 01 自由度 | [演示](./环节01-森林寻宝与自由度演示.ipynb) | 平面 L² vs 轨道 L；r(m+n) vs mn |
+| 02 信任底座 | [演示](./环节02-最小Transformer与信任底座演示.ipynb) | 正方形 8 参 → 对角 4 参 → 矩形 2 参 |
+| 03 秩 | [演示](./环节03-矩阵的秩与张成空间演示.ipynb) | 幸运矩阵外积；张成直线 vs 平面；幂迭代秩 1 |
+| 04 公式 | [演示](./环节04-低秩适配公式演示.ipynb) | 20→9→8；λ 缩放不变；接到 7B 的 0.24% |

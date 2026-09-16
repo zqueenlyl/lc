@@ -22,7 +22,8 @@ ai/
 │   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RNN
 │   ├── rl/                   #    强化学习与模型对齐：环节00-08 + 选型总表 + mvp.py
 │   ├── reasoning/            #    推理模型 / test-time scaling
-│   ├── moe/  peft-lora/  slm/  multimodal/
+│   ├── moe/  slm/  multimodal/
+│   ├── peft-lora/            #    LoRA 几何直觉：环节00-04 + mvp.py
 │   └── generative/           #    生成 + 多模态：README（手册）+ 00-AIGC总揽（模态矩阵 + 两大范式）
 │       ├── diffusion/  video/  audio-speech/  world-models/
 │
@@ -88,6 +89,7 @@ ai/
 | **多模态理解与统一模型（原理）** | CLIP 对齐 → VLM 三代接入 → 统一模型 | [详解](./foundation/multimodal/多模态理解与统一模型详解.md) |
 | **SLM** | 小模型与端侧：便宜、快、可私有化 | [slm/](./foundation/slm/) |
 | **PEFT / LoRA** | 只训少量参数就能适配领域 | [peft-lora/](./foundation/peft-lora/) |
+| **PEFT / LoRA（原理）** | 低秩为什么够用：森林寻宝 → 秩 → `ΔW=BA` | [总揽](./foundation/peft-lora/环节00-总揽与环节导航.md) |
 | **Generative（手册）** | 生成侧入口：扩散 / 视频 / 语音 / 世界模型 | [generative/](./foundation/generative/) |
 | **AIGC 总揽** | 模态矩阵 + 两大生成范式 + 公共底座 | [总揽](./foundation/generative/00-AIGC总揽与多模态地图.md) |
 | **Diffusion** | 扩散模型：图像 / 视频 / 音频生成主路径 | [diffusion/](./foundation/generative/diffusion/) ｜ [图像扩散模型详解](./foundation/generative/diffusion/图像扩散模型详解.md) |

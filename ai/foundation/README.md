@@ -20,6 +20,7 @@
 | **多模态理解与统一模型（原理）** | CLIP 对齐 → VLM 三代接入 → 统一模型 | [详解](./multimodal/多模态理解与统一模型详解.md) |
 | **SLM** | 小模型与端侧：便宜、快、可私有化 | [slm/](./slm/) |
 | **PEFT / LoRA** | 只训少量参数就能适配领域 | [peft-lora/](./peft-lora/) |
+| **PEFT / LoRA（原理）** | 低秩为什么够用：森林寻宝 → 秩 → `ΔW=BA` | [总揽](./peft-lora/环节00-总揽与环节导航.md) |
 | **Generative（手册）** | 生成侧入口：扩散 / 视频 / 语音 / 世界模型 | [generative/](./generative/) |
 | **AIGC 总揽（原理）** | 模态矩阵 + 两大生成范式 + 公共底座 | [总揽](./generative/00-AIGC总揽与多模态地图.md) |
 | **Diffusion** | 图像扩散：DDPM → 潜空间 VAE → UNet/DiT | [diffusion/](./generative/diffusion/) |
@@ -30,7 +31,7 @@
 ## 三条读法
 
 - **手册线**（可跳读）：`transformer/README.md` 建骨架 → 按需跳 `reasoning` / `moe` / `slm` / `peft-lora`。
-- **原理线**（须按序）：[`环节00-总揽与环节导航`](./transformer/环节00-总揽与环节导航.md) → `环节01` … `环节11` → 横切篇（模型评测与选型）；**RL 是独立专题**：[`rl/环节00-总揽与环节导航`](./rl/环节00-总揽与环节导航.md) → `环节01` … `环节08`。
+- **原理线**（须按序）：[`环节00-总揽与环节导航`](./transformer/环节00-总揽与环节导航.md) → `环节01` … `环节11` → 横切篇（模型评测与选型）；**RL 是独立专题**：[`rl/环节00-总揽与环节导航`](./rl/环节00-总揽与环节导航.md) → `环节01` … `环节08`；**LoRA 几何直觉**：[peft-lora 环节00](./peft-lora/环节00-总揽与环节导航.md) → `环节01` … `环节04`。
 - **生成线**：[`generative/README`](./generative/) → `00-AIGC总揽与多模态地图` → `diffusion` / `video` / `audio-speech` / `world-models`。
 
 ## 相邻大类

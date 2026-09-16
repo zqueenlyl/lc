@@ -109,7 +109,7 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 | [MoE](../moe/) | 通常只替换块里的 FFN；注意力还在 |
 | [Multimodal](../multimodal/) | 图/音切成 token，进同一个 Transformer |
 | [SLM](../slm/) | 同一骨架，层数/宽度更小，或再量化 |
-| [PEFT / LoRA](../peft-lora/) | 常先挂在注意力的 Q/V 上 |
+| [PEFT / LoRA](../peft-lora/) | 常先挂在注意力的 Q/V 上；几何直觉见 [peft-lora 环节00](../peft-lora/环节00-总揽与环节导航.md) |
 | [Reasoning](../reasoning/) | 推理模型仍是 Transformer，多的是测试时算力和 RL |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | 加速的是自回归逐步解码，不是换骨架 |
 | [Context Engineering](../../knowledge/context-engineering/) | 窗口 = 注意力能看见的范围；超了等于没看见 |
