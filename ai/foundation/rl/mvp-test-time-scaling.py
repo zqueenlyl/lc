@@ -2,10 +2,12 @@
 
 任务：在约束下找出唯一整数 n。
 策略：串行提出假设 → 可执行 verifier → 失败则换假设（并行采样的穷人版）。
-对比：budget=1 vs budget=4 的成功率。
+对比：budget=1 vs budget=5 的成功率。
 
-运行：
-    python3 mvp.py
+运行（在 ai/foundation/rl/ 下）：
+    python3 mvp-test-time-scaling.py
+
+训练侧演示见同目录 mvp.py。横切说明见 推理侧搜索与test-time-scaling.md。
 """
 
 from __future__ import annotations

@@ -201,7 +201,7 @@ COMA：用反事实基线 A_i = Q_total − E_{a'_i}[Q_total]   "如果只有我
 
 **为什么推理时用得上 PRM**：推理时我们**已经有 k 条候选路径**，需要"选哪条 / 往哪扩"——这正是**过程打分**的天然用途（逐步打分 → 剪枝 → 加权投票）。而这一步**完全不需要梯度**，所以 PRM 的成本与噪声问题都变得可接受。
 
-> 与 test-time scaling 的连接：这条路径属于"**推理侧算力换准确率**"的范畴，与 [reasoning（推理模型与 test-time scaling）](../reasoning/README.md) 直接相关——**训练侧 RL 与推理侧搜索是同一条战线上的两端**。
+> 与 test-time scaling 的连接：这条路径属于"**推理侧算力换准确率**"的范畴，见 [推理侧搜索与 test-time scaling](./推理侧搜索与test-time-scaling.md)——**训练侧 RL 与推理侧搜索是同一条战线上的两端**。
 
 ---
 
@@ -291,7 +291,7 @@ print("各 agent 的贪心动作 =", [max((a for a in (0, 1)), key=lambda a: Q[(
 - 上一站：[环节 07 · GRPO 与 RLVR](./环节07-GRPO与RLVR详解.md)（组基线为什么在单轮里够用）
 - 基线理论：[环节 03 · 策略梯度与 Actor-Critic](./环节03-策略梯度与Actor-Critic详解.md) §5
 - 在线与离线路线：[环节 06 · DPO 家族](./环节06-DPO家族与离线偏好优化详解.md)
-- 推理侧延伸：[reasoning · 推理模型与 test-time scaling](../reasoning/README.md)（训练侧 RL 与推理侧搜索的两端）
+- 推理侧延伸：[推理侧搜索与 test-time scaling](./推理侧搜索与test-time-scaling.md)（训练侧 RL 与推理侧搜索的两端）
 - Agent 侧笔记：[agent · 编排与循环控制](../../agent/环节07-编排与循环控制详解.md)、[agent · 评测与可观测](../../agent/环节09-评测与可观测详解.md)
 - 选型与工程总表：[RL选型与工程落地总表.md](./RL选型与工程落地总表.md)
 - 知识地图：[learning-path.md](../../learning-path.md)（1.3 训练）

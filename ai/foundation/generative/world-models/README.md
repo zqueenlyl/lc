@@ -62,7 +62,7 @@ LLM 擅长符号与语言。机器人、自动驾驶、游戏 AI 还要回答：
 | 技术 | 关系 |
 |---|---|
 | [Diffusion](../diffusion/) | 常作视频世界的生成骨干 |
-| [Multimodal](../../multimodal/) | 编码当前观察 |
+| [Multimodal](../multimodal/) | 编码当前观察 |
 | RL / 规划 | 世界模型的下游消费者 |
 | [Computer Use](../../../agent/computer-use/) | 真实 UI 是环境；世界模型可预演 DOM |
 | LLM Agent | 高层用语言规划，底层用世界模型验动作 |

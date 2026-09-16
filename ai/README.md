@@ -18,14 +18,14 @@ ai/
 ├── model-cases/              # 案例层：按厂商 / 产品纵向深挖（快照型，模型 ID / 端点 / 价格会过期）
 │   └── deepseek/  qwen/  glm/  doubao/  minimax/  providers/
 │
-├── foundation/               # ① 基模：模型是什么 / 怎么造 / 怎么变强 / 怎么生成
-│   ├── transformer/          #    骨架 + 环节01-11 原理长文 + 评测选型 + RNN
-│   ├── rl/                   #    强化学习与模型对齐：环节00-08 + 选型总表 + mvp.py
-│   ├── reasoning/            #    推理模型 / test-time scaling
-│   ├── moe/  slm/  multimodal/
+├── foundation/               # ① 基模：骨架 / 训练 / 变体 / 模态（分组见 foundation/README）
+│   ├── transformer/          #    骨架 + 环节01-11 + 评测/长上下文横切 + RNN
+│   ├── rl/                   #    对齐：环节00-08 + 推理侧 test-time 横切 + 选型总表
 │   ├── peft-lora/            #    LoRA 几何直觉：环节00-04 + mvp.py
-│   └── generative/           #    生成 + 多模态：README（手册）+ 00-AIGC总揽（模态矩阵 + 两大范式）
+│   ├── moe/  slm/            #    变体/档位（薄手册）
+│   └── generative/           #    模态家族：00 地图 + 生成 + 理解
 │       ├── diffusion/  video/  audio-speech/  world-models/
+│       └── multimodal/       #    理解侧（原 foundation/multimodal）
 │
 ├── agent/                    # ② Agent 应用：把模型编成能自己干活的系统
 │   ├── README.md             #    总图
@@ -66,7 +66,7 @@ ai/
 |---|---|
 | `README.md` | 技术讲解、功能作用、应用场景、相邻技术对比、落地建议、延伸阅读 |
 | `mvp.py` | 可运行最小实现（`python mvp.py`，默认不调外部模型） |
-| `环节NN-*.md` | 原理长文（`transformer/`、`agent/`、`rl/` 有），须按序读 |
+| `环节NN-*.md` | 原理长文（`transformer/`、`agent/`、`rl/`、`peft-lora/` 有），须按序读 |
 
 已有专题保持原文件名（`rag-types.md`、`agent-memory.md` 等），不强制改名。
 
@@ -76,26 +76,39 @@ ai/
 
 ### ① foundation · 基模
 
+分组与挂靠规则见 [foundation/README](./foundation/README.md)。
+
+**骨架**
+
 | 主题 | 一句话 | 入口 |
 |---|---|---|
-| **Transformer（手册）** | 自注意力骨架；RNN/LSTM 为何被取代；因果 vs 双向 | [transformer/](./foundation/transformer/) |
-| **Transformer 全链路（原理）** | 一条主线 + 两个生命周期，11 环节关卡地图 | [总揽](./foundation/transformer/环节00-总揽与环节导航.md) |
-| **模型评测与选型（原理）** | 训练产出后「怎么验」、部署前「怎么选」 | [详解](./foundation/transformer/模型评测与选型方法详解.md) |
-| **强化学习与模型对齐（原理）** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [总揽](./foundation/rl/环节00-总揽与环节导航.md) |
-| **RNN** | Attention 之前的历史：串行、长距离难题 | [RNN知识整理](./foundation/transformer/RNN知识整理.md) |
-| **Reasoning** | 推理模型 + 测试时算力缩放（第三条缩放律） | [reasoning/](./foundation/reasoning/) |
-| **MoE** | 稀疏专家混合：总参大、激活小 | [moe/](./foundation/moe/) |
-| **Multimodal（手册）** | 文本 / 图 / 音 / 视频原生一体 | [multimodal/](./foundation/multimodal/) |
-| **多模态理解与统一模型（原理）** | CLIP 对齐 → VLM 三代接入 → 统一模型 | [详解](./foundation/multimodal/多模态理解与统一模型详解.md) |
-| **SLM** | 小模型与端侧：便宜、快、可私有化 | [slm/](./foundation/slm/) |
-| **PEFT / LoRA** | 只训少量参数就能适配领域 | [peft-lora/](./foundation/peft-lora/) |
-| **PEFT / LoRA（原理）** | 低秩为什么够用：森林寻宝 → 秩 → `ΔW=BA` | [总揽](./foundation/peft-lora/环节00-总揽与环节导航.md) |
+| **Transformer（手册）** | 自注意力骨架；RNN/LSTM 为何被取代 | [transformer/](./foundation/transformer/) |
+| **Transformer 全链路（原理）** | 一条主线 + 两个生命周期，11 环节 | [总揽](./foundation/transformer/环节00-总揽与环节导航.md) |
+| **评测与选型 / 长上下文 / RNN** | 横切 + 前史 | [选型](./foundation/transformer/模型评测与选型方法详解.md) · [长上下文](./foundation/transformer/长上下文工程详解.md) · [RNN](./foundation/transformer/RNN知识整理.md) |
+
+**训练**
+
+| 主题 | 一句话 | 入口 |
+|---|---|---|
+| **强化学习与模型对齐** | SFT 之后为什么要 RL：RLHF → DPO → GRPO → RLVR | [总揽](./foundation/rl/环节00-总揽与环节导航.md) |
+| **推理模型 / test-time scaling** | 第三条缩放律：推理时多花算力换准确率 | [横切](./foundation/rl/推理侧搜索与test-time-scaling.md) |
+| **PEFT / LoRA** | 只训少量参数；几何直觉见环节课 | [手册](./foundation/peft-lora/) · [环节00](./foundation/peft-lora/环节00-总揽与环节导航.md) |
+
+**变体 / 档位**
+
+| 主题 | 一句话 | 入口 |
+|---|---|---|
+| **MoE** | 稀疏专家：总参大、激活小 | [moe/](./foundation/moe/) |
+| **SLM** | 小模型与端侧 | [slm/](./foundation/slm/) |
+
+**模态**（生成 + 理解，同一张地图）
+
+| 主题 | 一句话 | 入口 |
+|---|---|---|
 | **Generative（手册）** | 生成侧入口：扩散 / 视频 / 语音 / 世界模型 | [generative/](./foundation/generative/) |
-| **AIGC 总揽** | 模态矩阵 + 两大生成范式 + 公共底座 | [总揽](./foundation/generative/00-AIGC总揽与多模态地图.md) |
-| **Diffusion** | 扩散模型：图像 / 视频 / 音频生成主路径 | [diffusion/](./foundation/generative/diffusion/) ｜ [图像扩散模型详解](./foundation/generative/diffusion/图像扩散模型详解.md) |
-| **视频生成（原理）** | 视频 = 图 + 时间：时空 patch / 3D VAE / DiT | [视频生成详解](./foundation/generative/video/视频生成详解.md) |
-| **音频与语音（原理）** | ASR / TTS 三代演化 / 端到端语音对话 | [音频与语音详解](./foundation/generative/audio-speech/音频与语音详解.md) |
-| **World Models** | 预测「世界如何演化」，而不只是下一个 token | [world-models/](./foundation/generative/world-models/) |
+| **AIGC 总揽** | 模态矩阵 + 两大生成范式 + 公共底座 | [00](./foundation/generative/00-AIGC总揽与多模态地图.md) |
+| **Diffusion / Video / Audio / World** | 各模态生成 | [diffusion](./foundation/generative/diffusion/) · [video](./foundation/generative/video/) · [audio](./foundation/generative/audio-speech/) · [world-models](./foundation/generative/world-models/) |
+| **Multimodal（理解）** | CLIP → VLM → 统一模型 | [手册](./foundation/generative/multimodal/) · [详解](./foundation/generative/multimodal/多模态理解与统一模型详解.md) |
 
 ### ② agent · Agent 应用
 
@@ -174,8 +187,8 @@ ai/
 协议：MCP（工具） · A2A（Agent 互操作）
 治理：Guardrails · Eval · Model Routing · Structured Output
 知识：RAG · 向量库 · 知识库 · 上下文图（GraphRAG）
-模型：Transformer · Reasoning · Multimodal · SLM · MoE · PEFT
-生成：Diffusion · Video · Audio/Speech · World Models
+模型：Transformer · RL（含推理侧） · SLM · MoE · PEFT
+生成 / 理解：Diffusion · Video · Audio/Speech · World Models · Multimodal
 加速：Speculative Decoding · 量化
 本地运行：llama.cpp · Ollama · LM Studio · MLX
 案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax-H3（model-cases/）

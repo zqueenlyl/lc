@@ -16,7 +16,7 @@
 - **SLM**：分类、抽取、改写、路由、工具参数填充、离线草稿；
 - **特化小模型**：rerank、embedding、ASR、安全分类。
 
-SLM 变强的来源：更好的数据与蒸馏（尤其从 [推理模型](../reasoning/) 蒸思维）、量化（4/8-bit）、端侧 NPU、以及「任务足够窄」。
+SLM 变强的来源：更好的数据与蒸馏（尤其从 [推理模型](../rl/推理侧搜索与test-time-scaling.md) 蒸思维）、量化（4/8-bit）、端侧 NPU、以及「任务足够窄」。
 
 端侧还多三个约束：**内存、电量、隐私**。权重量化 + KV 量化 + 短上下文是常规；[MoE](../moe/) 端侧要专家卸载，仍偏研究/高端机。
 
@@ -62,7 +62,7 @@ SLM 变强的来源：更好的数据与蒸馏（尤其从 [推理模型](../rea
 |---|---|
 | [Model Routing](../../reliability/model-routing/) | SLM 是路由表里的默认廉价档 |
 | [PEFT / LoRA](../peft-lora/) | 让 SLM 变领域专家 |
-| [Reasoning](../reasoning/) | 蒸馏源；端侧很少开满 thinking |
+| [推理模型 / test-time scaling](../rl/推理侧搜索与test-time-scaling.md) | 蒸馏源；端侧很少开满 thinking |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | SLM 常当草稿模型 |
 | [Guardrails](../../reliability/guardrails/) | 端侧先挡一层，上云再细审 |
 

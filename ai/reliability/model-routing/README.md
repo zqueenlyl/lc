@@ -47,8 +47,8 @@
 |---|---|
 | 分类 / 改写 | [SLM](../../foundation/slm/) / Flash |
 | 长文档总结 | 长上下文价优模型 |
-| 数学 / 架构设计 | [Reasoning](../../foundation/reasoning/) |
-| 截图问答 | [Multimodal](../../foundation/multimodal/) 专用 |
+| 数学 / 架构设计 | [推理模型](../../foundation/rl/推理侧搜索与test-time-scaling.md) |
+| 截图问答 | [Multimodal](../../foundation/generative/multimodal/) 专用 |
 | 语音 | Realtime 端点，不能走普通 chat |
 | 内部代码 | 数据协议允许的厂商 |
 
@@ -68,7 +68,7 @@
 | 技术 | 关系 |
 |---|---|
 | [SLM](../../foundation/slm/) | 廉价默认档 |
-| [Reasoning](../../foundation/reasoning/) | 高档 |
+| [推理模型 / test-time scaling](../../foundation/rl/推理侧搜索与test-time-scaling.md) | 高档 |
 | [Eval](../eval/) | 没有 eval 的路由是猜 |
 | [Guardrails](../guardrails/) | 先过护栏再路由，或路由到「安全专用」模型 |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | 同一模型内加速，不是跨模型路由，但可叠加 |
@@ -88,7 +88,7 @@
 ## 七、延伸阅读
 
 - 各云 AI Gateway / 开源 LiteLLM / OpenRouter 一类路由层
-- 对比：[slm](../../foundation/slm/)、[reasoning](../../foundation/reasoning/)、[eval](../eval/)
+- 对比：[slm](../../foundation/slm/)、[推理侧](../../foundation/rl/推理侧搜索与test-time-scaling.md)、[eval](../eval/)
 
 ---
 

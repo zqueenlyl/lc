@@ -68,7 +68,7 @@ x0（图）→ 按时间步 t 加噪 → xt
 
 | 技术 | 关系 |
 |---|---|
-| [Multimodal](../../multimodal/) | 理解 vs 生成 |
+| [Multimodal](../multimodal/) | 理解 vs 生成 |
 | [World Models](../world-models/) | 视频扩散可作世界模型骨干，但要动作条件与物理 |
 | [PEFT / LoRA](../../peft-lora/) | 画风 / 角色定制的主流 |
 | [Eval](../../../reliability/eval/) | FID 不够，要任务向（品牌一致性、文字是否画对） |
@@ -88,7 +88,7 @@ x0（图）→ 按时间步 t 加噪 → xt
 ## 七、延伸阅读
 
 - DDPM、LDM / Stable Diffusion、DiT、Flow Matching、ControlNet
-- 对比：[multimodal](../../multimodal/)、[world-models](../world-models/)、[peft-lora](../../peft-lora/)
+- 对比：[multimodal](../multimodal/)、[world-models](../world-models/)、[peft-lora](../../peft-lora/)
 
 ---
 

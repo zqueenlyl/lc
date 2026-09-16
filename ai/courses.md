@@ -164,7 +164,7 @@
 
 **公开材料**：官网**无视频、无讲义下载**，只有每周论文清单（附 arXiv 链接）。可复用的产出 = **它的 reading list + 客座讲题**。
 
-**读完往本库写哪儿**：[foundation/reasoning/](./foundation/reasoning/)（test-time compute、训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-graph/](./agent/loop-graph/)（反思 / 验证器闭环）
+**读完往本库写哪儿**：[foundation/rl/推理侧搜索与test-time-scaling.md](./foundation/rl/推理侧搜索与test-time-scaling.md)（test-time compute）｜ [foundation/rl/](./foundation/rl/)（训练时扩展）｜ [reliability/eval/](./reliability/eval/)（长时程评测）｜ [agent/loop-graph/](./agent/loop-graph/)（反思 / 验证器闭环）
 
 ---
 
@@ -193,7 +193,7 @@
 |---|---|
 | 学期 | **Spring 2025（已结课）**；MIT OCW + 课程主页 **全公开**（12 讲，含中英字幕搬运） |
 | 主题 | 跨模态 / 多模态：从语言到图像、音频、3D、机器人；人机共生（human-AI symbiosis） |
-| 与本库对应 | [foundation/multimodal/](./foundation/multimodal/)、[foundation/generative/](./foundation/generative/) |
+| 与本库对应 | [foundation/generative/multimodal/](./foundation/generative/multimodal/)、[foundation/generative/](./foundation/generative/) |
 | 排序理由 | 与 Harness / 沙盒 / 回测**无直接接口**，属能力面扩展；材料最全、最易补，但优先级最低 |
 
 ---
@@ -204,9 +204,9 @@
 |---|---|---|
 | CMU 11-768 | [agent/harness/](./agent/harness/) · [reliability/sandbox/](./reliability/sandbox/) · [reliability/eval/](./reliability/eval/) · [agent/agent-skills/](./agent/agent-skills/) | harness 的分模块实现（prompt / loop / 并行工具 / 压缩）、Skill 渐进披露、上下文压缩阈值实测 |
 | CS329Z | [reliability/eval/](./reliability/eval/) · [agent/case-studies/langgraph/](./agent/case-studies/langgraph/) · [agent/mcp/](./agent/mcp/) | **4-tuple 评测框架**、pass@k vs pass^k、三类 grader 与偏差、DSPy 系 prompt 优化 |
-| CS329A | [foundation/reasoning/](./foundation/reasoning/) · [agent/loop-graph/](./agent/loop-graph/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
+| CS329A | [foundation/rl/推理侧搜索与test-time-scaling.md](./foundation/rl/推理侧搜索与test-time-scaling.md) · [foundation/rl/](./foundation/rl/) · [agent/loop-graph/](./agent/loop-graph/) | test-time compute / 训练时扩展的论文脉络、长时程任务评测 |
 | CS146S | [agent/loop-graph/](./agent/loop-graph/) · [agent/agent-skills/](./agent/agent-skills/) | spec-driven development、软件工厂的流程与角色分工 |
-| MIT MAS.S60 | [foundation/multimodal/](./foundation/multimodal/) · [foundation/generative/](./foundation/generative/) | 跨模态生成的完整讲次顺序 |
+| MIT MAS.S60 | [foundation/generative/multimodal/](./foundation/generative/multimodal/) · [foundation/generative/](./foundation/generative/) | 跨模态生成的完整讲次顺序 |
 
 ---
 
@@ -312,7 +312,7 @@
 |---|---|---|---|
 | **[CMU 10-414/714 Deep Learning Systems](https://dlsyscourse.org/)** ⭕ | 2022 版全套录像 YouTube 公开；当季录像走课程站、讲义每讲前发，**当季是否对公众开放未说明** | `agent/harness/`（工具执行底座）· `runtime/local-inference/`（算子与后端） | — |
 | **[Harvard CS249r · MLSysBook（Machine Learning Systems）](https://mlsysbook.ai/)** | **全免费开源**（MIT Press 2026）：教材 HTML / PDF / EPUB + 仓库 `harvard-edge/cs249r_book` | `runtime/local-inference/benchmark.md`（正面对偶）· `reliability/eval/` | Iron Law 原文：`T = D/BW + O/(R·η) + L`；MLSys·im CLI 例 `mlsysim eval Llama3_70B H100 --batch-size 1`（区分 mem-bound / compute-bound）；另含 Marimo Labs |
-| **[Berkeley LLM Agents MOOC](https://agenticai-learning.org/sp25)**（f24 + S25 两期） | **视频 + slides + quiz 全部保留公开**：f24 [agenticai-learning.org/f24](https://agenticai-learning.org/f24)（旧站 [rdi.berkeley.edu/llm-agents/f24](https://rdi.berkeley.edu/llm-agents/f24) 仍在）· S25 [agenticai-learning.org/sp25](https://agenticai-learning.org/sp25)。旧域名 `llmagents-learning.org` 会跳到新站，**HTTPS 根路径部分环境 403**，别停在那一页 | `foundation/reasoning/` · `reliability/eval/` | f24 课号 = CS294/194-196《Large Language Model Agents》；主题≈CS329A（推理时技术 / 后训练 / 搜索规划 / agentic workflow / 代码生成与验证 / 数学与定理证明 / agent 安全） |
+| **[Berkeley LLM Agents MOOC](https://agenticai-learning.org/sp25)**（f24 + S25 两期） | **视频 + slides + quiz 全部保留公开**：f24 [agenticai-learning.org/f24](https://agenticai-learning.org/f24)（旧站 [rdi.berkeley.edu/llm-agents/f24](https://rdi.berkeley.edu/llm-agents/f24) 仍在）· S25 [agenticai-learning.org/sp25](https://agenticai-learning.org/sp25)。旧域名 `llmagents-learning.org` 会跳到新站，**HTTPS 根路径部分环境 403**，别停在那一页 | `foundation/rl/` · `reliability/eval/` | f24 课号 = CS294/194-196《Large Language Model Agents》；主题≈CS329A（推理时技术 / 后训练 / 搜索规划 / agentic workflow / 代码生成与验证 / 数学与定理证明 / agent 安全） |
 | **[MIT 6.5940 TinyML and Efficient AI Computing](https://hanlab.mit.edu/courses/2026-fall-65940)** ⭕ | 当季页 [hanlab.mit.edu/courses/2026-fall-65940](https://hanlab.mit.edu/courses/2026-fall-65940)；短链 `efficientml.ai` 会跳到 HAN Lab。**目前只公开 L1**（视频 + 讲义），L2–L25 占位符会逐讲放；直播 [live.efficientml.ai](https://live.efficientml.ai/) → [YouTube @MITHANLab](https://www.youtube.com/@MITHANLab) | `runtime/local-inference/` · `runtime/speculative-decoding/` | 主题谱系：量化 / 剪枝稀疏 / NAS / 蒸馏 / MCUNet / TinyEngine → LLM 量化部署 / 后训练 / 长上下文 / ViT / diffusion → 分布式与端上训练；授课 **Han Song**（这条路线的源头） |
 
 <a id="s8-2"></a>
@@ -323,7 +323,7 @@
 |---|---|---|---|
 | **[Stanford CS336 Language Modeling from Scratch](https://cs336.stanford.edu/)** | **YouTube 全套 + 19 讲讲义 + 5 个作业仓库全公开** | `foundation/transformer/`（与本库原理层同构，但它是真跑一遍） | ⚠️ **荣誉守则**：可问 LLM 低层编程 / 高层概念，**禁止用 AI 直接解题**、建议关掉 Cursor Tab；云 GPU 见官网（Modal / Lambda / RunPod 报价） |
 | **[Stanford CS224N](https://web.stanford.edu/class/cs224n/)** | 2026 录像**只在 Canvas**；**公开的是 Spring 2024 全套 YouTube**；slides 与 4 个作业 zip 公开 | `reliability/eval/`（当「评测视角的一课」用，别从头刷） | 授课 **Diyi Yang + Yejin Choi** |
-| **[Berkeley CS285 Deep RL](http://rail.eecs.berkeley.edu/deeprlcourse/)** | **视频只有 Fall 2023**；**25 讲讲义 PDF + HW1–5 + 期末项目说明全公开** | `foundation/reasoning/`（补 RL 骨架；CS336 A5 只算练手，这门是系统学） | 授课 **Sergey Levine** |
+| **[Berkeley CS285 Deep RL](http://rail.eecs.berkeley.edu/deeprlcourse/)** | **视频只有 Fall 2023**；**25 讲讲义 PDF + HW1–5 + 期末项目说明全公开** | `foundation/rl/`（补 RL 骨架；CS336 A5 只算练手，这门是系统学） | 授课 **Sergey Levine** |
 
 <a id="s8-3"></a>
 

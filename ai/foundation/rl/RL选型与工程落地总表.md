@@ -266,5 +266,5 @@ RL 显存 =  策略（训练版：权重 + 梯度 + 优化器状态）
 - 上游：[环节 09 · 训练管线](../transformer/环节09-训练管线详解.md)（三阶段范式 / 微调 / 分布式训练）
 - 下游：[环节 10 · 推理解码与 KV Cache](../transformer/环节10-推理解码与KV缓存详解.md)（RL 训出的长 CoT 在推理时怎么花钱）
 - 验收：[模型评测与选型方法详解](../transformer/模型评测与选型方法详解.md)（RL 前后怎么做回归与 A/B）
-- 产品视角：[reasoning · 推理模型与 test-time scaling](../reasoning/README.md)
+- 产品视角：[推理侧搜索与 test-time scaling](./推理侧搜索与test-time-scaling.md)
 - 知识地图：[learning-path.md](../../learning-path.md)（1.3 训练）

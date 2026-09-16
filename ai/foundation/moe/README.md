@@ -65,7 +65,7 @@ DeepSeek 路线还叠加 **MLA**（压缩 KV）和更激进的稀疏注意力，
 | 技术 | 关系 |
 |---|---|
 | [Transformer](../transformer/) | MoE 换的是块里的 FFN；注意力仍是 self-attention |
-| [Reasoning](../reasoning/) | 推理模型常建在 MoE 底座上 |
+| [推理模型 / test-time scaling](../rl/推理侧搜索与test-time-scaling.md) | 推理模型常建在 MoE 底座上 |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | 加速解码；与动态专家缓存是 2026 热点组合 |
 | [SLM](../slm/) | 小稠密模型 vs 稀疏大模型，路由策略见 [model-routing](../../reliability/model-routing/) |
 | 量化 | MoE 同样要量化；冷专家可更低精度 |
@@ -86,7 +86,7 @@ DeepSeek 路线还叠加 **MLA**（压缩 KV）和更激进的稀疏注意力，
 
 - Mixtral 论文；DeepSeek-V3 技术报告（MoE + MLA）
 - Switch Transformer / GShard（早期 MoE）
-- 对比：[reasoning](../reasoning/)、[slm](../slm/)、[speculative-decoding](../../runtime/speculative-decoding/)
+- 对比：[推理侧](../rl/推理侧搜索与test-time-scaling.md)、[slm](../slm/)、[speculative-decoding](../../runtime/speculative-decoding/)
 
 ---
 

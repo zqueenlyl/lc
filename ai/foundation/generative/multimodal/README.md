@@ -6,7 +6,7 @@
 
 配套 MVP：[mvp.py](./mvp.py)（统一消息里混排文本与「图像/音频」占位，做跨模态引用问答）。
 
-> **相邻：生成侧**（图 / 视频 / 音频怎么造）见 [generative/](../generative/)（总揽 `00-AIGC总揽与多模态地图.md`）；本目录讲**理解侧**——把多模态读进来。
+> **相邻：生成侧**（图 / 视频 / 音频怎么造）见上级 [generative/](../)（总揽 [00-AIGC总揽与多模态地图.md](../00-AIGC总揽与多模态地图.md)）；本目录讲**理解侧**——把多模态读进来。原理长文：[多模态理解与统一模型详解.md](./多模态理解与统一模型详解.md)。
 
 ---
 
@@ -33,8 +33,8 @@
 |---|---|
 | 理解 | 看图说话、视频里找事件、听会纪要 |
 | 跨模态对齐 | 「第二张表里红色那列对应哪条政策」 |
-| 生成 | 文生图/视频通常仍走 [Diffusion](../generative/diffusion/)；部分模型一个 API 两套头 |
-| 实时 | [Voice Realtime](../../runtime/voice-realtime/) 是多模态的流式特化 |
+| 生成 | 文生图/视频通常仍走 [Diffusion](../diffusion/)；部分模型一个 API 两套头 |
+| 实时 | [Voice Realtime](../../../runtime/voice-realtime/) 是多模态的流式特化 |
 
 2026 年产品差异在 **覆盖哪些模态、上下文里能放多少张图/几分钟视频、是否原生出声**，而不是「有没有识图开关」。
 
@@ -44,7 +44,7 @@
 
 - **少胶水**：减少 OCR/ASR 微服务和 prompt 拼接。
 - **保真**：图表、UI 截图、白板照片比纯转写可靠。
-- **统一记忆与工具**：同一 Agent 循环里既能看图又能 [Computer Use](../../agent/computer-use/)。
+- **统一记忆与工具**：同一 Agent 循环里既能看图又能 [Computer Use](../../../agent/computer-use/)。
 - **体验**：一个会话里丢合同 PDF 页 + 录音 + 问题。
 
 代价：视觉 token 很贵（一张图 ≈ 几百到上千 token）；视频按帧采样策略决定成本和漏检。
@@ -78,12 +78,12 @@
 
 | 技术 | 关系 |
 |---|---|
-| [Transformer](../transformer/) | 图/音切成 token 后，进同一套 self-attention |
-| [Computer Use](../../agent/computer-use/) | 像素感知的上游能力 |
-| [Voice Realtime](../../runtime/voice-realtime/) | 音频进、音频出的会话形态 |
-| [Diffusion](../generative/diffusion/) | 生成图像/视频的主路径 |
-| [World Models](../generative/world-models/) | 预测未来帧 / 物理，比「描述当前帧」更进一步 |
-| [RAG](../../knowledge/rag/) | 多模态检索（图搜图、图文混合索引） |
+| [Transformer](../../transformer/) | 图/音切成 token 后，进同一套 self-attention |
+| [Computer Use](../../../agent/computer-use/) | 像素感知的上游能力 |
+| [Voice Realtime](../../../runtime/voice-realtime/) | 音频进、音频出的会话形态 |
+| [Diffusion](../diffusion/) | 生成图像/视频的主路径 |
+| [World Models](../world-models/) | 预测未来帧 / 物理，比「描述当前帧」更进一步 |
+| [RAG](../../../knowledge/rag/) | 多模态检索（图搜图、图文混合索引） |
 
 ---
 
@@ -93,14 +93,14 @@
 2. Token 账本按「图张数 / 视频秒数」估，不要只按文字字数。
 3. 评测集必须含你们自己的图（单据、后台截图），通用 MMBench 不够。
 4. 隐私：图和音往往比纯文本更敏感，日志默认不落原片。
-5. 和 [structured-output](../../reliability/structured-output/) 结合：从图抽出 JSON，再用规则校验。
+5. 和 [structured-output](../../../reliability/structured-output/) 结合：从图抽出 JSON，再用规则校验。
 
 ---
 
 ## 七、延伸阅读
 
 - Gemini / GPT / Claude 多模态 API 文档（覆盖差异大，以官方为准）
-- 对比：[voice-realtime](../../runtime/voice-realtime/)、[computer-use](../../agent/computer-use/)、[diffusion](../generative/diffusion/)
+- 对比：[voice-realtime](../../../runtime/voice-realtime/)、[computer-use](../../../agent/computer-use/)、[diffusion](../diffusion/)
 
 ---
 

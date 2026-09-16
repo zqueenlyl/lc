@@ -42,9 +42,9 @@
 |---|---|---|---|
 | **Transformer** | 自注意力序列骨架，取代 RNN | 几乎所有 LLM / ViT | [transformer/](./foundation/transformer/) |
 | **LLM** | 大语言模型，下一个 token 预测 | GPT / Claude / Qwen | [transformer/](./foundation/transformer/) |
-| **Reasoning / 推理模型** | 先想再答，测试时多花算力 | o 系列思路、R1 蒸馏、各家 Thinking 档 | [reasoning/](./foundation/reasoning/) |
+| **Reasoning / 推理模型** | 先想再答，测试时多花算力 | o 系列思路、R1 蒸馏、各家 Thinking 档 | [横切](./foundation/rl/推理侧搜索与test-time-scaling.md) |
 | **MoE** | 总参很大、每次只激活一小撮专家 | Mixtral、Qwen-MoE、DeepSeek、Llama 4 | [moe/](./foundation/moe/) |
-| **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./foundation/multimodal/) |
+| **Multimodal** | 文图音视频原生一体 | Gemini、GPT、豆包、Gemma | [multimodal/](./foundation/generative/multimodal/) |
 | **Diffusion** | 图像 / 视频生成主路径 | Flux、Midjourney、可灵、Seedance、Veo | [diffusion/](./foundation/generative/diffusion/) |
 | **RAG** | 先检索再生成，给模型外挂知识 | 几乎所有企业知识问答 | [rag/](./knowledge/rag/) |
 | **Agent** | 规划 → 调工具 → 验证的循环 | Claude Code、Cursor Agent、千问办公 | [agent/](./agent/) |
@@ -541,7 +541,7 @@ Agent 要大规模调工具
 | 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[memory/](./knowledge/memory/) |
 | 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |
 | 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./foundation/transformer/) |
-| 模型内部在升级什么 | [reasoning/](./foundation/reasoning/)、[moe/](./foundation/moe/)、[multimodal/](./foundation/multimodal/) |
+| 模型内部在升级什么 | [推理侧横切](./foundation/rl/推理侧搜索与test-time-scaling.md)、[moe/](./foundation/moe/)、[multimodal/](./foundation/generative/multimodal/) |
 | 怎么上线别炸 | [guardrails/](./reliability/guardrails/)、[sandbox/](./reliability/sandbox/)、[eval/](./reliability/eval/)、[model-routing/](./reliability/model-routing/) |
 
 专题总索引见 [README.md](./README.md)。

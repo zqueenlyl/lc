@@ -70,10 +70,10 @@
 
 ### 1.6 多模态
 
-- **视觉**：ViT、CLIP（图文对齐，机制详解见 [多模态理解与统一模型详解.md](./foundation/multimodal/多模态理解与统一模型详解.md)）、视觉理解（OCR/图表/截图问答）
+- **视觉**：ViT、CLIP（图文对齐，机制详解见 [多模态理解与统一模型详解.md](./foundation/generative/multimodal/多模态理解与统一模型详解.md)）、视觉理解（OCR/图表/截图问答）
 - **语音**：ASR（语音识别，Whisper 系）、TTS（语音合成）、端到端语音对话
 - **生成**：文生图（Diffusion / DiT）、文生视频
-- **AIGC 全谱系与工程化**：文/图/音/视频/3D/代码生成范式（自回归 vs 扩散）、审核/版权/评测 —— 库入口 [00-AIGC总揽与多模态地图.md](./foundation/generative/00-AIGC总揽与多模态地图.md)：图像扩散 [图像扩散模型详解.md](./foundation/generative/diffusion/图像扩散模型详解.md) ｜ 视频 [视频生成详解.md](./foundation/generative/video/视频生成详解.md) ｜ 音频语音 [音频与语音详解.md](./foundation/generative/audio-speech/音频与语音详解.md) ｜ 多模态统一 [多模态理解与统一模型详解.md](./foundation/multimodal/多模态理解与统一模型详解.md)
+- **AIGC 全谱系与工程化**：文/图/音/视频/3D/代码生成范式（自回归 vs 扩散）、审核/版权/评测 —— 库入口 [00-AIGC总揽与多模态地图.md](./foundation/generative/00-AIGC总揽与多模态地图.md)：图像扩散 [图像扩散模型详解.md](./foundation/generative/diffusion/图像扩散模型详解.md) ｜ 视频 [视频生成详解.md](./foundation/generative/video/视频生成详解.md) ｜ 音频语音 [音频与语音详解.md](./foundation/generative/audio-speech/音频与语音详解.md) ｜ 多模态统一 [多模态理解与统一模型详解.md](./foundation/generative/multimodal/多模态理解与统一模型详解.md)
   - **案例纵深（视频生成）**：MiniMax H3（海螺开源 Base：音画联合去噪、本地 768p / API 2K）→ [MiniMax-H3全景与架构.md](./model-cases/minimax/MiniMax-H3全景与架构.md) ｜ [本地部署与 API](./model-cases/minimax/MiniMax-H3本地部署与API接入.md)
 - **实时多模态交互（案例研究库）**：级联 vs 端到端、全双工与打断机制、抽帧上传 / VAD / 上下文工程 —— 案例 [model-cases/](./model-cases/README.md)：豆包 SeedRealtime ｜ 阿里 [Qwen-Omni](./model-cases/qwen/Qwen-Omni系列全景调研.md) ｜ 智谱 [GLM-Realtime](./model-cases/glm/GLM-Realtime技术文档.md)
 - **工程关注**：多模态 RAG（图片/表格的解析与检索）、Token 消耗、跨模态对齐方案

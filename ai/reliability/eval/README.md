@@ -139,7 +139,7 @@ expect:
 | [Harness](../../agent/harness/) | Agent 分数 = 模型 × 外壳；换循环就要重测 |
 | [Guardrails](../guardrails/) | 护栏决策应成为 span，进入同一条 trace |
 | [Model Routing](../model-routing/) | 路由策略用 eval 证明「省钱且不掉点」 |
-| [Reasoning](../../foundation/reasoning/) | 报告准确率时必须带 thinking 预算 |
+| [推理模型 / test-time scaling](../../foundation/rl/推理侧搜索与test-time-scaling.md) | 报告准确率时必须带 thinking 预算 |
 | [Agent Skills](../../agent/agent-skills/) | 「是否遵守硬规则」是便宜的程序裁判 |
 | LangSmith / Langfuse / Braintrust | 常见产品化实现 |
 | 单测 | 确定性逻辑用单测；生成用 eval 集；上机用夹具 + 测试 |

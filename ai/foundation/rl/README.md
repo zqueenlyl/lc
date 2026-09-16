@@ -118,7 +118,7 @@
 | [Transformer 环节 09 · 训练管线](../transformer/环节09-训练管线详解.md) | RL 是后训练三阶段（预训练 → SFT → 对齐）的最后一环；本专题是它 §3「对齐」的完整展开 |
 | [Transformer 环节 10 · 推理与 KV Cache](../transformer/环节10-推理解码与KV缓存详解.md) | RL 的 rollout 是**推理负载**、训练是**训练负载**，两套峰值都要扛；长 CoT 下 KV Cache 先爆 |
 | [模型评测与选型方法详解](../transformer/模型评测与选型方法详解.md) | RL 前后必须做回归：可验证 RL 会**隧道化**，通用能力 / 风格要单独验收 |
-| [Reasoning](../reasoning/README.md) | 训练侧 RL 与推理侧搜索（test-time scaling）是同一战线的两端 |
+| [推理侧搜索与 test-time scaling](./推理侧搜索与test-time-scaling.md) | 训练侧 RL 与推理侧搜索是同一战线的两端；本文是训练侧，横切文是推理侧 |
 | [Agent](../../agent/README.md) | 长程 Agent 的信用分配、编排与评测；Agentic RL 的落地场景 |
 | [PEFT / LoRA](../peft-lora/) | 单卡 LoRA + GRPO 是低成本快速验证路径（Unsloth） |
 | [Knowledge / RAG](../../knowledge/rag/) | RL 调的是**行为**，不是知识——知识需求走 RAG / 继续预训练 |
@@ -153,7 +153,7 @@
 
 ## 八、本目录 MVP 与 Notebook
 
-`mvp.py` 用「值迭代 → Q-learning → REINFORCE」三小节，把 RL 主线的三个核心动作跑通（**纯标准库，无 numpy / torch**）：先"算"出最优值、再"试"着学、最后直接对策略调概率。
+`mvp.py` 用「值迭代 → Q-learning → REINFORCE」三小节，把 RL 主线的三个核心动作跑通（**纯标准库，无 numpy / torch**）：先"算"出最优值、再"试"着学、最后直接对策略调概率。推理侧（test-time 预算 ↔ 成功率）另见 [mvp-test-time-scaling.py](./mvp-test-time-scaling.py)，说明在 [横切文](./推理侧搜索与test-time-scaling.md)。
 
 环节 01–08 **各配一份 notebook**（全部纯 Python 标准库实现，零依赖、可逐格运行）：
 

@@ -36,7 +36,7 @@
 
 - **电话 / 车机 / 眼镜**：手眼被占时的主界面。
 - **坐席辅助**：实时提示话术，不代替挂断键。
-- **会议**：边听边记待办，会后对齐 [Multimodal](../../foundation/multimodal/) 纪要。
+- **会议**：边听边记待办，会后对齐 [Multimodal](../../foundation/generative/multimodal/) 纪要。
 - **无障碍**：语音进出。
 
 ---
@@ -69,11 +69,11 @@
 
 | 技术 | 关系 |
 |---|---|
-| [Multimodal](../../foundation/multimodal/) | 实时是多模态的流式特化 |
+| [Multimodal](../../foundation/generative/multimodal/) | 实时是多模态的流式特化 |
 | [Guardrails](../../reliability/guardrails/) | 必须流式化 |
 | [Eval](../../reliability/eval/) | 指标含打断成功率、首包延迟、重听率 |
 | [MCP](../../agent/mcp/) | 工具仍可走 MCP，但要短超时 |
-| [Reasoning](../../foundation/reasoning/) | 通话中默认关 thinking |
+| [推理模型 / test-time scaling](../../foundation/rl/推理侧搜索与test-time-scaling.md) | 通话中默认关 thinking |
 
 ---
 
@@ -90,7 +90,7 @@
 ## 七、延伸阅读
 
 - OpenAI Realtime / Gemini Live 文档
-- 对比：[multimodal](../../foundation/multimodal/)、[guardrails](../../reliability/guardrails/)
+- 对比：[multimodal](../../foundation/generative/multimodal/)、[guardrails](../../reliability/guardrails/)
 
 ---
 

@@ -71,7 +71,7 @@ x → LN → MultiHeadAttn → +x → LN → FFN → +x
 - **并行训练**：一个 batch 里整句的注意力可一次算完（推理仍常自回归，一个 token 一轮）。
 - **短路径长依赖**：任意两个位置一步就能互相看见（在窗口内）。
 - **可解释的弱信号**：注意力权重不是因果证明，但调试「模型有没有看见那个约束」时比 RNN 隐状态好读。
-- **统一骨架**：文本、[多模态](../multimodal/) token、甚至部分 [扩散](../generative/diffusion/) 骨干都往这套块上靠。
+- **统一骨架**：文本、[多模态](../generative/multimodal/) token、甚至部分 [扩散](../generative/diffusion/) 骨干都往这套块上靠。
 - **工程抓手**：上下文窗口、KV cache、注意力二次复杂度，都从这里来。
 
 ---
@@ -107,10 +107,10 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 | 技术 | 关系 |
 |---|---|
 | [MoE](../moe/) | 通常只替换块里的 FFN；注意力还在 |
-| [Multimodal](../multimodal/) | 图/音切成 token，进同一个 Transformer |
+| [Multimodal](../generative/multimodal/) | 图/音切成 token，进同一个 Transformer |
 | [SLM](../slm/) | 同一骨架，层数/宽度更小，或再量化 |
 | [PEFT / LoRA](../peft-lora/) | 常先挂在注意力的 Q/V 上；几何直觉见 [peft-lora 环节00](../peft-lora/环节00-总揽与环节导航.md) |
-| [Reasoning](../reasoning/) | 推理模型仍是 Transformer，多的是测试时算力和 RL |
+| [推理模型 / test-time scaling](../rl/推理侧搜索与test-time-scaling.md) | 仍是 Transformer，多的是测试时算力和 RL |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | 加速的是自回归逐步解码，不是换骨架 |
 | [Context Engineering](../../knowledge/context-engineering/) | 窗口 = 注意力能看见的范围；超了等于没看见 |
 
@@ -132,7 +132,7 @@ LLM 服务里的 **KV cache**：已经算过的 K、V 存下来，新 token 只�
 - Bahdanau 注意力、LSTM（Hochreiter & Schmidhuber）、GPT / BERT 论文
 - 位置：RoPE；长上下文：稀疏 / 线性注意力、MLA（见 [MoE](../moe/) 里的 DeepSeek 路线）；系统整理见横切主题 [长上下文工程详解](./长上下文工程详解.md)
 - 环节式长文：11 环节关卡地图见 [环节00-总揽与环节导航](./环节00-总揽与环节导航.md)
-- 对比：[moe](../moe/)、[multimodal](../multimodal/)、[context-engineering](../../knowledge/context-engineering/)
+- 对比：[moe](../moe/)、[multimodal](../generative/multimodal/)、[context-engineering](../../knowledge/context-engineering/)
 
 ---
 

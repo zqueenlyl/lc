@@ -76,7 +76,7 @@ Computer Use 的循环：
 | [MCP](../mcp/) | 有官方工具优先 MCP；Computer Use 是没有协议时的后备 |
 | RPA（UiPath 等） | 规则脚本 vs 模型决策；可混合：模型选分支，RPA 跑稳点 |
 | Playwright / Selenium | 最常见的网页执行器 |
-| [Multimodal](../../foundation/multimodal/) | 像素路线依赖多模态感知 |
+| [Multimodal](../../foundation/generative/multimodal/) | 像素路线依赖多模态感知 |
 | [Eval](../../reliability/eval/) | 任务完成率、步数、非法动作率是核心指标 |
 
 ---
@@ -95,7 +95,7 @@ Computer Use 的循环：
 
 - OpenAI Computer Using Agent / Anthropic Computer Use 文档
 - Browser Use、Playwright MCP、OSWorld / WebArena 评测集
-- 对比：[mcp](../mcp/)、[multimodal](../../foundation/multimodal/)、[guardrails](../../reliability/guardrails/)
+- 对比：[mcp](../mcp/)、[multimodal](../../foundation/generative/multimodal/)、[guardrails](../../reliability/guardrails/)
 
 ---
 

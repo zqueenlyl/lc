@@ -59,7 +59,7 @@
 | [../diffusion/](../diffusion/) | 数学底座：DDPM / 潜空间 / DiT，必读前置 |
 | [../audio-speech/](../audio-speech/) | 视频-音频联合（口型 / 配音）的交叉位 |
 | [../world-models/](../world-models/) | 同一套预测下帧的思路，加了动作条件与物理约束 |
-| [../../multimodal/](../../multimodal/) | 理解侧：视频找事件、多模态问答 |
+| [../multimodal/](../multimodal/) | 理解侧：视频找事件、多模态问答 |
 | [../../../runtime/voice-realtime/](../../../runtime/voice-realtime/) | 实时音视频流是另一条延迟敏感路线 |
 
 ---

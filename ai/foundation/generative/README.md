@@ -5,7 +5,7 @@
 代表：Stable Diffusion / FLUX / Midjourney（文生图）、Sora / 可灵 / Veo / Vidu（文生视频）、Whisper（ASR）/ CosyVoice / Seed-TTS（语音）、GPT-4o / Gemini / Qwen-VL（多模态理解）。
 
 > **先读**：[00-AIGC总揽与多模态地图.md](./00-AIGC总揽与多模态地图.md)（模态矩阵 + 两大范式 + 公共底座），把骨架搭好再进专题。
-> **`mvp.py` 只在两处**：`diffusion/`（一维加噪-去噪）与 `world-models/`（格子世界学转移）——真实生成模型无法用标准库最小实现，其余专题以"原理 + 工程要点 + 成本账"为主。
+> **`mvp.py` 所在**：`diffusion/`（一维加噪-去噪）、`world-models/`（格子世界学转移）、`multimodal/`（跨模态引用）。真实生成模型无法用标准库最小实现，其余专题以"原理 + 工程要点 + 成本账"为主。
 
 ---
 
@@ -27,7 +27,7 @@
 ## 二、功能作用
 
 - **生成**：文字 → 图像 / 视频 / 语音 / 3D，按需生产素材。
-- **理解**：原生吃多模态输入（图文音视频同模型），不再靠 OCR / ASR / TTS 一串胶水；理解侧细节见 [../multimodal/](../multimodal/)。
+- **理解**：原生吃多模态输入（图文音视频同模型），不再靠 OCR / ASR / TTS 一串胶水；理解侧细节见 [multimodal/](./multimodal/)。
 - **成本结构差异**：文本按 token，图像按**步数**，视频按**帧数 × 图像成本**，语音按 RTF——预算口径完全不同。
 
 ---
@@ -39,7 +39,7 @@
 | 营销配图 / 分镜 / 海报 | 文生图 | [diffusion/](./diffusion/) |
 | 短视频 / 广告片头 / 动态素材 | 文生视频 | [video/](./video/) |
 | 会议转写 / 语音客服 / 配音 | 语音（ASR / TTS） | [audio-speech/](./audio-speech/) |
-| 单据截图理解、视频找事件 | 多模态理解 | [../multimodal/](../multimodal/) |
+| 单据截图理解、视频找事件 | 多模态理解 | [multimodal/](./multimodal/) |
 | 仿真 / 具身 / 预测下一帧 | 视频预测 | [world-models/](./world-models/) |
 
 ---
@@ -63,7 +63,7 @@
 | 技术 | 关系 |
 |---|---|
 | [transformer/](../transformer/) | 自回归那条线：文本 token 的全部机制在那边（环节 01–11） |
-| [multimodal/](../multimodal/) | 理解侧：原生多模态问答、视觉 token 成本 |
+| [multimodal/](./multimodal/) | 理解侧：原生多模态问答、视觉 token 成本 |
 | [voice-realtime/](../../runtime/voice-realtime/) | 音频进、音频出的流式会话，是多模态的实时特化 |
 | [agent/](../../agent/) | 生成 API 就是普通 tool（Function Calling 直接调）；多模态 RAG 与安全治理平移 |
 | [guardrails/](../../reliability/guardrails/) | 内容审核、深度伪造 / 声音克隆治理 |
@@ -91,6 +91,6 @@
 | [video/视频生成详解.md](./video/视频生成详解.md) | 视频 = 图 + 时间：时空 patch / 3D VAE / DiT 路线 |
 | [audio-speech/音频与语音详解.md](./audio-speech/音频与语音详解.md) | ASR / TTS 三代演化 / 神经编解码 token / 端到端语音对话 |
 | [world-models/](./world-models/) | 预测"世界如何演化"，而不只是下一个 token |
-| [../multimodal/多模态理解与统一模型详解.md](../multimodal/多模态理解与统一模型详解.md) | 理解侧（与生成互为镜像）：CLIP → VLM 三代 → 统一模型 |
+| [multimodal/多模态理解与统一模型详解.md](./multimodal/多模态理解与统一模型详解.md) | 理解侧（与生成互为镜像）：CLIP → VLM 三代 → 统一模型 |
 
 > **扩展约定**：音乐、3D 生成、视频-音频联合（含口型/配音）、DiT 深水等若需深挖，按本目录模式拆子文档（如 `DiT详解.md`），由 [总揽 §0](./00-AIGC总揽与多模态地图.md) 导航表登记；纯文本侧自回归机制（attention / MoE / KV Cache）一律回链 [transformer/](../transformer/)，不重复。

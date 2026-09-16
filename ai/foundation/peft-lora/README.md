@@ -73,7 +73,7 @@ PEFT 家族不止 LoRA：Adapter 插层、Prefix Tuning 改 KV、BitFit 只训 b
 | RAG | 知识常变用 RAG；风格 / 格式 / 决策边界用 LoRA。常组合 |
 | [SLM](../slm/) | 小模型 + LoRA 是最便宜的专才 |
 | [MoE](../moe/) | 可只对专家或路由做 LoRA |
-| [Reasoning](../reasoning/) | 用推理轨迹当蒸馏监督 |
+| [推理模型 / test-time scaling](../rl/推理侧搜索与test-time-scaling.md) | 用推理轨迹当蒸馏监督 |
 | 全量微调 / 继续预训练 | 数据极大、要改底座分布时才考虑 |
 
 ---
