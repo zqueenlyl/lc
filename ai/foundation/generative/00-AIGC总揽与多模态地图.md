@@ -94,4 +94,4 @@
 - 工程落点与 Agent/多模态 RAG 实践：[`../../agent/`](../../agent/)（[环节06-检索增强RAG详解.md](../../agent/环节06-检索增强RAG详解.md) 等）
 - 知识地图：[learning-path.md](../../learning-path.md)（1.6 多模态）
 - 待扩展位：`DiT详解.md` / `音乐与3D生成详解.md` / `视频音频联合生成详解.md`（按需拆出，登记进 §0 导航表）
-- 视频-音频联合的开源案例：[MiniMax-H3](../../model-cases/minimax/MiniMax-H3全景与架构.md)（单 Transformer、同环去噪出片+立体声）
+- 视频-音频联合的开源案例：[MiniMax-H3](../../model-cases/minimax/MiniMax-H3全景与架构.md)（单 Transformer、同环去噪出片+立体声）｜ fal 人像适配器：[People LoRA](../../model-cases/fal/MiniMax-H3-Realism-People-LoRA.md)

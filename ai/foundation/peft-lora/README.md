@@ -58,11 +58,12 @@ PEFT 家族不止 LoRA：Adapter 插层、Prefix Tuning 改 KV、BitFit 只训 b
 
 ## 四、数据与 rank 经验
 
-- **r**：8–64 常见；过小学不动，过大接近全量、过拟合。
-- **目标模块**：先 attn `q/v`，不够再加 FFN。
-- **数据**：质量 ≫ 数量；指令格式要和推理一致。
+- **r**：8–64 常见；过小学不动，过大接近全量、过拟合。视频风格适配器上「更大 rank 更大文件」经常输给更小 rank（现场：[fal H3 People LoRA](../../model-cases/fal/MiniMax-H3-Realism-People-LoRA.md) 的十六组人评）。
+- **目标模块**：先 attn `q/v`，不够再加 FFN。H3 这条是融合 QKV 的 `attn.qkv_proj`，一份 LoRA 覆盖 T2V/I2V/R2V。
+- **数据**：质量 ≫ 数量；指令格式要和推理一致。视频还要锁帧率（H3 = 24.000 fps）并处理慢镜头，否则运动先验被污染。
 - **学习率**：通常高于全量微调一个数量级，需 sweep。
-- **评测**：领域集 + 通用集一起看，防「只会说客户黑话」。
+- **评测**：领域集 + 通用集一起看，防「只会说客户黑话」。视频 LoRA 用同 prompt、同 seed、`scale=0` vs `1` 成对人评；换权重后同 seed 不会同构图。
+- **训练分辨率**：人像皮肤/毛孔/颗粒活在高频；低分桶 latent 带不上，适配器没东西可学。People LoRA 现网配方因此从 rank 16 / 5000 / medium 翻盘到 rank 32 / 1500 / high。
 
 ---
 
@@ -94,6 +95,7 @@ PEFT 家族不止 LoRA：Adapter 插层、Prefix Tuning 改 KV、BitFit 只训 b
 - 视频底本：Luis Serrano，《Low Rank Adaptation (LoRA)》（[B 站 BV1PLhw6fEaB](https://www.bilibili.com/video/BV1PLhw6fEaB/) · [YouTube](https://www.youtube.com/watch?v=Gy9jrVQTY4Q)）
 - LoRA (Hu et al.)、QLoRA、HuggingFace PEFT
 - 工程深水：[环节09-训练管线详解](../transformer/环节09-训练管线详解.md) §4.3–§4.4
+- 现场案例（视频 DiT 人像适配器、同 seed A/B、训练分辨率 vs rank）：[fal · MiniMax-H3 Realism People LoRA](../../model-cases/fal/MiniMax-H3-Realism-People-LoRA.md)
 - 对比：[slm](../slm/)、[rag](../../knowledge/rag/)、[eval](../../reliability/eval/)
 
 ---

@@ -1,6 +1,6 @@
 # MiniMax-H3 本地部署与 API 接入
 
-> 调研时间：2026-09-16 ｜ 配套：[《MiniMax-H3 全景与架构》](./MiniMax-H3全景与架构.md)
+> 调研时间：2026-09-16 ｜ 配套：[《MiniMax-H3 全景与架构》](./MiniMax-H3全景与架构.md) ｜ fal 人像 LoRA：[People 篇](../fal/MiniMax-H3-Realism-People-LoRA.md)
 > 口径：`官方`=模型卡 / GitHub README / SGLang cookbook / Hugging Face diffusers 文档 / Community License；未在官方页核对的标「未核实」。
 > 本页是**操作层**：checkpoint 怎么下、四套推理栈怎么选、本地 768p 与官方 2K 怎么拼、许可证雷区。
 
@@ -66,7 +66,7 @@ ModelScope 同源 ID：`MiniMax/MiniMax-H3`。SGLang 加 `SGLANG_USE_MODELSCOPE=
 
 | 栈 | 适合 | 入口 |
 |----|------|------|
-| **ComfyUI ≥ 0.30** | 工作站试跑、节点工作流 | [官方教程](https://docs.comfy.org/tutorials/video/minimax/minimax-h3)；模板 [T2V](https://github.com/Comfy-Org/workflow_templates/blob/main/templates/video_minimax_h3_t2v.json) / [R2V](https://github.com/Comfy-Org/workflow_templates/blob/main/templates/video_minimax_h3_r2v.json) |
+| **ComfyUI ≥ 0.30** | 工作站试跑、节点工作流 | [官方教程](https://docs.comfy.org/tutorials/video/minimax/minimax-h3)；模板 [T2V](https://github.com/Comfy-Org/workflow_templates/blob/main/templates/video_minimax_h3_t2v.json) / [R2V](https://github.com/Comfy-Org/workflow_templates/blob/main/templates/video_minimax_h3_r2v.json)。人像写实 Load LoRA（触发词 `r34l1sm`）→ [fal People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md) |
 | **SGLang Diffusion** | 生产 HTTP、多卡、NVIDIA / AMD 有实测菜谱 | [cookbook](https://docs.sglang.io/cookbook/diffusion/MiniMax/MiniMax-H3) |
 | **vLLM** | 要 OpenAI 风格视频端点、跟现有 vLLM 集群 | [recipes.vllm.ai/MiniMaxAI/MiniMax-H3](https://recipes.vllm.ai/MiniMaxAI/MiniMax-H3) |
 | **diffusers Modular** | Python 管线、单卡 offload / int8、细抠 scheduler | [HF diffusers · MiniMax-H3](https://huggingface.co/docs/diffusers/main/api/pipelines/minimax_h3) |
@@ -245,7 +245,7 @@ npx skills add https://github.com/MiniMax-AI/MiniMax-H3 --skill h3-prompt-writin
 1. **开源 768p ≠ API 2K。** 比画质前先锁「是否过 IR / 是否过 Regen」。
 2. **FL2VA / Ref2VA 权重不互通。** 首尾帧请求打到 ref2va 服务，或参考视频打到 fl2va，属于配错 variant。
 3. **V2V 没有独立 task。** 只有 `ref2va` + 视频条件。
-4. **音频不能当唯一输入。** 必须配图或视频。
+4. **音频不能当唯一输入。** 必须配图或视频；每段 2–15 s、合计 ≤15 s（模型卡 Ref2VA 上限）。
 5. **CFG 蒸馏。** 传 `guidance_scale` / 负向 prompt 会被忽略或报错，不要按 SD/Wan 习惯调。
 6. **两套 scheduler。** 视频 `shift=12`、音频 `shift=3`；改一个不改另一个会音画节奏拆开。
 7. **时长窗口。** 模型卡 / SGLang：4–15 s；diffusers：帧数对齐后 5–15 s。越界先查你用的栈。
@@ -254,8 +254,10 @@ npx skills add https://github.com/MiniMax-AI/MiniMax-H3 --skill h3-prompt-writin
 10. **国内/国际 base_url 与 Key 类型。** 混用表现为鉴权失败或静默打到空环境（历史坑，见 [providers MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)）。
 11. **错误模型。** MiniMax 原生对话接口是「HTTP 200 + `base_resp.status_code`」派；H3 视频任务走另一套异步 `status`。客户端不要用聊天解析器去拆 `/v1/videos`。
 12. **许可证领土。** 美 / 欧 / 英 / 韩不在 Community License 适用领土内；对外托管要有内容防护；禁止用输出蒸馏其它模型。见架构篇 §七。
-13. **必须用仓库里的 tokenizer。** Encoder 是 Qwen3-VL-32B，但 H3 加了特殊 token；不要换成上游 Qwen 原版 tokenizer。
+13. **必须用仓库里的 tokenizer。** Encoder 是 Qwen3-VL-32B，但 H3 加了 `<d>` 等特殊 token（对白写成 `<d>[English] …</d>`）；不要换成上游 Qwen 原版 tokenizer。
 14. **审核。** IR / 开放平台会对输入和增强 prompt 过机审。本地 Base **不会**自动带同一套护栏——对外提供服务时许可证要求你自己做。
+15. **社区 LoRA 不替代 variant，也不替代官方仓库。** 基座永远是 `MiniMaxAI/MiniMax-H3`；`fal/MiniMax-H3-Realism-People-LoRA` 只是挂上去的皮肤。见 [fal People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md)。
+16. **HF 模型页自动代码片段是错的。** 官方卡顶上的 `DiffusionPipeline.from_pretrained("MiniMaxAI/MiniMax-H3")` + `.images[0]` 是 Hugging Face 通用文生图模板，H3 **没有**这条路径。用 SGLang / vLLM / `ModularPipeline` / ComfyUI，见上文 §三–§五。
 
 ---
 
@@ -284,3 +286,4 @@ npx skills add https://github.com/MiniMax-AI/MiniMax-H3 --skill h3-prompt-writin
 - [vLLM recipes](https://recipes.vllm.ai/MiniMaxAI/MiniMax-H3)
 - [ComfyUI 教程](https://docs.comfy.org/tutorials/video/minimax/minimax-h3)
 - 创建 / IR / Regen API：[全球文档](https://platform.minimax.io/docs/api-reference/video-generation-v2-create) ｜ [国内文档](https://platform.minimaxi.com/docs/api-reference/video-generation-v2-create)
+- fal 人像 LoRA：[People 篇](../fal/MiniMax-H3-Realism-People-LoRA.md)

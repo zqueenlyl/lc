@@ -143,7 +143,7 @@
 | **DeepSeek** | 对话 + API + 开源权重 | 2025 R1 震惊行业；2026 比拼 Flash 效率与推理 |
 | **月之暗面** | Kimi | 长文档起家，转向 Agent / 编程 |
 | **智谱** | 清言 / GLM API / 私有化 | 高校基因，企业部署盘大 |
-| **MiniMax** | 海螺 H3（开源 Base）/ 语音 / M 系对话 | 多模态生成里产品面最全之一；H3 案例见 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
+| **MiniMax** | 海螺 H3（开源 Base）/ Music3 / M 系对话 | 多模态生成里产品面最全之一；官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)。H3 案例见 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
 | **零一万物 01.AI** | Yi | 早期开源玩家，份额已被前几家挤压 |
 | **百川 / 阶跃星辰** 等 | 各有对话与多模态线 | 第二梯队，跟节奏即可 |
 
@@ -269,7 +269,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **可灵 Kling** | 快手 | 人物运动、性价比、国内最出圈的视频产品之一 |
 | **Veo** | Google | 物理真实感、口型/对白 |
 | **Runway** | Runway | 控制与后期工作流，不只是一条生成 |
-| **Hailuo / 海螺 / H3** | MiniMax | H3-Base 开源（768p + 立体声）；2K 与 Context-IR 仍走 API。案例 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
+| **Hailuo / 海螺 / H3** | MiniMax | H3-Base 开源（768p + 立体声）；2K 与 Context-IR 仍走 API。案例 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md)。挂在 H3 上的 fal 人像 LoRA 见 [fal/](./model-cases/fal/MiniMax-H3-Realism-People-LoRA.md) |
 | **Wan 万相视频** | 阿里 | API 管线 |
 | **Pika** | Pika | 短视频、首尾帧 |
 | **Grok Imagine Video** | xAI | 偏便宜、快 |
@@ -410,7 +410,7 @@ Artificial Analysis 首页还能进 **Search Index**（比搜索 API）和 **Opt
 | **OpenRouter** | 一个 key 调很多家模型；[Rankings](https://openrouter.ai/rankings) 是真实 Token 用量，不是质量 | [openrouter.ai](https://openrouter.ai/) |
 | **硅基流动 SiliconFlow** | 国内常用的开源模型推理，DeepSeek / Qwen / Kimi / GLM 上新快 | [siliconflow.cn](https://siliconflow.cn/) / [siliconflow.com](https://siliconflow.com/) |
 | **Together / Fireworks / Groq** | 海外第三方推理：便宜或极快（Groq 吃延迟） | 各官网 |
-| **fal.ai** | 图像 / 视频 / 语音 API 聚合，生成模型调试常用 | [fal.ai](https://fal.ai/) |
+| **fal.ai** | 图像 / 视频 / 语音推理平台 + 自训 LoRA（HF 组织 [`fal`](https://huggingface.co/fal)）。案例 [fal/](./model-cases/fal/fal全景与生态.md) | [fal.ai](https://fal.ai/) |
 | 官方控制台 | 功能最新、账单最清楚 | [OpenAI](https://platform.openai.com/) · [Anthropic](https://console.anthropic.com/) · [Google AI Studio](https://aistudio.google.com/) |
 | 国内云 MaaS | 备案、发票、内网 | 阿里云百炼 · 火山方舟 · 腾讯云 · 百度千帆 |
 

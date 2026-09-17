@@ -1,8 +1,8 @@
 # MiniMax-H3 全景与架构
 
-> 调研时间：2026-09-16 ｜ 范围：MiniMax **H 系列**视频生成旗舰 `MiniMaxAI/MiniMax-H3`（海螺 / Hailuo 线），不是 M 系对话模型
+> 调研时间：2026-09-16（架构）／2026-09-17 对照官方 HF 模型卡再核 ｜ 范围：MiniMax **官方**仓库 [`MiniMaxAI/MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（海螺 / Hailuo 线），不是 M 系对话模型，也不是 fal 的 LoRA
 > 本文基于官方发布博客、Hugging Face 模型卡、GitHub README 与 Community License 整理；**凡官方未披露或第三方转述，均显式标注**，不臆造。
-> 接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。原理对照：[视频生成详解](../../foundation/generative/video/视频生成详解.md)。与 M 系工程接口见 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
+> 接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。挂在本基座上的 fal 人像 LoRA 见 [`fal/`](../fal/fal全景与生态.md)，不要和本页混成一个产品。原理对照：[视频生成详解](../../foundation/generative/video/视频生成详解.md)。与 M 系工程接口见 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
 
 ---
 
@@ -25,7 +25,9 @@
 | 更早 | Hailuo 01 / 02 | 01 从 0 到 1；02 抠架构效率、数据与规模。H3 **主动丢掉 Hailuo-02 架构**，因为它不利于任务泛化 | 官方博客 |
 | 2026-07-31 | **H3 正式发布** | 全模态上下文理解 + 原生立体声音视频，最高 15s / 2K；宣称指令遵循、品牌文字、V2V 动作迁移 | 官方博客 |
 | 2026-08-02 | **Community License / 权重开源日** | HF `MiniMaxAI/MiniMax-H3`；许可证日期即此日。Encoder 另走 Qwen3-VL-32B 的 Apache-2.0 | 官方 LICENSE |
-| 2026-09-16（本快照） | 开源形态已稳定为双 checkpoint | `FL2VA/` + `Ref2VA/`；SGLang / vLLM / diffusers / ComfyUI 均有官方菜谱。完整 Tech Report **尚未见到** | 官方仓库 / 模型卡 |
+| 2026-08-10 | fal H3 LoRA 训练指南 | 四套 trainer；176 人像素材、十六组人评。当时胜出配方后来被现网权重替换 | [fal People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md) |
+| 2026-09-16 | 开源形态已稳定为双 checkpoint | `FL2VA/` + `Ref2VA/`；SGLang / vLLM / diffusers / ComfyUI 均有官方菜谱。完整 Tech Report **尚未见到** | 官方仓库 / 模型卡 |
+| 2026-09-17 | fal 人像 LoRA 快照 | `fal/MiniMax-H3-Realism-People-LoRA`：现网 rank 32 / 1500 / 高分桶。**不是**官方第四模块 | [fal/](../fal/fal全景与生态.md) |
 
 ### 三条产品面（不要混规格）
 
@@ -35,7 +37,7 @@
 | **开放平台 API** | 全球 [platform.minimax.io](https://platform.minimax.io/docs/api-reference/video-generation-v2-create) ｜ 国内 [platform.minimaxi.com](https://platform.minimaxi.com/docs/api-reference/video-generation-v2-create) | 一键 2K，或拆成 IR / Base / Regen 三段 |
 | **开源权重** | Hugging Face `MiniMaxAI/MiniMax-H3`；ModelScope `MiniMax/MiniMax-H3` | **仅 H3-Base**，768p + 立体声 |
 
-> **选型坑**：拿开源 768p 去和官方 API 的 2K 片比画质，比的是系统而不是同一份权重。
+> **选型坑**：拿开源 768p 去和官方 API 的 2K 片比画质，比的是系统而不是同一份权重。H3 模型页 Inference Providers 显示 fal，只说明托管渠道；平台与适配器见 [`fal/`](../fal/fal全景与生态.md)。
 
 ### 输入 / 输出规格（模型卡口径）
 
@@ -51,7 +53,7 @@
 | 变体 | 模式 | 输入上限 |
 |------|------|----------|
 | **H3-Base-FL2VA** | 首尾帧 | 0 / 1 / 2 张图：无图 = T2VA；一张 = 首帧或尾帧；两张 = 首尾帧 |
-| **H3-Base-Ref2VA** | 全参考 | 图 ≤9；视频 ≤3 段、每段 2–15s、总时长 ≤15s；音频 ≤3 段且**必须配图或视频、不能单独作为输入**；全类型文件合计 ≤12 |
+| **H3-Base-Ref2VA** | 全参考 | 图 ≤9；视频 ≤3 段、每段 2–15s、总时长 ≤15s；音频 ≤3 段、**每段 2–15s、总时长 ≤15s**，且必须配图或视频、不能单独作为输入；全类型文件合计 ≤12 |
 
 V2V 动作迁移是 **Ref2VA 的一种用法**，不是第四个任务名。
 
@@ -109,7 +111,7 @@ H3 预训练刻意早融合：
 
 | 模态 | 谁编码 |
 |------|--------|
-| 文本 | **H3-Encoder**（Qwen3-VL-32B **完整预训练权重**，取第 **50** 层 hidden，而不是最后一层；LM head 闲置） |
+| 文本 | **H3-Encoder**（Qwen3-VL-32B **完整预训练权重**，取第 **50** 层 hidden，而不是最后一层；LM head 闲置）。仓库 tokenizer 加了 `<d>` 等特殊 token（对白示例写作 `<d>[English] …</d>`），**必须用本仓 tokenizer**，不要换上游 Qwen 原版 |
 | 视觉 | Encoder + **H3-VisualVAE** |
 | 音频 | 仅 **H3-AudioVAE**（不经 Encoder） |
 
@@ -182,7 +184,7 @@ H3 预训练刻意早融合：
 
 | 条款 | 含义 |
 |------|------|
-| 适用领土 | **全球，排除美国、欧盟、英国、韩国**。排除区要商用 / 部署需另洽授权 |
+| 适用领土 | **全球，排除美国、欧盟、英国、韩国**。排除区要商用 / 部署须另洽授权；模型卡链了 [申请表](https://huggingface.co/MiniMaxAI/MiniMax-H3)（License 节 Application form，仅美 / 欧 / 英 / 韩） |
 | 费用 | 领土内 royalty-free；年营收超过 **2000 万美元**的商业产品须事先书面授权（`api@minimax.io`，标题 `MiniMax H3 licensing - authorization request`） |
 | 品牌 | 使用 H3 的商业产品 UI **须显著展示「MiniMax H3」** |
 | 蒸馏禁令 | **不得用 H3 或其输出去改进其它 AI 模型**（含蒸馏、中间表示、合成数据训练） |
@@ -222,6 +224,7 @@ H3 预训练刻意早融合：
 **相邻**
 
 - 部署与 API：[MiniMax-H3本地部署与API接入.md](./MiniMax-H3本地部署与API接入.md)
+- fal 平台与人像适配器：[fal全景](../fal/fal全景与生态.md) · [People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md)
 - 视频原理：[视频生成详解](../../foundation/generative/video/视频生成详解.md)
 - 产业层：[landscape.md](../../landscape.md) §4.5
 - M 系接口：[providers · 各大厂商代表模型总览](../providers/各大厂商代表模型总览.md)

@@ -18,6 +18,7 @@
 | [`glm/`](./glm/) | ✅ 已研究 | 智谱 GLM-Realtime 实时音视频通话模型 |
 | [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 + V4.1-Flash KV 压缩通俗解读 |
 | [`minimax/`](./minimax/) | ✅ 已研究 | MiniMax **H3**（海螺视频线）：三模块系统 + 33B Omni Transformer 开源 Base；本地 768p / API 2K |
+| [`fal/`](./fal/) | ✅ 已研究 | **fal** 生成媒体推理平台：托管开源模型 + 自训 LoRA；H3 人像写实适配器（非 MiniMax 官方模块） |
 | [`providers/`](./providers/) | ✅ 已研究 | **横切层**：各大厂商代表模型 + 模型服务 API 协议对比 |
 
 ### 厂商与协议（providers/）
@@ -72,12 +73,25 @@
 
 ### MiniMax（minimax/）
 
+官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)（[minimax.io](https://www.minimax.io)）。置顶三条线：[`MiniMax-M3`](https://huggingface.co/MiniMaxAI/MiniMax-M3)（对话，427B）· [`MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（视频，33B）· [`MiniMax-Music3`](https://huggingface.co/MiniMaxAI/MiniMax-Music3)（文生音乐，2B）。H3 Collection 里的 Comfy-Org / `larryvrh` / `drbaph` Turbo LoRA 是**社区适配器**，不是官方第四模块。推理平台与 fal 自训 LoRA 见 [`fal/`](./fal/)，不要写进本目录。
+
 内容清单：
 
-- 《MiniMax-H3全景与架构.md》—— H 系列 ≠ M 系列；Hailuo 01/02 → H3；三模块（Context-IR / Base / Regenerator-2K）；33B 稠密单流 + 联合音画去噪；许可证领土与蒸馏禁令
-- 《MiniMax-H3本地部署与API接入.md》—— `FL2VA` / `Ref2VA` 双 checkpoint；SGLang / vLLM / diffusers / ComfyUI；本地 768p 与 IR+Regen 拼 2K；官方拓扑时延
+- 《MiniMax-H3全景与架构.md》—— H 系列 ≠ M 系列；三模块（Context-IR / Base / Regenerator-2K）；33B 稠密单流 + 联合音画去噪；许可证领土与蒸馏禁令
+- 《MiniMax-H3本地部署与API接入.md》—— `FL2VA` / `Ref2VA`；SGLang / vLLM / diffusers / ComfyUI；本地 768p 与 IR+Regen 拼 2K
 
-关键事实边界：开源的是 **H3-Base（默认 768p）**，Context-IR 与 2K Regeneration **仍托管**；完整 Tech Report 官方预告但本快照未见。Community License **排除美 / 欧 / 英 / 韩**。M 系对话模型（`MiniMax-M3`）不在本目录，接口见 [`providers/`](./providers/各大厂商代表模型总览.md)。
+关键事实边界：开源的是 **H3-Base（默认 768p）**，Context-IR 与 2K Regeneration **仍托管**；完整 Tech Report 官方预告但本快照未见。Community License **排除美 / 欧 / 英 / 韩**（排除区另有申请表）。M 系对话、Music3 **不在本目录**（M 系接口见 [`providers/`](./providers/各大厂商代表模型总览.md)）。
+
+### fal（fal/）
+
+[`fal`](https://huggingface.co/fal) 是另一家公司（[fal.ai](https://fal.ai)）：生成媒体**推理平台**，托管开源图/视频/音频，也自己发 LoRA / FlashPack。HF Inference Provider。**不是 MiniMax 子品牌。**
+
+内容清单：
+
+- 《fal全景与生态.md》—— 平台身份（托管推理 / trainer / 发适配器）；与 MiniMax 的「平台 × 基座」关系；AuraFlow / Kontext / FlashPack 登记不展开
+- 《MiniMax-H3-Realism-People-LoRA.md》—— 挂在 H3-Base 上的人像写实 LoRA（触发词 `r34l1sm`）；只改共享 `attn.qkv_proj`；现网 rank 32 / 1500 / 高分桶
+
+关键事实边界：People LoRA 许可证跟 MiniMax H3 Community License；现网超参以 fal 模型卡为准，与 2026-08-10 训练指南当时的胜出配方（rank 16 / 5000 / medium）已不一致。H3 模型页右侧 Inference Providers 写 fal，是把 **MiniMax 权重**丢到 fal 渠道上跑，权属不变。
 
 ### 三家横向速查（实时音视频交互赛道）
 

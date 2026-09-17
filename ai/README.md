@@ -175,6 +175,7 @@ ai/
 | **GLM-Realtime** | 实时音视频通话：WebSocket 事件协议 / VAD / 成本估算 | [glm/](./model-cases/glm/) |
 | **豆包 / Seed** | 视频交互体系（Seedance / SeedEdit / Seedream / SeedRealtime） | [doubao/](./model-cases/doubao/) |
 | **MiniMax H3** | 海螺视频线开源 Base：33B Omni Transformer、本地 768p / API 2K、FL2VA·Ref2VA | [minimax/](./model-cases/minimax/) |
+| **fal** | 生成媒体推理平台；H3 人像写实 LoRA（非 MiniMax 官方模块） | [fal/](./model-cases/fal/) |
 | **providers（横切）** | 各厂商代表模型总览 + 服务 API 协议对比与「假兼容」陷阱 | [providers/](./model-cases/providers/) |
 
 ---
@@ -191,7 +192,7 @@ ai/
 生成 / 理解：Diffusion · Video · Audio/Speech · World Models · Multimodal
 加速：Speculative Decoding · 量化
 本地运行：llama.cpp · Ollama · LM Studio · MLX
-案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax-H3（model-cases/）
+案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax-H3 / fal（model-cases/）
 ```
 
 MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图](./agent/loop-graph/)（[栈总览](./agent/README.md#七按栈升级从提示到图)）管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。
