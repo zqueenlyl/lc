@@ -36,7 +36,7 @@ ai/
 │   └── case-studies/            #    案例层：commerce-agents / pi / mini-swe-agent / trpc-agent-go / langgraph
 │
 ├── knowledge/                # ③ 知识与记忆：决定往上下文窗口里塞什么
-│   └── rag/  vector-db/  knowledge-base/  memory/  context-engineering/
+│   └── rag/  vector-db/  knowledge-base/  ontology/  memory/  context-engineering/
 │
 ├── reliability/              # ④ 治理与上线：决定能不能上生产
 │   ├── sandbox/              #    环节系列（README + 环节00–13 + 13 notebook + 选型总表）
@@ -143,6 +143,7 @@ ai/
 | **RAG** | 检索增强生成：Naive → Agentic 全谱系 | [rag/](./knowledge/rag/) |
 | **向量数据库** | Milvus/Qdrant/pgvector 等：ANN 索引 + 语义检索底座 | [vector-db/](./knowledge/vector-db/) |
 | **知识库** | 知识库类型五维整理 | [knowledge-base/](./knowledge/knowledge-base/) |
+| **Ontology** | 学术 OWL vs Palantir 运营本体（组织数字孪生） | [ontology/](./knowledge/ontology/) |
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./knowledge/memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./knowledge/context-engineering/) |
 

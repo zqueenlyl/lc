@@ -244,7 +244,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **元宝 / 搜狗等** | 腾讯等 | 国内搜索入口 |
 | **Notion AI / 飞书 / 钉钉 / 企微智能** | 各办公套件 | 知识在工作区里，不在公网 |
 
-企业知识问答很少「只调一个模型」，标准形态是 **RAG**：文档 → 切片 → 向量库 → 检索 → LLM。详见 [rag/](./knowledge/rag/) 与 [知识库/](./knowledge/knowledge-base/)。
+企业知识问答很少「只调一个模型」，标准形态是 **RAG**：文档 → 切片 → 向量库 → 检索 → LLM。详见 [rag/](./knowledge/rag/) 与 [知识库/](./knowledge/knowledge-base/)。要把多源系统对齐成「同一个客户 / 同一台设备」，并让人与 Agent 在权限内改状态，对照 [运营本体](./knowledge/ontology/)（Palantir Foundry 为产品化参照），不要和 OWL 学术本体混成一种东西。
 
 ### 4.4 图像生成
 
@@ -538,7 +538,7 @@ Agent 要大规模调工具
 |---|---|
 | **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](./model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
 | Agent 怎么转起来 | [agent/](./agent/)、[loop-graph/](./agent/loop-graph/)、[langgraph/](./agent/case-studies/langgraph/)、[harness/](./agent/harness/) |
-| 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[memory/](./knowledge/memory/) |
+| 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[ontology/](./knowledge/ontology/)、[memory/](./knowledge/memory/) |
 | 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |
 | 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./foundation/transformer/) |
 | 模型内部在升级什么 | [推理侧横切](./foundation/rl/推理侧搜索与test-time-scaling.md)、[moe/](./foundation/moe/)、[multimodal/](./foundation/generative/multimodal/) |

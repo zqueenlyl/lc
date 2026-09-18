@@ -36,6 +36,7 @@
 | [RAG](../../knowledge/rag/) · [环节 06](../环节06-检索增强RAG详解.md) | GraphRAG 是 RAG 谱系一支；构图与契约在 [context-graph.md](./context-graph.md) |
 | [Memory](../../knowledge/memory/) | 图式记忆 = 上下文图用在长期记忆上 |
 | [知识库](../../knowledge/knowledge-base/) | 五维里的图存储 / Graph RAG / Ontology |
+| [Ontology](../../knowledge/ontology/) | OWL vs Palantir 运营本体；对象可写、动作过权 |
 | [MCP](../mcp/) | 插件进循环；图库以 Tool / Resource 暴露 |
 | [Eval](../../reliability/eval/) | 循环评验证器与轨迹；上下文图评多跳路径是否走对 |
 | [structured-output](../../reliability/structured-output/) | 提示层的格式闭环 |

@@ -49,7 +49,7 @@ GraphRAG 只是上下文图的一条**检索**用法。完整管线：
 | 权限 | 客服 Agent 读到账务字段 |
 | 框架可迁移 | Schema 绑死在某一家 Checkpointer / Store 上 |
 
-本体不必上 OWL。**带类型的应用 Schema + 稳定 ID** 对有界领域通常够用。形式化 Ontology 见 [知识库 · 表示层](../../knowledge/knowledge-base/)。
+本体不必上 OWL。**带类型的应用 Schema + 稳定 ID** 对有界领域通常够用。要「对象可写、动作过权、人与 LLM 共用同一语义面」时，对照 [运营本体](../../knowledge/ontology/)（Palantir Foundry 为产品化参照）。形式化 OWL 见 [知识库 · 表示层](../../knowledge/knowledge-base/)。
 
 ---
 

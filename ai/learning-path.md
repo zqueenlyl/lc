@@ -156,7 +156,7 @@
   | GraphRAG | 知识图谱 + 社区摘要 | 跨实体关系、全局性问题 |
   | Agentic RAG | 检索作为 Agent 工具，自主编排 | 复杂场景（终极形态）|
 - **演进脉络**：Naive → Advanced/Modular → Agentic
-- **构图与维护不在 RAG 变体里讲完**：执行图 vs 上下文图、实体对齐 / 时效 / 来源、GraphRAG 家族选型 → [循环与图工程](./agent/loop-graph/) · [context-graph.md](./agent/loop-graph/context-graph.md)
+- **构图与维护不在 RAG 变体里讲完**：执行图 vs 上下文图、实体对齐 / 时效 / 来源、GraphRAG 家族选型 → [循环与图工程](./agent/loop-graph/) · [context-graph.md](./agent/loop-graph/context-graph.md)；**对象 + 动作 + 权限**（运营本体，Palantir 为参照）→ [ontology/](./knowledge/ontology/)
 
 ### 2.7 MCP（Model Context Protocol）
 

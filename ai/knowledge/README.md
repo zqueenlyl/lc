@@ -12,10 +12,11 @@
 | **RAG** | 检索增强生成：Naive → Advanced → Agentic 全谱系 | [rag/](./rag/) |
 | **向量数据库** | Milvus / Qdrant / pgvector：ANN 索引 + 语义检索底座 | [vector-db/](./vector-db/) |
 | **知识库** | 知识库类型五维整理 | [knowledge-base/](./knowledge-base/) |
+| **Ontology** | 学术 OWL vs Palantir 运营本体（组织数字孪生） | [ontology/](./ontology/) |
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 
-> 跨实体 / 多跳 / 「同一个客户」要对齐：不在本目录单开专题，见 [../agent/loop-graph/](../agent/loop-graph/)（上下文图 + GraphRAG 家族）。向量库仍然是语义召回底座。
+> 跨实体 / 多跳 / 「同一个客户」要对齐：图检索见 [../agent/loop-graph/](../agent/loop-graph/)（上下文图 + GraphRAG 家族）；**对象 + 动作 + 权限**的运营建模见 [ontology/](./ontology/)（Palantir Foundry 为参照）。向量库仍然是语义召回底座。
 
 ## 四件事的分工
 
