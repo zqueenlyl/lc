@@ -71,6 +71,7 @@
 | [推理模型 / test-time scaling](../../foundation/rl/推理侧搜索与test-time-scaling.md) | 高档 |
 | [Eval](../eval/) | 没有 eval 的路由是猜 |
 | [Guardrails](../guardrails/) | 先过护栏再路由，或路由到「安全专用」模型 |
+| [TypeSafe Jev](../../model-cases/typesafe/) | 适合当前置分类器（难/易、要不要人、走哪条 LLM）；**不是**生成模型平替 |
 | [Speculative Decoding](../../runtime/speculative-decoding/) | 同一模型内加速，不是跨模型路由，但可叠加 |
 
 ---
@@ -87,7 +88,7 @@
 
 ## 七、延伸阅读
 
-- 各云 AI Gateway / 开源 LiteLLM / OpenRouter 一类路由层
+- 各云 AI Gateway / 开源 LiteLLM / OpenRouter 一类路由层；意图分类也可用 [Jev](../../model-cases/typesafe/Jev接入与工程实践.md)（Decisions API，不是 Chat Completions）
 - 对比：[slm](../../foundation/slm/)、[推理侧](../../foundation/rl/推理侧搜索与test-time-scaling.md)、[eval](../eval/)
 
 ---

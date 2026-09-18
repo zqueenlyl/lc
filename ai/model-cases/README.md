@@ -19,6 +19,7 @@
 | [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 + V4.1-Flash KV 压缩通俗解读 |
 | [`minimax/`](./minimax/) | ✅ 已研究 | MiniMax 三线：文本 **M3**（MSA / 1M）· 视频 **H3**（开源 768p Base）· 音频 **Speech + Music3** |
 | [`fal/`](./fal/) | ✅ 已研究 | **fal** 生成媒体推理平台：托管开源模型 + 自训 LoRA；H3 人像写实适配器（非 MiniMax 官方模块） |
+| [`typesafe/`](./typesafe/) | ✅ 已研究 | **TypeSafe / Jev**：System One 结构化决策模型（非 LLM）；原生 System One API + OpenRouter Decisions API |
 | [`providers/`](./providers/) | ✅ 已研究 | **横切层**：各大厂商代表模型 + 模型服务 API 协议对比 |
 
 ### 厂商与协议（providers/）
@@ -28,7 +29,7 @@
 - 《各大厂商代表模型总览.md》—— 海外 / 国内 / 开源权重 / 聚合分发四组的**代表模型、上下文、模态、协议族、端点**速查；工程选型维度；未核实清单
 - 《模型服务API协议对比.md》—— **三代协议演进**（Completions → Chat Completions → Responses/Interactions）、逐家协议速查表、十类字段差异、**"假兼容"陷阱清单**、多厂商接入架构、Chat Completions → Responses 迁移清单
 
-关键事实边界：模型 ID 均为 **2026-09-11 检索快照**（H3 为 **2026-09-16**，MiniMax 三线总览为 **2026-09-18**），迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax **对话**文档与火山方舟官方文档为 JS 单页应用，聊天接口细节在 providers 文中标注「未核实」；H3 视频线已按 Hugging Face / GitHub 正文落 [minimax/](./minimax/)；M3 / Speech / Music3 见同目录全景与分线篇。
+关键事实边界：模型 ID 均为 **2026-09-11 检索快照**（H3 为 **2026-09-16**，MiniMax 三线总览为 **2026-09-18**，TypeSafe / Jev 为 **2026-09-18**），迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax **对话**文档与火山方舟官方文档为 JS 单页应用，聊天接口细节在 providers 文中标注「未核实」；H3 视频线已按 Hugging Face / GitHub 正文落 [minimax/](./minimax/)；M3 / Speech / Music3 见同目录全景与分线篇。
 
 ### 豆包 / Seed（doubao/）
 
@@ -95,6 +96,18 @@
 - 《MiniMax-H3-Realism-People-LoRA.md》—— 挂在 H3-Base 上的人像写实 LoRA（触发词 `r34l1sm`）；只改共享 `attn.qkv_proj`；现网 rank 32 / 1500 / 高分桶
 
 关键事实边界：People LoRA 许可证跟 MiniMax H3 Community License；现网超参以 fal 模型卡为准，与 2026-08-10 训练指南当时的胜出配方（rank 16 / 5000 / medium）已不一致。H3 模型页右侧 Inference Providers 写 fal，是把 **MiniMax 权重**丢到 fal 渠道上跑，权属不变。
+
+### TypeSafe / Jev（typesafe/）
+
+[TypeSafe](https://typesafe.ai) 是另一家公司，卖 **System One** 决策模型，不是聊天 LLM。旗舰 **Jev**（现网 `jev-1.13.0`）吃 `state` + 类型化问题（Noul / Choice / Score），吐校准概率；**不生成文本**。OpenRouter 上架 slug：[`~typesafe/jev-latest`](https://openrouter.ai/~typesafe/jev-latest)（走 Decisions API，不是 Chat Completions）。
+
+内容清单：
+
+- 《TypeSafe全景与System-One.md》—— 身份（≠ Scala Typesafe）；System One vs LLM；Jev 1.13 规格；三原语；jaggedness；和 structured-output / routing / guardrails 的边界
+- 《Jev接入与工程实践.md》—— 原生 `POST /v1/systemone`、OpenRouter `POST /api/alpha/decisions`、Cloudflare / Vercel 渠道 ID、SDK、置信度门闩、14 条坑
+- [Jev原语与置信度门闩演示.ipynb](./typesafe/Jev原语与置信度门闩演示.ipynb)—— 按 [OpenRouter Jev Latest](https://openrouter.ai/~typesafe/jev-latest) Quick Start：`POST /api/alpha/decisions` + 三原语 + `noul > 0.8` 升级账单
+
+关键事实边界：权重不开源、无论文、参数量未披露；「不能幻觉」只保证不越出你定义的答案空间；官方上下文是 64k / 32k 双预算，OpenRouter 只公示 32k；原生仍是 early access。
 
 ### 三家横向速查（实时音视频交互赛道）
 

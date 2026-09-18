@@ -54,6 +54,7 @@
 | **A2A** | Agent 互相对话委托 | 跨系统多智能体 | [a2a/](./agent/a2a/) |
 | **Computer Use** | 看屏幕、点鼠标、开浏览器 | Claude Computer Use、各家浏览器 Agent | [computer-use/](./agent/computer-use/) |
 | **Function Calling** | 模型按 schema 调工具、吐 JSON | 所有主流 API | [structured-output/](./reliability/structured-output/) |
+| **System One** | 不生成文本，对 state 做类型化决策（是/否、选择、量表） | TypeSafe Jev | [typesafe/](./model-cases/typesafe/) |
 | **PEFT / LoRA** | 只训少量参数做领域适配 | 开源微调标配 | [peft-lora/](./foundation/peft-lora/) |
 | **SLM / 端侧** | 小模型跑在手机 / 笔记本 | Gemma、Phi、Apple 端侧、MiMo | [slm/](./foundation/slm/) |
 | **投机解码** | 小模型打草稿、大模型一次校验 | vLLM / SGLang 常见加速 | [speculative-decoding/](./runtime/speculative-decoding/) |
@@ -156,6 +157,7 @@
 | **Oracle** | — | 给训练集群卖算力和云 |
 | **Salesforce / SAP** | 各自 Einstein / Joule 等 | 业务 SaaS 里嵌 AI；SAP 还押注表格基础模型 |
 | **Cohere** | Command 等 | 企业检索、Embedding、多语言，生成模型不是主战场 |
+| **TypeSafe** | Jev（System One） | 给软件用的快判断：路由 / 打分 / 校验；**不聊天**。案例 [typesafe/](./model-cases/typesafe/) |
 
 ---
 
@@ -186,6 +188,7 @@
 | MAI | Microsoft | 闭源 + 端侧 | Windows / Copilot |
 | Nemotron | NVIDIA | 开权重 | 自有 GPU 吞吐 |
 | Granite | IBM | 开权重 | 受监管小模型 |
+| Jev | TypeSafe | 闭源 | 结构化决策，不是 LLM；吃 state 吐概率。案例 [typesafe/](./model-cases/typesafe/) |
 
 **分档口诀（各家名字不同，结构一样）**
 

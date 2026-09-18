@@ -83,6 +83,7 @@ L1/L3 可用小分类模型 + 规则；L2 必须是 **确定性策略**（RBAC�
 ## 七、延伸阅读
 
 - OWASP LLM Top 10；各云 Guardrails / Moderations API
+- LLM 输入/输出筛也可用 [Jev](../../model-cases/typesafe/) 做 Noul+Score（阈值在你代码里）；**L2 工具门禁仍必须是确定性策略**
 - 对比：[eval](../eval/)、[mcp](../../agent/mcp/)、[computer-use](../../agent/computer-use/)
 
 ---

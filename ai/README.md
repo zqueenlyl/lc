@@ -16,7 +16,7 @@ ai/
 ├── fde.md                    # 职业与落地视角：FDE 岗位要求 / 三支柱能力模型 / 现场五关 / 转型路径
 │
 ├── model-cases/              # 案例层：按厂商 / 产品纵向深挖（快照型，模型 ID / 端点 / 价格会过期）
-│   └── deepseek/  qwen/  glm/  doubao/  minimax/  providers/
+│   └── deepseek/  qwen/  glm/  doubao/  minimax/  fal/  typesafe/  providers/
 │
 ├── foundation/               # ① 基模：骨架 / 训练 / 变体 / 模态（分组见 foundation/README）
 │   ├── transformer/          #    骨架 + 环节01-11 + 评测/长上下文横切 + RNN
@@ -177,6 +177,7 @@ ai/
 | **豆包 / Seed** | 视频交互体系（Seedance / SeedEdit / Seedream / SeedRealtime） | [doubao/](./model-cases/doubao/) |
 | **MiniMax** | 三线：文本 M3（MSA/1M）· 视频 H3（768p Base）· 音频 Speech+Music3 | [minimax/](./model-cases/minimax/) |
 | **fal** | 生成媒体推理平台；H3 人像写实 LoRA（非 MiniMax 官方模块） | [fal/](./model-cases/fal/) |
+| **TypeSafe / Jev** | System One 结构化决策（非 LLM）；原生 API + OpenRouter Decisions API | [typesafe/](./model-cases/typesafe/) |
 | **providers（横切）** | 各厂商代表模型总览 + 服务 API 协议对比与「假兼容」陷阱 | [providers/](./model-cases/providers/) |
 
 ---
@@ -193,7 +194,7 @@ ai/
 生成 / 理解：Diffusion · Video · Audio/Speech · World Models · Multimodal
 加速：Speculative Decoding · 量化
 本地运行：llama.cpp · Ollama · LM Studio · MLX
-案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax（M3·H3·音频） / fal（model-cases/）
+案例纵深：DeepSeek / Qwen-Omni / GLM-Realtime / 豆包·Seed / MiniMax（M3·H3·音频） / fal / TypeSafe·Jev（model-cases/）
 ```
 
 MCP 连工具，A2A 连 Agent，二者互补而不是二选一。Agent 总图见 [agent/](./agent/)。RAG / Memory / Context Engineering 解决「塞什么进窗口」，[循环与图](./agent/loop-graph/)（[栈总览](./agent/README.md#七按栈升级从提示到图)）管验证闭环、执行图接线和领域事实契约，Guardrails / Eval 解决「能不能上线」，[model-cases/](./model-cases/) 解决「某个具体模型到底怎么用」。

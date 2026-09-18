@@ -46,6 +46,8 @@
 
 散文更适合：品牌文案、解释、安抚——先生成文本，必要时再附一个小 JSON 头。
 
+**和 TypeSafe Jev 不是同一条路。** LLM 结构化输出仍在生成 token，再用 schema / 约束解码卡住形状。Jev 是 System One：不生成文本，对 `state` 做 Noul / Choice / Score。路由、打分、护栏前置分类用 Jev；要写稿、工具循环、自由抽取仍用本节手段。见 [TypeSafe / Jev](../../model-cases/typesafe/TypeSafe全景与System-One.md)。
+
 ---
 
 ## 四、常见坑
@@ -88,7 +90,7 @@
 - **CMU《Tool Use for Language Model Agents》Lecture 02**：<https://www.cmu-agents.com/slides/lecture-02-tool-use.pdf>（约束四层与边界、PDA + token mask、模型工具协议差异、BFCL 评测分层）—— 核实于 2026-09-12
 - 原理篇（schema → FSM → token mask、引擎横向对比、代价与冲突）→ [约束解码原理.md](./约束解码原理.md)
 - 正确率评测（无约束 vs 约束、跨模型 JSON 正确率数据）→ [正确率评测.md](./正确率评测.md)
-- 对比：[mcp](../../agent/mcp/)、[guardrails](../guardrails/)
+- 对比：[mcp](../../agent/mcp/)、[guardrails](../guardrails/)、[TypeSafe Jev](../../model-cases/typesafe/)
 
 ---
 

@@ -37,6 +37,7 @@
 
 > **结论**：协议层已经分成两个阵营——**Responses 阵营**（OpenAI / xAI / Google / 火山方舟）与 **Chat Completions 阵营**（Anthropic Messages 风格 + 国内大多数）。跨阵营迁移的成本远高于"换个 base_url"。
 > **唯一的跨阵营特例是 DeepSeek**：同一家同时开通了 Responses、Chat Completions、Anthropic 三套入口（见 §3 补充）。
+> **平行轨（不是第 4 代聊天协议）**：TypeSafe Jev 走 **System One**（`POST /v1/systemone`）；OpenRouter 对应 **Decisions API**（`POST /api/alpha/decisions`）。这是「state + 类型化问题 → 结构化决策」，**不生成文本**，不能当 Chat Completions 用。见 [typesafe/](../typesafe/Jev接入与工程实践.md)。
 
 ---
 
@@ -249,7 +250,7 @@ Bedrock Converse  → { "system": [{"text": "..."}] }                 // 数组�
 |------|------|------|------|------|
 | **A. 直连 + 自建适配层** | 每厂商一个 adapter，统一到内部 IR | 完全可控、可按需用厂商独有能力 | 维护成本随厂商数线性增长 | 厂商数少（≤3）、需要独有能力的核心链路 |
 | **B. 自建网关（LiteLLM 等）** | 对外 OpenAI 格式，网关做协议转换 | 统一鉴权/计费/限流/负载均衡；LiteLLM 支持 **100+ 提供方**、虚拟密钥、多部署负载均衡 | 受网关能力边界限制；Responses 专属能力可能失落 | 厂商数多、以 Chat Completions 为主的业务 |
-| **C. 聚合服务（OpenRouter 等）** | 直接用第三方聚合端点 | 免运维、自动故障回退、一个 key 打通 | 加一层延迟与成本；厂商独有参数被忽略；数据经第三方 | 早期验证、长尾模型兜底 |
+| **C. 聚合服务（OpenRouter 等）** | 直接用第三方聚合端点 | 免运维、自动故障回退、一个 key 打通 | 加一层延迟与成本；厂商独有参数被忽略；数据经第三方；**Jev 必须走 Decisions API，不能假设全部模型都是 Chat Completions** | 早期验证、长尾模型兜底 |
 
 **共性原则**：
 - 对外暴露的**内部契约**应取"最小公共子集"（messages + tools + stream），厂商独有能力通过 `extra_body` 透传。
