@@ -80,8 +80,8 @@ naval/
 
 ## 与本仓其它专题
 
-- 长期博弈、重复博弈、信誉 → [game-theory/05-重复博弈](../game-theory/05-重复博弈.md)
-- 合作而不必对话（Schelling 点）→ [game-theory/08-应用与延伸](../game-theory/08-应用与延伸.md)
+- 长期博弈、重复博弈、信誉 → [game-theory/06-重复博弈](../game-theory/06-重复博弈.md)
+- 合作而不必对话（Schelling 点）→ [game-theory/09-应用与延伸](../game-theory/09-应用与延伸.md)
 - 「杠杆无限便宜时方向才稀缺」这条判断力句，和 AI 时代「人还剩什么」是同一根柱子，不要跟 token 成本账混写成一句话。
 
 ---
