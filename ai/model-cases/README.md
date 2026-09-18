@@ -17,7 +17,7 @@
 | [`qwen/`](./qwen/) | ✅ 已研究 | 阿里通义 Qwen-Omni 系列（开源权重 + 百炼 Realtime API） |
 | [`glm/`](./glm/) | ✅ 已研究 | 智谱 GLM-Realtime 实时音视频通话模型 |
 | [`deepseek/`](./deepseek/) | ✅ 已研究 | DeepSeek 模型谱系与架构演进 + API 三协议接入与成本优化 + V4.1-Flash KV 压缩通俗解读 |
-| [`minimax/`](./minimax/) | ✅ 已研究 | MiniMax **H3**（海螺视频线）：三模块系统 + 33B Omni Transformer 开源 Base；本地 768p / API 2K |
+| [`minimax/`](./minimax/) | ✅ 已研究 | MiniMax 三线：文本 **M3**（MSA / 1M）· 视频 **H3**（开源 768p Base）· 音频 **Speech + Music3** |
 | [`fal/`](./fal/) | ✅ 已研究 | **fal** 生成媒体推理平台：托管开源模型 + 自训 LoRA；H3 人像写实适配器（非 MiniMax 官方模块） |
 | [`providers/`](./providers/) | ✅ 已研究 | **横切层**：各大厂商代表模型 + 模型服务 API 协议对比 |
 
@@ -28,7 +28,7 @@
 - 《各大厂商代表模型总览.md》—— 海外 / 国内 / 开源权重 / 聚合分发四组的**代表模型、上下文、模态、协议族、端点**速查；工程选型维度；未核实清单
 - 《模型服务API协议对比.md》—— **三代协议演进**（Completions → Chat Completions → Responses/Interactions）、逐家协议速查表、十类字段差异、**"假兼容"陷阱清单**、多厂商接入架构、Chat Completions → Responses 迁移清单
 
-关键事实边界：模型 ID 均为 **2026-09-11 检索快照**（H3 为 **2026-09-16**），迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax **对话**文档与火山方舟官方文档为 JS 单页应用，聊天接口细节在 providers 文中标注「未核实」；H3 视频线已按 Hugging Face / GitHub 正文落 [minimax/](./minimax/)。
+关键事实边界：模型 ID 均为 **2026-09-11 检索快照**（H3 为 **2026-09-16**，MiniMax 三线总览为 **2026-09-18**），迭代极快，上线请以 `GET /v1/models` 或官方模型页校准。与 [`landscape.md`](../landscape.md) 有明确分工——**landscape 是产业扫盲层（不记版本号），本目录是工程可操作层（模型 ID / 端点 / 字段）**，两层互链不重复。MiniMax **对话**文档与火山方舟官方文档为 JS 单页应用，聊天接口细节在 providers 文中标注「未核实」；H3 视频线已按 Hugging Face / GitHub 正文落 [minimax/](./minimax/)；M3 / Speech / Music3 见同目录全景与分线篇。
 
 ### 豆包 / Seed（doubao/）
 
@@ -73,14 +73,17 @@
 
 ### MiniMax（minimax/）
 
-官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)（[minimax.io](https://www.minimax.io)）。置顶三条线：[`MiniMax-M3`](https://huggingface.co/MiniMaxAI/MiniMax-M3)（对话，427B）· [`MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（视频，33B）· [`MiniMax-Music3`](https://huggingface.co/MiniMaxAI/MiniMax-Music3)（文生音乐，2B）。H3 Collection 里的 Comfy-Org / `larryvrh` / `drbaph` Turbo LoRA 是**社区适配器**，不是官方第四模块。推理平台与 fal 自训 LoRA 见 [`fal/`](./fal/)，不要写进本目录。
+官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)（[minimax.io](https://www.minimax.io)）。**先认三条模态线**，再进分篇：文本 M 系 · 视频 H 系 · 音频 Speech / Music3。入口总图：[《MiniMax 全景与产品线》](./minimax/MiniMax全景与产品线.md)。H3 Collection 里的 Comfy-Org / `larryvrh` / `drbaph` Turbo LoRA 是社区适配器。推理平台与 fal 自训 LoRA 见 [`fal/`](./fal/)，不要写进本目录。
 
 内容清单：
 
-- 《MiniMax-H3全景与架构.md》—— H 系列 ≠ M 系列；三模块（Context-IR / Base / Regenerator-2K）；33B 稠密单流 + 联合音画去噪；许可证领土与蒸馏禁令
+- 《MiniMax全景与产品线.md》—— 文本 / 视频 / 音频对照；协议与许可证不要混；论文有无一张表
+- 《MiniMax-M3全景与架构.md》—— M 系旗舰：~428B MoE / 激活 ~23B / 1M 窗；MSA 论文；MaxProof 测试时框架；`thinking` 三档
+- 《MiniMax-H3全景与架构.md》—— H 系：三模块（Context-IR / Base / Regenerator-2K）；33B 稠密单流 + 联合音画去噪；H3 Tech Report **仍未见**
 - 《MiniMax-H3本地部署与API接入.md》—— `FL2VA` / `Ref2VA`；SGLang / vLLM / diffusers / ComfyUI；本地 768p 与 IR+Regen 拼 2K
+- 《MiniMax音频线Speech与Music3.md》—— TTS API（至 speech-2.8）+ MiniMax-Speech 论文；Music3 整曲（8B+0.6B+Flow Matching）
 
-关键事实边界：开源的是 **H3-Base（默认 768p）**，Context-IR 与 2K Regeneration **仍托管**；完整 Tech Report 官方预告但本快照未见。Community License **排除美 / 欧 / 英 / 韩**（排除区另有申请表）。M 系对话、Music3 **不在本目录**（M 系接口见 [`providers/`](./providers/各大厂商代表模型总览.md)）。
+关键事实边界：H3 开源的是 **H3-Base（默认 768p）**，Context-IR 与 2K Regeneration **仍托管**；H3 Community License **排除美 / 欧 / 英 / 韩**。M3 另有 Community License，**领土条款不要从 H3 抄**。Speech 线上档 ≠ 2025-05 论文权重。Music3 的 HF「2B params」与模块表不一致，以模型卡架构为准。
 
 ### fal（fal/）
 

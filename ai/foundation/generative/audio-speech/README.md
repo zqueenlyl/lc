@@ -81,3 +81,4 @@ TTS 的三代演化（看懂为什么越来越快）：**拼接 / 参数合成 �
 - 正文：[音频与语音详解.md](./音频与语音详解.md)
 - 地图：[../00-AIGC总揽与多模态地图.md](../00-AIGC总揽与多模态地图.md) ｜ 上级 [../README.md](../README.md)
 - 相关：[../../../runtime/voice-realtime/](../../../runtime/voice-realtime/)、[../multimodal/](../multimodal/)
+- 案例：MiniMax 把 TTS 与成曲拆成两条——[Speech 与 Music3](../../../model-cases/minimax/MiniMax音频线Speech与Music3.md)；视频同期声仍走 [H3](../../../model-cases/minimax/MiniMax-H3全景与架构.md)

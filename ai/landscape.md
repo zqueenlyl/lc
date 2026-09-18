@@ -108,7 +108,7 @@
 | **阿里巴巴** | Qwen（通义千问）开源档 | 多为 Apache 2.0 | 尺寸最全、多语言、HF 下载量最大之一；**Max 档是 API 闭源** |
 | **月之暗面 Moonshot** | Kimi K2 / K3 | 改版 MIT | Agent 编程、长工具循环、超长上下文 |
 | **智谱 Zhipu / Z.ai** | GLM | MIT | 长程编程、企业私有化 |
-| **MiniMax** | M 系列 + **H 系列（Hailuo / H3）** | 开权重 | 低成本吞吐 + 原生多模态；视频线 H3 开源 768p Base |
+| **MiniMax** | M 系列 + **H 系列（Hailuo / H3）** + Music3 | 开权重（各线许可证不同） | 低成本吞吐 + 原生多模态；视频线 H3 开源 768p Base。总图 [minimax 全景](./model-cases/minimax/MiniMax全景与产品线.md) |
 | **Mistral AI** | Large / Small / Ministral | Apache 2.0 | 欧洲数据驻留、多语言、真能自托管 |
 | **Google** | Gemma | 较友好 | 西方实验室里最干净的本地选项之一 |
 | **Meta** | Llama 3.3 / 4 | 社区许可 | 生态与工具链最深，但 2026 前沿转向闭源 Muse |
@@ -143,7 +143,7 @@
 | **DeepSeek** | 对话 + API + 开源权重 | 2025 R1 震惊行业；2026 比拼 Flash 效率与推理 |
 | **月之暗面** | Kimi | 长文档起家，转向 Agent / 编程 |
 | **智谱** | 清言 / GLM API / 私有化 | 高校基因，企业部署盘大 |
-| **MiniMax** | 海螺 H3（开源 Base）/ Music3 / M 系对话 | 多模态生成里产品面最全之一；官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)。H3 案例见 [model-cases/minimax](./model-cases/minimax/MiniMax-H3全景与架构.md) |
+| **MiniMax** | 海螺 H3（开源 Base）/ Music3 / Speech TTS / M 系对话 | 多模态生成里产品面最全之一；官方 HF 组织 [`MiniMaxAI`](https://huggingface.co/MiniMaxAI)。三线案例 [model-cases/minimax 全景](./model-cases/minimax/MiniMax全景与产品线.md) |
 | **零一万物 01.AI** | Yi | 早期开源玩家，份额已被前几家挤压 |
 | **百川 / 阶跃星辰** 等 | 各有对话与多模态线 | 第二梯队，跟节奏即可 |
 
@@ -175,7 +175,7 @@
 | Qwen | 阿里 | 开源档开权重；Max 闭源 | 家族最全、中文与多语言 |
 | Kimi | 月之暗面 | 开权重 | Agent 编程、超长上下文 |
 | GLM | 智谱 | 开权重 | 开源里的长程编程 |
-| MiniMax M | MiniMax | 开权重 | 便宜吞吐 + 图视频理解 |
+| MiniMax M | MiniMax | 开权重 | 便宜吞吐 + 图视频理解；旗舰 M3（MSA / 1M）。案例 [M3 篇](./model-cases/minimax/MiniMax-M3全景与架构.md) |
 | MiniMax H / Hailuo | MiniMax | 开权重（H3-Base）+ API | 原生立体声音视频；本地 768p，2K 走托管 Regenerator |
 | 豆包 / Seed | 字节 | 以 API / 应用为主 | 中文 C 端与调用量 |
 | 混元 | 腾讯 | 混合 | 腾讯生态内嵌 |
@@ -285,7 +285,7 @@ Flash / Haiku / Mini / Nano / Lite → Agent 高频、路由底层
 | **Voxtral** | Mistral | 开源向语音 |
 | **Whisper 及衍生** | OpenAI + 社区 | 转写体量最大 |
 | **讯飞开放平台** | 科大讯飞 | 中文语音、教育医疗 |
-| **豆包语音 / MiniMax 语音** | 字节 / MiniMax | 国内 C 端音色 |
+| **豆包语音 / MiniMax 语音** | 字节 / MiniMax | 国内 C 端音色。MiniMax 研究论文 MiniMax-Speech；线上 TTS 至 speech-2.8。案例 [音频篇](./model-cases/minimax/MiniMax音频线Speech与Music3.md) |
 
 实时对话的硬约束是延迟（常要 &lt; 500ms），见 [voice-realtime/](./runtime/voice-realtime/)。
 

@@ -36,7 +36,7 @@
   - **案例纵深**（[model-cases/deepseek/](./model-cases/deepseek/)）：谱系时间线 + 三代注意力架构 + 长上下文经济学 → [DeepSeek技术路线与架构演进.md](./model-cases/deepseek/DeepSeek技术路线与架构演进.md)；三套协议入口 + 思考模式 + 硬盘缓存 + 峰谷定价 → [DeepSeek API接入与成本优化.md](./model-cases/deepseek/DeepSeek%20API接入与成本优化.md)；V4.1-Flash 技术报告通俗解读（Agent 长上下文 KV 压缩）→ [DeepSeek-V4.1-Flash通俗解读.md](./model-cases/deepseek/DeepSeek-V4.1-Flash通俗解读.md)
   - 训练报告精读 **待写**（`DeepSeek-V3训练报告详解.md`：14.8T token / FP8 / DualPipe / $5.6M 总账；`DeepSeek-R1训练报告详解.md`：GRPO 四阶段 / 蒸馏，已刊 Nature）——原 `../deepseek/` 目录已不存在
 - **混元（腾讯）**：Turbo / T1 推理模型，多模态与长文能力
-- **其他必知**：GPT 系列、Claude 系列、Gemini、Qwen（阿里，开源生态强）、Llama（Meta）
+- **其他必知**：GPT 系列、Claude 系列、Gemini、Qwen（阿里，开源生态强）、Llama（Meta）、**MiniMax**（文本 M3 / 视频 H3 / 音频 Speech·Music3，三线不要混）→ [minimax 全景](./model-cases/minimax/MiniMax全景与产品线.md)；M3 稀疏注意力 MSA → [M3 篇](./model-cases/minimax/MiniMax-M3全景与架构.md)
 - **关注维度**：上下文长度、推理/非推理模型差异、开源 vs 闭源、许可证商用限制、评测榜单（MMLU / GPQA / SWE-bench / Aider）
 - **厂商代表模型与接口速查**（2026-09 快照）：各厂商当前模型 ID / 上下文 / 协议族 / API 端点 → [providers/各大厂商代表模型总览.md](./model-cases/providers/各大厂商代表模型总览.md)；同一功能在不同厂商的字段差异与"假兼容"陷阱 → [providers/模型服务API协议对比.md](./model-cases/providers/模型服务API协议对比.md)；产业层扫盲（公司 / 产品 / 榜单）见 [ai/landscape.md](landscape.md)
 
@@ -74,7 +74,7 @@
 - **语音**：ASR（语音识别，Whisper 系）、TTS（语音合成）、端到端语音对话
 - **生成**：文生图（Diffusion / DiT）、文生视频
 - **AIGC 全谱系与工程化**：文/图/音/视频/3D/代码生成范式（自回归 vs 扩散）、审核/版权/评测 —— 库入口 [00-AIGC总揽与多模态地图.md](./foundation/generative/00-AIGC总揽与多模态地图.md)：图像扩散 [图像扩散模型详解.md](./foundation/generative/diffusion/图像扩散模型详解.md) ｜ 视频 [视频生成详解.md](./foundation/generative/video/视频生成详解.md) ｜ 音频语音 [音频与语音详解.md](./foundation/generative/audio-speech/音频与语音详解.md) ｜ 多模态统一 [多模态理解与统一模型详解.md](./foundation/generative/multimodal/多模态理解与统一模型详解.md)
-  - **案例纵深（视频生成）**：MiniMax H3（海螺开源 Base：音画联合去噪、本地 768p / API 2K）→ [MiniMax-H3全景与架构.md](./model-cases/minimax/MiniMax-H3全景与架构.md) ｜ [本地部署与 API](./model-cases/minimax/MiniMax-H3本地部署与API接入.md)；fal 人像写实 LoRA → [Realism People LoRA](./model-cases/fal/MiniMax-H3-Realism-People-LoRA.md)
+  - **案例纵深（视频生成）**：MiniMax H3（海螺开源 Base：音画联合去噪、本地 768p / API 2K）→ [MiniMax-H3全景与架构.md](./model-cases/minimax/MiniMax-H3全景与架构.md) ｜ [本地部署与 API](./model-cases/minimax/MiniMax-H3本地部署与API接入.md)；厂商三线总图 → [MiniMax全景与产品线.md](./model-cases/minimax/MiniMax全景与产品线.md)；fal 人像写实 LoRA → [Realism People LoRA](./model-cases/fal/MiniMax-H3-Realism-People-LoRA.md)
 - **实时多模态交互（案例研究库）**：级联 vs 端到端、全双工与打断机制、抽帧上传 / VAD / 上下文工程 —— 案例 [model-cases/](./model-cases/README.md)：豆包 SeedRealtime ｜ 阿里 [Qwen-Omni](./model-cases/qwen/Qwen-Omni系列全景调研.md) ｜ 智谱 [GLM-Realtime](./model-cases/glm/GLM-Realtime技术文档.md)
 - **工程关注**：多模态 RAG（图片/表格的解析与检索）、Token 消耗、跨模态对齐方案
 
