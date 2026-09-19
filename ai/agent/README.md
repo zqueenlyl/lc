@@ -65,7 +65,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 | **上下文** | 窗口里塞谁、砍谁 | [context-engineering](../knowledge/context-engineering/) |
 | **知识** | 仓库外的事实从哪召回 | [rag](../knowledge/rag/)、[知识库](../knowledge/knowledge-base/) |
 | **无 API 的环境** | 看屏幕点鼠标 | [computer-use](computer-use/) |
-| **多 Agent** | 同事之间派工单 | [a2a](a2a/)、[langgraph 04](case-studies/langgraph/04-多智能体与高级模式.md) |
+| **多 Agent** | 同事之间派工单 | [环节 08](./环节08-多Agent协作详解.md)、[a2a](a2a/)、[langgraph 04](case-studies/langgraph/04-多智能体与高级模式.md)、[multi-agent-research](multi-agent-research/) |
 | **治理** | 别把生产删了；分数要可复现 | [guardrails](../reliability/guardrails/)、[eval](../reliability/eval/) |
 
 记一句：**模型不会「自己变 Agent」**。缺循环、缺工具、缺验证，它只是会说话的补全器。
@@ -275,6 +275,7 @@ Prompt（怎么问一次）
 | 执行图画出来怎么跑 | [langgraph/](case-studies/langgraph/) |
 | 工具插头 | [mcp/](mcp/) |
 | Agent 互委托 | [a2a/](a2a/) |
+| 实验室对照（何时拆 / 下发 / 产物 / 门控） | [multi-agent-research/](multi-agent-research/) |
 | 菜谱 | [agent-skills/](agent-skills/) |
 | 编码外壳 | [harness/](harness/) |
 | 记忆 | [memory/](../knowledge/memory/) |
