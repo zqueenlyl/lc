@@ -37,9 +37,9 @@ V4.1-Flash 数字（dsh Agent Team，初步）：
 
 ## 博客 / 产品
 
-- [Harness developer preview](https://www.deepseek.com/harness/en/)：一切皆插件。Standard 含 subagents / workflows；Code mode 用 TypeScript 编排多轮工具（计划在代码里）。
-- [V3.2 发布](https://www.deepseek.com/en/news/deepseek-v3-2/)：讲合成规模，不讲 Team API。
-- [V4.1-Flash 新闻](https://www.deepseek.com/en/news/deepseek-v4-1-flash/)：多 agent 数字只在技术报告。
+- [Harness developer preview](https://www.deepseek.com/harness/en/)（2026-08）：一切皆插件。Standard 含 subagents / workflows；Code mode 用 TypeScript 编排多轮工具（计划在代码里）。
+- [V3.2 发布](https://www.deepseek.com/en/news/deepseek-v3-2/)（2025-12）：讲合成规模，不讲 Team API。
+- [V4.1-Flash 新闻](https://www.deepseek.com/en/news/deepseek-v4-1-flash/)（2026-09）：多 agent 数字只在技术报告。
 
 ---
 

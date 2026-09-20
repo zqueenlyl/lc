@@ -10,12 +10,12 @@
 
 ## 论文 / 白皮书
 
-| 年份 | 来源 | 关系 |
+| 发表 | 来源 | 关系 |
 |---|---|---|
-| 2018 | [AI safety via debate](https://arxiv.org/abs/1805.00899) / [博客](https://openai.com/index/debate/) | 两个 agent 对辩、人当裁判。对齐用自博弈。 |
-| 2019 | [Emergent Tool Use](https://arxiv.org/abs/1909.07528) | 捉迷藏自博弈长出策略和工具使用。 |
-| 2019 | [Dota 2 with large scale DRL](https://openai.com/index/dota-2-with-large-scale-deep-reinforcement-learning/) | OpenAI Five。 |
-| 2023 | [Practices for Governing Agentic AI Systems](https://cdn.openai.com/papers/practices-for-governing-agentic-ai-systems.pdf) | 任务适配、动作约束、审批、日志、可中断。 |
+| 2018-05 | [AI safety via debate](https://arxiv.org/abs/1805.00899) / [博客](https://openai.com/index/debate/) | 两个 agent 对辩、人当裁判。对齐用自博弈。 |
+| 2019-09 | [Emergent Tool Use](https://arxiv.org/abs/1909.07528) | 捉迷藏自博弈长出策略和工具使用。 |
+| 2019-12 | [Dota 2 with large scale DRL](https://openai.com/index/dota-2-with-large-scale-deep-reinforcement-learning/) | OpenAI Five。 |
+| 2023-12 | [Practices for Governing Agentic AI Systems](https://cdn.openai.com/papers/practices-for-governing-agentic-ai-systems.pdf) | 任务适配、动作约束、审批、日志、可中断。 |
 
 没有「AI Organizations」那种组织对齐论文。LLM 编排写在指南和 SDK 里。
 
@@ -23,17 +23,17 @@
 
 ## 博客与产品（LLM 主线）
 
-1. [Orchestrating Agents: Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents)（已归档）  
+1. [Orchestrating Agents: Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents)（2024-10，已归档）  
    Swarm 概念原文：handoff = 电话转接，对方看得见全部对话。
-2. [New tools for building agents](https://openai.com/index/new-tools-for-building-agents/)（2025）  
+2. [New tools for building agents](https://openai.com/index/new-tools-for-building-agents/)（2025-03）  
    Responses API + Agents SDK。SDK 是 Swarm 的生产演进。
-3. [A practical guide to building agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/)  
+3. [A practical guide to building agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/)（2025-04）  
    **先单 agent。** 要拆只有 Manager（`as_tool`）和 Handoff。
-4. [Deep Research](https://openai.com/index/introducing-deep-research/) / [Operator](https://openai.com/index/introducing-operator/) / [ChatGPT agent](https://openai.com/index/introducing-chatgpt-agent/)  
+4. [Deep Research](https://openai.com/index/introducing-deep-research/)（2025-02） / [Operator](https://openai.com/index/introducing-operator/)（2025-01） / [ChatGPT agent](https://openai.com/index/introducing-chatgpt-agent/)（2025-07）  
    产品更像统一长循环，不是对外拆解的 Lead+Workers 文。
-5. [The next evolution of the Agents SDK](https://openai.com/index/the-next-evolution-of-the-agents-sdk/)  
+5. [The next evolution of the Agents SDK](https://openai.com/index/the-next-evolution-of-the-agents-sdk/)（2026-04）  
    Sandbox harness：MCP、skills、`AGENTS.md`、shell、apply_patch。
-6. [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)  
+6. [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)（2026-01）  
    Codex harness 怎么管上下文。Agents API 的底本。
 7. [Introducing the Agents API](https://openai.com/index/introducing-the-agents-api/)（2026-09）  
    托管 Codex harness：compaction、programmatic tool calling、原生并行 subagents。
