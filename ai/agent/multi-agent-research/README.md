@@ -18,7 +18,7 @@
 
 落地主文：[sdlc.md](./sdlc.md)（何时拆、下发、产物、门控、四段配法）
 
-厂商分册：[Anthropic](./anthropic.md) · [OpenAI](./openai.md) · [DeepSeek](./deepseek.md) · [Multica](./multica.md)
+厂商分册：[Anthropic](./anthropic.md) · [OpenAI](./openai.md) · [DeepSeek](./deepseek.md) · [Multica](./multica.md)（源码阅读：[multica-architecture.md](./multica-architecture.md)）
 
 ---
 
@@ -89,5 +89,5 @@
 1. 本页第二～三节，钉死总判断。
 2. [sdlc.md](./sdlc.md) 走完四段：下发字段、run 目录、门控、最小系统。
 3. 对照要抄的原语：DeepSeek 任务板 / Anthropic 研究子 agent / OpenAI Manager。
-4. 若要上工作区而不是自建队列，读 [Multica](./multica.md)。
+4. 若要上工作区而不是自建队列，读 [Multica](./multica.md)；逛源码按 [multica-architecture.md](./multica-architecture.md)。
 5. 环节 08 仍用来讲模式名；上线评测回 [环节 09](../环节09-评测与可观测详解.md)。
