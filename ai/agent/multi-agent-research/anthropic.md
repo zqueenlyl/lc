@@ -14,7 +14,7 @@
 |---|---|
 | [AI Organizations](https://arxiv.org/abs/2604.10290)（2026-04） / [Alignment 解读](https://alignment.anthropic.com/2026/ai-organizations/) | 12 任务：咨询组织 + 软件团队。已对齐个体组成组织后业务效用更高、伦理更差。差距更多来自提示与任务分解。单 agent 安全结论不能认证 multi-agent 部署。 |
 
-Constitutional AI（2022）是模型自反馈，不算部署型 MAS。
+Constitutional AI（2022-12）是模型自反馈，不算部署型 MAS。
 
 ---
 
@@ -24,23 +24,23 @@ Constitutional AI（2022）是模型自反馈，不算部署型 MAS。
    Workflows vs Agents。五模式含 **Orchestrator-Workers**。从简单开始。
 2. [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)（2025-06）  
    Claude Research = LeadResearcher + 并行 Subagents + CitationAgent。Opus 4 lead + Sonnet 4 workers，内部 eval **比单 agent Opus 4 高 90.2%**；约 **15× chat token**。适用：高价值、可并行、信息超出单窗口。计划写入 Memory；子 agent **产物落文件**，只回引用。
-3. [Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)  
+3. [Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)（2025-10）  
    `SKILL.md` 渐进披露。模块化靠技能，不是先拆人。
-4. [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)  
+4. [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)（2025-09）  
    Code SDK 改名 Agent SDK；默认 subagents（并行 + 隔离上下文）。
-5. [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)  
+5. [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)（2025-11）  
    Initializer + 增量 coding agent + 文件产物。长程编码单 vs 多 **仍未决**。
-6. [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)  
+6. [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)（2026-01）  
    评的是 model + harness；多路径合法，看终态。
 
 ## 产品博客（何时不该拆 / 何时该拆）
 
 - [The Anatomy of Effective Commerce Agents](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)（2026-09）  
   紧耦合会话：**技能优于子 agent**。例外：深度研究子 agent；已有合规面则 **hand-off**。
-- [Claude for Commerce Agents](https://www.anthropic.com/news/claude-for-commerce-agents)
-- [How and when to use subagents in Claude Code](https://claude.com/blog/subagents-in-claude-code)  
+- [Claude for Commerce Agents](https://www.anthropic.com/news/claude-for-commerce-agents)（2026-09）
+- [How and when to use subagents in Claude Code](https://claude.com/blog/subagents-in-claude-code)（2026-04）  
   调研、并行、独立二审才值得付隔离税。
-- [Project Vend 1](https://www.anthropic.com/research/project-vend-1) / [Phase 2](https://www.anthropic.com/research/project-vend-2)  
+- [Project Vend 1](https://www.anthropic.com/research/project-vend-1)（2025-06） / [Phase 2](https://www.anthropic.com/research/project-vend-2)（2025-12）  
   Phase 2 加 CEO agent。利润改善，但 CEO 也会批准糟决策。加一层监督 ≠ 自动治理。
 
 ---
