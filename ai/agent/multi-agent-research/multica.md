@@ -39,7 +39,40 @@ Agent **不会自己开工**。四种显式触发，路径相同，上下文重�
 路径：issue 上下文 → 创建 **run** → 在线 runtime 认领 → 本机 spawn CLI → 进度写回 issue。  
 Backlog 只是停车位，推到 Todo / In Progress 才入队。`/note` 只留言不唤醒。
 
+```mermaid
+flowchart LR
+  T["四种触发"] --> R["创建 run"]
+  R --> C["runtime 认领"]
+  C --> S["本机 spawn CLI"]
+  S --> W["写回 issue"]
+```
+
 Squad 时多一跳：指派 squad → 只给 leader 入队 → leader 发带精确 mention 的委派评论 → 被 `@` 的成员各自一条 run。Leader 停，不自己实现。成员回帖或阶段闸关闭后再叫醒 leader；有人显式 `@` 时 leader 让路。
+
+Leader 与 Member **不直连**。委派、回执、blocker、审查都写在同一张 issue 上。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Person as 人
+  participant Issue as Issue
+  participant Leader as Leader
+  participant Member as Member
+
+  Person->>Issue: 指派 squad，离开 backlog
+  Issue->>Leader: 只叫醒 leader（建 run）
+  Leader->>Issue: "@委派后停，不自己实现"
+  Issue->>Member: 被 @，入队 run
+  Member->>Issue: 回帖或提 PR
+  Issue->>Leader: 回帖或闸关，再醒
+  alt 再委派
+    Leader->>Issue: 再 @ 成员
+    Issue->>Member: 成员再入队
+  else 收口
+    Leader->>Issue: 标 in_review 或让路
+    Person->>Issue: 审 PR，签 done
+  end
+```
 
 产物靠 **issue 时间线 + execution log + Git PR**。run `completed` 只表示这一趟跑完，issue 是否完成看状态和人审。审查门默认进 `in_review`，不进 main。
 
@@ -134,6 +167,33 @@ Issue 状态说「这件活有没有做完」；run 状态说「这一趟跑没�
 ## 落到本目录的 SDLC
 
 适合当「几十个仓的人机看板」：评审 / 拆解 / 实现 / 验收做成 issue 状态机，Squad leader 做路由，实现 agent 在本机 checkout 干活，人看 plan / diff / 测试 / 未决问题。
+
+需求不会直接切成一堆实现单。先落成一张父 issue 做评审，人签后再由**一个 Lead** 按互不重叠的写域写成子 issue DAG。切一刀的标准是写域能不能分开，不是「看起来很大」。契约全程一个 owner；影响面不清或契约两解就停，禁止默认一种。
+
+```mermaid
+flowchart TD
+  req["一条需求"] --> parent["父 issue：整件活"]
+  parent --> review["评审：单 agent + skills"]
+  review --> gate1{"人签：做不做"}
+  gate1 -->|否| stop["停 / cancelled"]
+  gate1 -->|是| lead["拆解：一个 Lead 写子 issue"]
+  lead --> gate2{"人签：契约与范围"}
+  gate2 -->|两解未定| opts["列选项，禁止默认"]
+  opts --> gate2
+  gate2 -->|是| split["按写域切开"]
+  split --> contract["契约 issue<br/>唯一 owner"]
+  split --> implA["实现 issue A"]
+  split --> implB["实现 issue B"]
+  split --> cfg["配置 issue<br/>与代码成对"]
+  contract -->|"blockedBy 解开"| implA
+  contract -->|"blockedBy 解开"| implB
+  implA --> accept["验收 issue"]
+  implB --> accept
+  cfg --> accept
+  accept --> gate3{"人签 done"}
+```
+
+子 issue 状态互不影响；可用阶段闸分批叫醒父 assignee。每张实现单至少写清：`goal`、`repos[]`、`writeScope`、`inputs`、`acceptance`、`blockedBy`、`budget`。判断仍按 [sdlc.md](./sdlc.md)。
 
 | SDLC 段 | 建议结构 | 落在 Multica 上 |
 |---|---|---|
