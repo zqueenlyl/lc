@@ -1,8 +1,8 @@
 # MiniMax-H3 全景与架构
 
-> 调研时间：2026-09-16（架构）／2026-09-17 对照官方 HF 模型卡再核 ｜ 范围：MiniMax **官方**仓库 [`MiniMaxAI/MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（海螺 / Hailuo 线），不是 M 系对话模型，也不是 fal 的 LoRA
-> 三线总图：[《MiniMax 全景与产品线》](./MiniMax全景与产品线.md)（文本 M3 / 本页视频 / 音频 Speech·Music3）。本文基于官方发布博客、Hugging Face 模型卡、GitHub README 与 Community License 整理；**完整 H3 Tech Report 官方预告，2026-09-18 仍未见独立论文。**
-> 接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。挂在本基座上的 fal 人像 LoRA 见 [`fal/`](../fal/fal全景与生态.md)。原理对照：[视频生成详解](../../foundation/generative/video/视频生成详解.md)。M 系见 [M3 篇](./MiniMax-M3全景与架构.md)；接口速查 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
+> 调研时间：2026-09-16（架构）／2026-09-17 对照官方 HF 模型卡再核 ／ **2026-09-21 补开源骨架数字、统一口径** ｜ 范围：MiniMax **官方**仓库 [`MiniMaxAI/MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（海螺 / Hailuo 线），不是 M 系对话模型，也不是 fal 的 LoRA
+> 三线总图：[《MiniMax 全景与产品线》](./MiniMax全景与产品线.md)（文本 M3 / 本页视频 / 音频 Speech·Music3）。本文基于官方发布博客、Hugging Face 模型卡、GitHub README 与 Community License 整理；层宽等开源数字来自 [`MiniMaxH3DiTArchConfig`](https://github.com/vllm-project/vllm-omni/blob/main/vllm_omni/diffusion/models/minimax_h3/minimax_h3_transformer.py)。**完整 H3 Tech Report 官方预告，2026-09-21 仍未见独立论文。**
+> **环节拆解（仿 Transformer 01–11）**：[h3/环节00](./h3/环节00-总揽与环节导航.md)。单页压缩：[模型构成与训练全流程](./MiniMax-H3模型构成与训练全流程.md)。接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。挂在本基座上的 fal 人像 LoRA 见 [`fal/`](../fal/fal全景与生态.md)。原理对照：[视频生成详解](../../foundation/generative/video/视频生成详解.md)。M 系见 [M3 篇](./MiniMax-M3全景与架构.md)；接口速查 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
 
 ---
 
@@ -24,7 +24,8 @@
 |------|------|------|------|
 | 更早 | Hailuo 01 / 02 | 01 从 0 到 1；02 抠架构效率、数据与规模。H3 **主动丢掉 Hailuo-02 架构**，因为它不利于任务泛化 | 官方博客 |
 | 2026-07-31 | **H3 正式发布** | 全模态上下文理解 + 原生立体声音视频，最高 15s / 2K；宣称指令遵循、品牌文字、V2V 动作迁移 | 官方博客 |
-| 2026-08-02 | **Community License / 权重开源日** | HF `MiniMaxAI/MiniMax-H3`；许可证日期即此日。Encoder 另走 Qwen3-VL-32B 的 Apache-2.0 | 官方 LICENSE |
+| 2026-08-02 | **Community License 日期** | 许可证文本落款此日。Encoder 另走 Qwen3-VL-32B 的 Apache-2.0 | 官方 LICENSE |
+| 2026-08-03 | **开源新闻** | [Open General Intelligence…](https://www.minimax.io/news/minimax-h3-open-source)；HF 权重此前已挂。不要把 LICENSE 日和新闻日混成同一个「开源日」 | 官方新闻 |
 | 2026-08-10 | fal H3 LoRA 训练指南 | 四套 trainer；176 人像素材、十六组人评。当时胜出配方后来被现网权重替换 | [fal People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md) |
 | 2026-09-16 | 开源形态已稳定为双 checkpoint | `FL2VA/` + `Ref2VA/`；SGLang / vLLM / diffusers / ComfyUI 均有官方菜谱。完整 Tech Report **尚未见到** | 官方仓库 / 模型卡 |
 | 2026-09-17 | fal 人像 LoRA 快照 | `fal/MiniMax-H3-Realism-People-LoRA`：现网 rank 32 / 1500 / 高分桶。**不是**官方第四模块 | [fal/](../fal/fal全景与生态.md) |
@@ -53,7 +54,7 @@
 | 变体 | 模式 | 输入上限 |
 |------|------|----------|
 | **H3-Base-FL2VA** | 首尾帧 | 0 / 1 / 2 张图：无图 = T2VA；一张 = 首帧或尾帧；两张 = 首尾帧 |
-| **H3-Base-Ref2VA** | 全参考 | 图 ≤9；视频 ≤3 段、每段 2–15s、总时长 ≤15s；音频 ≤3 段、**每段 2–15s、总时长 ≤15s**，且必须配图或视频、不能单独作为输入；全类型文件合计 ≤12 |
+| **H3-Base-Ref2VA** | 全参考 | 图 ≤9；视频 ≤3 段、每段 2–15s、总时长 ≤15s；音频 ≤3 段、**每段 2–15s、总时长 ≤15s**；全类型文件合计 ≤12。开源日新闻另写：音频必须配图或视频、**不能单独作为输入**——**2026-09-21 的 HF / GitHub 规格表没有这句**，接入时以你用的栈报错为准 |
 
 V2V 动作迁移是 **Ref2VA 的一种用法**，不是第四个任务名。
 
@@ -132,13 +133,15 @@ H3 预训练刻意早融合：
 
 **H3-Omni-Transformer**
 
-| 项 | 官方口径 |
-|----|----------|
-| 规模 | **33B 稠密单流**；约 **13B 在 AdaLN 相关分支** |
-| 推理 | AdaLN 调制可预计算缓存，**纯推理可不加载这 13B**；完整权重仍放出以便微调 |
-| 模态专用参数 | 只在 **输入/输出层 + AdaLN**；Attention / FFN 无模态分支 |
-| 位置 | 三维 **MM-RoPE** `(t, h, w)` |
-| 稀疏注意力 | 训练末段引入，**降低长序列成本**；**首发开源只有全注意力推理**，稀疏实现标「后续单独发」 |
+| 项 | 口径 | 来源 |
+|----|------|------|
+| 规模 | **33B 稠密单流**；约 **13B 在 AdaLN 相关分支** | 官方 |
+| 层 / hidden / 头 | **50** / **5376** / **56×128**；另 2 层 text Token Refiner | 开源 `MiniMaxH3DiTArchConfig`（博客未写） |
+| FFN | **14336** SwiGLU | 同上 |
+| 推理 | AdaLN 调制可预计算缓存，**纯推理可不加载这 13B**；完整权重仍放出以便微调 | 官方 |
+| 模态专用参数 | 只在 **输入/输出层 + AdaLN**；Attention / FFN 无模态分支 | 官方 |
+| 位置 | 三维 **MM-RoPE** `(t, h, w)` | 官方 |
+| 稀疏注意力 | 训练末段引入，**降低长序列成本**；**首发开源只有全注意力推理**，稀疏实现标「后续单独发」 | 官方 |
 
 博客补充：引入多模态上下文后，序列长度方差约 **大了 3 倍**，理解 / 生成 workload 异质化。训练侧把理解与生成拆开调硬件利用率，并做样本间负载均衡，自称端到端训练吞吐 **+~30%**。这是训练基建，不是推理 API 行为。
 
@@ -160,7 +163,7 @@ H3 预训练刻意早融合：
 | **Contextual Omni Representation** | Caption 不能只写目标画面 | 还要写「上下文↔目标」「上下文内部元素」关系，且音视频、多镜头联合描述；语言当可泛化的任务接口 | 专用 caption 模型结构、数据配比 |
 | Caption 管线成本 | 素材太长 | 「大部分素材需要消耗 **100K token** 的推理，最终得到平均约 **4K** token」 | 这 100K 跑在哪套模型上 |
 | **H3-VAE** | 序列太长、2K 太贵 | 换代 tokenizer：重建 + 易学性 + 约 4× 有效序列 | 与 Hailuo-02 tokenizer 的逐项对比表 |
-| **Omni Transformer** | 任务墙 / 架构过巧 | 丢掉 Hailuo-02 架构；Attention/FFN 通用，模态差放在 AdaLN | 层数 / 头数 / hidden size |
+| **Omni Transformer** | 任务墙 / 架构过巧 | 丢掉 Hailuo-02 架构；Attention/FFN 通用，模态差放在 AdaLN | 博客未写层宽；开源已钉死，见 §4.2 |
 | **In-context Regeneration** | 2K 细节 | 低分结果 + 原上下文再生成，而非独立 SR | 2K 的具体像素规格、步数、是否另有蒸馏权重 |
 
 博客定价叙事（**未给绝对价，仅相对口径**）：默认提供 2K；2K 每秒价格不到「主流模型」的 1/3，768p 不到主流 720p 的 1/2。上线请以开放平台价目为准。
@@ -200,7 +203,7 @@ H3 预训练刻意早融合：
 
 | 项 | 状态 |
 |----|------|
-| 完整 H3 Tech Report | 官方预告，本快照未见 |
+| 完整 H3 Tech Report | 官方预告，2026-09-21 仍未见 |
 | Hailuo-02 被抛弃的具体结构 | 只说「会带来额外复杂性」 |
 | Context-IR / Regenerator 的模型规模与是否蒸馏 | 未开源、未给参数量 |
 | 训练数据构成、token 量、卡时 | 未披露 |

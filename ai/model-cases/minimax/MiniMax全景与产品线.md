@@ -64,7 +64,8 @@ MiniMax 按**任务族**拆线，不是「一个 Omni 包打天下」。官网�
 | 更早–2026-03 | 文本 | M2 → M2.1 / M2.5 → **M2.7**（自称参与自身进化） | M2.7 博客 2026-03-18 |
 | 2026-06-01 前后 | 文本 | **M3** 发布；MSA 论文 2026-06-11；MaxProof 博客 2026-06-09 | 官方博客 / arXiv |
 | 2026-07-31 | 视频 | **H3** 发布；Tech Report 标后续 | [H3 博客](https://www.minimax.io/blog/minimax-h3) |
-| 2026-08-02 | 视频 | H3-Base Community License / 开源 | HF LICENSE |
+| 2026-08-02 | 视频 | H3 Community License 落款 | HF LICENSE |
+| 2026-08-03 | 视频 | H3 开源新闻 | minimax.io/news |
 | 2026-08 中旬 | 音乐 | Music3 权重与 Demo（HF 组织页 Updated Aug 14） | [Music3](https://huggingface.co/MiniMaxAI/MiniMax-Music3) |
 | 线上 TTS | 语音 | API 档位滚动到 `speech-2.8-hd/turbo`（仍保留 2.6 / 02 / 01） | [T2A HTTP](https://platform.minimax.io/docs/api-reference/speech-t2a-http) |
 
