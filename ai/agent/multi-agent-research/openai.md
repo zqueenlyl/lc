@@ -2,7 +2,7 @@
 
 > 几乎没有一篇对标 Anthropic Research 系统的工程长文。LLM 时代反复讲两个原语：**Handoff（转交对话所有权）** 与 **Agents as tools（经理把专家当工具）**，再用 Swarm → Agents SDK → Codex / Agents API 收成产品。
 >
-> 检索日：2026-09-19。`my-kb` 几乎没有 OpenAI 专题页，只有 2026-09-13 周报提到 Agents API 和万级 agent 证明。
+> 检索日：2026-09-21（相对 09-19 补漏：Symphony 看板调度）。`my-kb` 几乎没有 OpenAI 专题页，只有 2026-09-13 周报提到 Agents API 和万级 agent 证明。
 
 总判断见 [README](./README.md)。落地四段见 [sdlc.md](./sdlc.md)。先分清两代：2018–2019 是 MARL（辩论、捉迷藏、Dota Five）；2024–2026 才是 LLM 编排。
 
@@ -39,6 +39,8 @@
    托管 Codex harness：compaction、programmatic tool calling、原生并行 subagents。
 8. [On the Navier–Stokes Millennium Prize Problem](https://openai.com/index/navier-stokes-solution/)（2026-09）  
    约 1 万并发 agent、分组通信、Codex 交叉授粉、Lean 形式化。优先权有争议。当「编排上限 + 可验证产物」样本读，不要当已结案科学结论。
+9. [An open-source spec for Codex orchestration: Symphony](https://openai.com/index/open-source-codex-orchestration-symphony/)（2026-04）  
+   人盯 3–5 个 Codex 会话会爆。改成 **issue 看板调度**：Linear 开单 → 每单独立 workspace → 常驻跑 Codex，崩了重启。Symphony 是 scheduler/runner，票状态/评论由 agent 用工具写回。对照 [Multica](./multica.md)：都是「管活不盯会话」；Multica 自建 issue，Symphony 读现成 tracker。
 
 ---
 
@@ -51,6 +53,7 @@
 | [examples/agent_patterns](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns) | **最该读**：routing、agents_as_tools、parallelization、llm_as_a_judge、human_in_the_loop |
 | [openai-agents-js](https://github.com/openai/openai-agents-js) | TypeScript |
 | [openai/codex](https://github.com/openai/codex) | 开源 coding harness。Agents API 底层即此 |
+| [openai/symphony](https://github.com/openai/symphony) | 看板编排 spec + Elixir 参考实现。可信环境预览，不是托管产品 |
 | [multi-agent-emergence-environments](https://github.com/openai/multi-agent-emergence-environments) | 捉迷藏环境。历史 MARL |
 
 官方第一问：**这一步谁对用户说话？**
@@ -70,3 +73,4 @@ Codex 默认要显式要求才 spawn；内置 `worker` / `explorer`；自定义 
 - 实现：专家当 tool / subagent；HITL 与 guardrails 在 SDK 示例里现成。
 - 跨域合规面才 Handoff。
 - NS 实验提醒：分组、交叉授粉、**产物可机器核验** 比多做人设重要。
+- 实现调度：人不要盯会话；Symphony / Multica 都从 issue 拉活。

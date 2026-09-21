@@ -3,7 +3,7 @@
 > 三家实验室一手资料 + Multica 工作区，用来回答：**何时拆、怎么下发、产物怎么收、不确定谁拍板**。
 > 关卡讲义仍读 [环节 08](../环节08-多Agent协作详解.md)；跨进程工单读 [a2a](../a2a/)。本目录是资料库，不是又一篇「怎么拆团队」。
 
-整理日期：2026-09-20。场景锚点：复杂业务系统、几十个仓库、多套配置——需求评审 → 任务拆解 → 实现 → 验收。
+整理日期：2026-09-21（补漏 FLT / Prove2Me、C compiler teams、Symphony）。场景锚点：复杂业务系统、几十个仓库、多套配置——需求评审 → 任务拆解 → 实现 → 验收。
 
 ---
 
@@ -76,8 +76,8 @@
 
 | | 核心原语 | 何时拆 | 开源可跑 | 量化 |
 |---|---|---|---|---|
-| [Anthropic](./anthropic.md) | Skills vs subagents；Research = Lead + 并行 workers | 紧耦合会话不拆；可并行研究/编码才拆 | Cookbook prompts、`research-agent`、`commerce-agents` | 内部 research eval +90.2%，约 15× token |
-| [OpenAI](./openai.md) | Handoff vs agents-as-tools | 先单 agent；合同/工具/策略变了再拆 | Swarm → Agents SDK `agent_patterns` → Codex | 万级 NS（有争议） |
+| [Anthropic](./anthropic.md) | Skills vs subagents；Research = Lead + 并行 workers；FLT = Prove2Me DAG | 紧耦合会话不拆；可并行研究/长程编码/形式化才拆 | Cookbook prompts、`research-agent`、`commerce-agents`、FLT Lean | 内部 research eval +90.2%；FLT ~11 天 / ~60 亿 token |
+| [OpenAI](./openai.md) | Handoff vs agents-as-tools；Symphony = issue 调度 | 先单 agent；合同/工具/策略变了再拆；人盯会话会爆则上看板 | Swarm → Agents SDK `agent_patterns` → Codex / Symphony | 万级 NS（有争议） |
 | [DeepSeek](./deepseek.md) | 持久 roster + 任务板 + mailbox | 长时程可并行编码；共享 checkout + 建议写域 | `dsh` experimental Team；社区 `dsh-agent-teams` | ProgramBench 8h 30.04% vs 单 20.39% |
 
 [Multica](./multica.md) 不是实验室论文，是人机看板：issue 是真相，daemon 在你机器上跑已有 CLI。管「工作系统」，不管「模型怎么推理」。

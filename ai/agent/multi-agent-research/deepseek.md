@@ -2,7 +2,7 @@
 
 > 不写「如何编排」的产品长文。公开主线是开源 harness 里一套可崩溃恢复的 **Agent Teams**，再用 V4.1-Flash 报告给出长时程编码曲线。
 >
-> 检索日：2026-09-19。`my-kb` 已摄入 `agent-teams`、`deepseek-harness`、`dsh-agent-teams-architecture`、V3.2 / V4.1-Flash。
+> 检索日：2026-09-21（相对 09-19 再搜：无新的官方 Team 编排长文。WideSeek-R1 等第三方 MARL 论文不是 DeepSeek 出品，不收）。`my-kb` 已摄入 `agent-teams`、`deepseek-harness`、`dsh-agent-teams-architecture`、V3.2 / V4.1-Flash。
 
 总判断见 [README](./README.md)。落地四段见 [sdlc.md](./sdlc.md)。
 
