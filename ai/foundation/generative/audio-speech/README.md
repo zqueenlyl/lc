@@ -60,7 +60,7 @@ TTS 的三代演化（看懂为什么越来越快）：**拼接 / 参数合成 �
 | 技术 | 关系 |
 |---|---|
 | [../diffusion/](../diffusion/) | TTS 第三代（扩散 / 流匹配）的数学底座 |
-| [../video/](../video/) | 视频-音频联合（口型 / 配音）的交叉位 |
+| [../../video/](../../video/) | 视频-音频联合（口型 / 配音）的交叉位 |
 | [../multimodal/](../multimodal/) | 语音进 Omni 系多模态 LLM |
 | [../../../runtime/voice-realtime/](../../../runtime/voice-realtime/) | 实时语音会话的延迟预算与流式协议 |
 | [../../../foundation/transformer/](../../transformer/) | 自回归解码与推理优化（ASR / TTS 自回归侧） |

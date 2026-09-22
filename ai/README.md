@@ -78,13 +78,13 @@ ai/
 
 分组与挂靠规则见 [foundation/README](./foundation/README.md)。
 
-**骨架**
+**骨架（两条生成全链路，文件夹按机制命名）**
 
 | 主题 | 一句话 | 入口 |
 |---|---|---|
-| **Transformer（手册）** | 自注意力骨架；RNN/LSTM 为何被取代 | [transformer/](./foundation/transformer/) |
-| **Transformer 全链路（原理）** | 一条主线 + 两个生命周期，11 环节 | [总揽](./foundation/transformer/环节00-总揽与环节导航.md) |
-| **评测与选型 / 长上下文 / RNN** | 横切 + 前史 | [选型](./foundation/transformer/模型评测与选型方法详解.md) · [长上下文](./foundation/transformer/长上下文工程详解.md) · [RNN](./foundation/transformer/RNN知识整理.md) |
+| **文本接龙 / LLM** | 猜下一个 token；目录是 `transformer/`（零件被视频复用） | [手册](./foundation/transformer/) · [环节00](./foundation/transformer/环节00-总揽与环节导航.md) |
+| **生视频** | 噪声 latent → 成片；与上者平级 | [手册](./foundation/video/) · [环节00](./foundation/video/环节00-总揽与环节导航.md) |
+| **评测 / 长上下文 / RNN** | 文本横切 + 前史 | [选型](./foundation/transformer/模型评测与选型方法详解.md) · [长上下文](./foundation/transformer/长上下文工程详解.md) · [RNN](./foundation/transformer/RNN知识整理.md) |
 
 **训练**
 
@@ -107,7 +107,7 @@ ai/
 |---|---|---|
 | **Generative（手册）** | 生成侧入口：扩散 / 视频 / 语音 / 世界模型 | [generative/](./foundation/generative/) |
 | **AIGC 总揽** | 模态矩阵 + 两大生成范式 + 公共底座 | [00](./foundation/generative/00-AIGC总揽与多模态地图.md) |
-| **Diffusion / Video / Audio / World** | 各模态生成 | [diffusion](./foundation/generative/diffusion/) · [video](./foundation/generative/video/) · [audio](./foundation/generative/audio-speech/) · [world-models](./foundation/generative/world-models/) |
+| **Diffusion / Audio / World** | 各模态生成（视频环节课已升格到骨架） | [diffusion](./foundation/generative/diffusion/) · [audio](./foundation/generative/audio-speech/) · [world-models](./foundation/generative/world-models/) |
 | **Multimodal（理解）** | CLIP → VLM → 统一模型 | [手册](./foundation/generative/multimodal/) · [详解](./foundation/generative/multimodal/多模态理解与统一模型详解.md) |
 
 ### ② agent · Agent 应用

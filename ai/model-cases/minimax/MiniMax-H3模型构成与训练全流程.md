@@ -1,8 +1,8 @@
 # MiniMax-H3：按模块拆构成 + 训练全流程
 
 > 配套总览：[《MiniMax-H3 全景与架构》](./MiniMax-H3全景与架构.md)（产品面 / 许可证 / 未披露表）｜ 部署：[本地部署与 API](./MiniMax-H3本地部署与API接入.md)
-> 扩散数学底座：[图像扩散模型详解](../../foundation/generative/diffusion/图像扩散模型详解.md)｜ 视频时间维：[视频生成详解](../../foundation/generative/video/视频生成详解.md)｜ Transformer 块：[环节 07](../../foundation/transformer/环节07-Block堆叠与整体架构详解.md)
-> **按 Transformer 环节拆读（推荐）**：[h3/环节00-总揽与环节导航.md](./h3/环节00-总揽与环节导航.md)（01–11 详解 + 各站 Notebook）。本文是同一套材料的单页压缩版。
+> 扩散数学底座：[图像扩散模型详解](../../foundation/generative/diffusion/图像扩散模型详解.md)｜ 视频时间维：[视频生成详解](../../foundation/video/视频生成详解.md)｜ Transformer 块：[环节 07](../../foundation/transformer/环节07-Block堆叠与整体架构详解.md)
+> **按生成链路分站拆读（推荐）**：[视频生成 · 环节00](../../foundation/video/环节00-总揽与环节导航.md)（01–11 详解 + 各站 Notebook）。本文是 H3 产品面的单页压缩版。
 > 手算合集（旧入口，内容已拆进各环节）：[MiniMax-H3模块与训练直觉演示.ipynb](./MiniMax-H3模块与训练直觉演示.ipynb)
 >
 > **口径（2026-09-21）**：官方完整 Tech Report **仍未发布**（2026-07-31 博客写 soon）。本文能钉死的数字来自官方博客、HF 模型卡、GitHub README，以及开源推理栈 [`vllm-omni` 的 `MiniMaxH3DiTArchConfig`](https://github.com/vllm-project/vllm-omni/blob/main/vllm_omni/diffusion/models/minimax_h3/minimax_h3_transformer.py)。训练数据配比、卡时、稀疏注意力具体模式、IR / Regenerator 参数量 **官方未披露**，文中一律标「未披露」。第三方评测 [arXiv:2609.18323](https://arxiv.org/abs/2609.18323) 是物理世界推理评测，**不是**官方技术报告。

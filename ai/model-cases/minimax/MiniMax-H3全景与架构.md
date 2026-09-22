@@ -2,7 +2,7 @@
 
 > 调研时间：2026-09-16（架构）／2026-09-17 对照官方 HF 模型卡再核 ／ **2026-09-21 补开源骨架数字、统一口径** ｜ 范围：MiniMax **官方**仓库 [`MiniMaxAI/MiniMax-H3`](https://huggingface.co/MiniMaxAI/MiniMax-H3)（海螺 / Hailuo 线），不是 M 系对话模型，也不是 fal 的 LoRA
 > 三线总图：[《MiniMax 全景与产品线》](./MiniMax全景与产品线.md)（文本 M3 / 本页视频 / 音频 Speech·Music3）。本文基于官方发布博客、Hugging Face 模型卡、GitHub README 与 Community License 整理；层宽等开源数字来自 [`MiniMaxH3DiTArchConfig`](https://github.com/vllm-project/vllm-omni/blob/main/vllm_omni/diffusion/models/minimax_h3/minimax_h3_transformer.py)。**完整 H3 Tech Report 官方预告，2026-09-21 仍未见独立论文。**
-> **环节拆解（仿 Transformer 01–11）**：[h3/环节00](./h3/环节00-总揽与环节导航.md)。单页压缩：[模型构成与训练全流程](./MiniMax-H3模型构成与训练全流程.md)。接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。挂在本基座上的 fal 人像 LoRA 见 [`fal/`](../fal/fal全景与生态.md)。原理对照：[视频生成详解](../../foundation/generative/video/视频生成详解.md)。M 系见 [M3 篇](./MiniMax-M3全景与架构.md)；接口速查 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
+> **环节拆解（foundation 视频 01–11）**：[环节00](../../foundation/video/环节00-总揽与环节导航.md)。单页压缩：[模型构成与训练全流程](./MiniMax-H3模型构成与训练全流程.md)。接入、本地部署、端点与坑见 [《MiniMax-H3 本地部署与 API 接入》](./MiniMax-H3本地部署与API接入.md)。挂在本基座上的 fal 人像 LoRA 见 [`fal/`](../fal/fal全景与生态.md)。原理：[视频生成详解](../../foundation/video/视频生成详解.md)。M 系见 [M3 篇](./MiniMax-M3全景与架构.md)；接口速查 [providers · MiniMax](../providers/各大厂商代表模型总览.md#36-minimax)。
 
 ---
 
@@ -174,7 +174,7 @@ H3 预训练刻意早融合：
 
 | 对照 | H3 的位置 |
 |------|-----------|
-| 经典视频 DiT（先出静音再配乐） | H3 是 **单 Transformer、单去噪环、音画联合**；更接近「原生 A/V」而不是两段流水线。原理层仍是潜空间去噪，见 [视频生成详解](../../foundation/generative/video/视频生成详解.md) |
+| 经典视频 DiT（先出静音再配乐） | H3 是 **单 Transformer、单去噪环、音画联合**；更接近「原生 A/V」而不是两段流水线。原理层仍是潜空间去噪，见 [视频生成详解](../../foundation/video/视频生成详解.md) |
 | 字节 Seedance 2.0 | 同属「一次前向出画+声」赛道；Seedance 以 API / 产品为主、权重未开。案例见 [doubao](../doubao/豆包视频交互技术深度调研报告.md) |
 | 可灵 / Veo / Wan | 仍是「按镜头选模型」的 2026 格局；H3 的差异化是 **开源 Base + 多模态参考上限写进模型卡** |
 | MiniMax **M 系列** | 对话 / Agent / 代码；协议是 `chatcompletion_v2` + OpenAI 兼容。H3 走 **视频异步任务 API**（`/v1/videos` 或 `video-generation-v2-*`），两套不要共用客户端假设 |
@@ -228,7 +228,7 @@ H3 预训练刻意早融合：
 
 - 部署与 API：[MiniMax-H3本地部署与API接入.md](./MiniMax-H3本地部署与API接入.md)
 - fal 平台与人像适配器：[fal全景](../fal/fal全景与生态.md) · [People LoRA](../fal/MiniMax-H3-Realism-People-LoRA.md)
-- 视频原理：[视频生成详解](../../foundation/generative/video/视频生成详解.md)
+- 视频原理：[视频生成详解](../../foundation/video/视频生成详解.md)
 - 产业层：[landscape.md](../../landscape.md) §4.5
 - 三线总图：[MiniMax全景与产品线.md](./MiniMax全景与产品线.md) ｜ 文本：[M3](./MiniMax-M3全景与架构.md) ｜ 音频：[Speech 与 Music3](./MiniMax音频线Speech与Music3.md)
 - M 系接口：[providers · 各大厂商代表模型总览](../providers/各大厂商代表模型总览.md)

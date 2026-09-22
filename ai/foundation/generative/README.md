@@ -37,7 +37,7 @@
 | 场景 | 模态 | 入口 |
 |---|---|---|
 | 营销配图 / 分镜 / 海报 | 文生图 | [diffusion/](./diffusion/) |
-| 短视频 / 广告片头 / 动态素材 | 文生视频 | [video/](./video/) |
+| 短视频 / 广告片头 / 动态素材 | 文生视频 | [video 环节课](../video/) |
 | 会议转写 / 语音客服 / 配音 | 语音（ASR / TTS） | [audio-speech/](./audio-speech/) |
 | 单据截图理解、视频找事件 | 多模态理解 | [multimodal/](./multimodal/) |
 | 仿真 / 具身 / 预测下一帧 | 视频预测 | [world-models/](./world-models/) |
@@ -88,7 +88,8 @@
 | `README.md`（本文件） | 入口：是什么 / 怎么读 / 工程横切 |
 | [00-AIGC总揽与多模态地图.md](./00-AIGC总揽与多模态地图.md) | 生成侧第 0 篇：模态矩阵 + 两大范式 + 公共底座 + 合规评测 |
 | [diffusion/图像扩散模型详解.md](./diffusion/图像扩散模型详解.md) | DDPM 数学 → 潜空间 VAE → UNet / DiT → 条件与可控生成 |
-| [video/视频生成详解.md](./video/视频生成详解.md) | 视频 = 图 + 时间：时空 patch / 3D VAE / DiT 路线 |
+| [../video/视频生成详解.md](../video/视频生成详解.md) | 视频 = 图 + 时间：时空 patch / 成本账 |
+| [../video/环节00](../video/环节00-总揽与环节导航.md) | 生视频 01–11 关卡（与 transformer 平级） |
 | [audio-speech/音频与语音详解.md](./audio-speech/音频与语音详解.md) | ASR / TTS 三代演化 / 神经编解码 token / 端到端语音对话 |
 | [world-models/](./world-models/) | 预测"世界如何演化"，而不只是下一个 token |
 | [multimodal/多模态理解与统一模型详解.md](./multimodal/多模态理解与统一模型详解.md) | 理解侧（与生成互为镜像）：CLIP → VLM 三代 → 统一模型 |

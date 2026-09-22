@@ -218,7 +218,7 @@ fal 四个 trainer 与推理任务对齐，按 step 计费：
 | [H3 本地部署与 API](../minimax/MiniMax-H3本地部署与API接入.md) | ComfyUI / SGLang / 768p vs 2K；本页只多一个 Load LoRA |
 | [fal 全景与生态](./fal全景与生态.md) | 平台身份：托管推理 / trainer / 发 LoRA，不是模型实验室 |
 | [PEFT / LoRA](../../foundation/peft-lora/README.md) | 现场样本：r 不是越大越好、训练分辨率决定高频能不能进 latent、同 seed A/B |
-| [视频生成详解](../../foundation/generative/video/视频生成详解.md) | 可控生成用适配器，不另训专家 |
+| [视频生成详解](../../foundation/video/视频生成详解.md) | 可控生成用适配器，不另训专家 |
 
 ---
 

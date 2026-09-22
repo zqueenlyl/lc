@@ -2,23 +2,32 @@
 
 > **定位**：模型**本体** —— 是什么、怎么造、怎么变强、怎么生成。
 > **口诀**：「讲模型内部 / 权重 / 训练 / 生成范式」→ 归这。
-> **挂靠规则**：没长成独立环节课的，不跟 `transformer` / `rl` 平级当「全链路原理」。变体/档位用薄手册；跨环节收口用横切文（不占环节号）。
+> **挂靠规则**：
+> 1. **全链路环节课**才平级：现在是 `transformer/`（文本接龙 / LLM）、`video/`（生视频）、`rl/`（对齐）、`peft-lora/`（低秩微调）。
+> 2. **文件夹按机制命名，不按品类**。所以文本这条不叫 `llm/`：01–07 的 Attention / FFN / RoPE 是零件，[video 环节 07](./video/环节07-Omni-Block堆叠详解.md) 直接复用。对外可以说「LLM 环节课」，路径仍是 `transformer/`。
+> 3. 还没长成 01–N 的（图像扩散、语音、世界模型、多模态理解）留在 [generative/](./generative/)，用薄手册 + 地图，不占骨架席。
+> 4. 变体/档位（`moe/` `slm/`）用薄手册，零件正文回环节课。
 
 上级索引：[../README.md](../README.md) ｜ 学习地图：[../learning-path.md](../learning-path.md)
 
 ---
 
-## 骨架
+## 两条生成全链路（骨架）
 
-| 入口 | 一句话 |
-|---|---|
-| [transformer/](./transformer/)（手册） | 自注意力骨架；RNN/LSTM 为何被取代；因果 vs 双向 |
-| [环节00](./transformer/环节00-总揽与环节导航.md)（原理，01–11） | 一条主线 + 两个生命周期 |
-| [模型评测与选型](./transformer/模型评测与选型方法详解.md)（横切） | 训练产出后怎么验、部署前怎么选 |
-| [长上下文工程](./transformer/长上下文工程详解.md)（横切） | 位置 / 结构可见 / KV / 算力四条天花板 |
-| [RNN知识整理](./transformer/RNN知识整理.md) | Attention 之前的历史 |
+同一套「环节 00 → 01–11 + Notebook」：先认机器在干什么，再下钻零件。
 
-引擎怎么跑、本地怎么装 → [../runtime/](../runtime/)（环节 11 只讲服务化原理）。
+| | 文本接龙（LLM） | 生视频 |
+|--|----------------|--------|
+| 目录 | [transformer/](./transformer/) | [video/](./video/) |
+| 关卡地图 | [环节00](./transformer/环节00-总揽与环节导航.md) | [环节00](./video/环节00-总揽与环节导航.md) |
+| 机器 | 猜下一个 token | 把噪声 latent 拉回干净音视频 |
+| 循环 | 序列变长，+1 token | 序列长度冻结，\(t\) 往 0 走 |
+| 01–07 | 零件正文（Tokenizer → Block） | 视频侧改造（VAE / pack / 3D-RoPE / AdaLN / 双向 DiT） |
+| 08–11 | LM Head、CE、KV、Chat 服务 | 速度头、flow MSE、沿 \(t\) 积分、异步出片 |
+
+文本横切（评测 / 长上下文 / RNN 前史）仍挂在 transformer 下：[选型](./transformer/模型评测与选型方法详解.md) · [长上下文](./transformer/长上下文工程详解.md) · [RNN](./transformer/RNN知识整理.md)。视频横切：[演化路线](./video/生视频模型演化路线与类型.md) · [时间维短文](./video/视频生成详解.md)。
+
+引擎怎么跑、本地怎么装 → [../runtime/](../runtime/)（各课环节 11 只讲服务化原理）。
 
 ---
 
@@ -53,8 +62,7 @@
 |---|---|
 | [generative/](./generative/)（手册） | 生成侧入口与工程横切（异步 / 步数账 / 审核） |
 | [00-AIGC总揽与多模态地图](./generative/00-AIGC总揽与多模态地图.md) | 模态矩阵 + 两大范式 + 公共底座 |
-| [diffusion/](./generative/diffusion/) | 图像扩散：DDPM → 潜空间 VAE → UNet/DiT |
-| [video/](./generative/video/) | 视频 = 图 + 时间 |
+| [diffusion/](./generative/diffusion/) | 图像扩散：DDPM → 潜空间 VAE → UNet/DiT（尚未独立环节课） |
 | [audio-speech/](./generative/audio-speech/) | ASR / TTS / 端到端语音对话 |
 | [world-models/](./generative/world-models/) | 预测世界如何演化，而不只是下一个 token |
 | [multimodal/](./generative/multimodal/)（理解侧手册） | 原生吃图/音/视频，不再靠 OCR/ASR 胶水 |
@@ -64,10 +72,10 @@
 
 ## 四条读法
 
-- **骨架线**（须按序）：[transformer 环节00](./transformer/环节00-总揽与环节导航.md) → 01 … 11 → 横切（评测 / 长上下文）。
+- **生成全链路**（须按序，两条平行）：文本 [transformer 环节00](./transformer/环节00-总揽与环节导航.md) → 01 … 11；视频 [video 环节00](./video/环节00-总揽与环节导航.md) → 01 … 11。视频 01–07 遇到 Attn/FFN/RoPE 公式，回 transformer 对应站，不在 video 重讲。
 - **训练线**：[rl 环节00](./rl/环节00-总揽与环节导航.md) → 01 … 08 → [推理侧横切](./rl/推理侧搜索与test-time-scaling.md)；微调几何走 [peft-lora 环节00](./peft-lora/环节00-总揽与环节导航.md)。
-- **模态线**：[00-AIGC总揽](./generative/00-AIGC总揽与多模态地图.md) → `diffusion` / `video` / `audio-speech` / `world-models` / `multimodal`。
-- **变体**：按需跳 `moe` / `slm`；手册线也可从 [transformer/README](./transformer/) 建骨架再跳。
+- **模态线**（还没成课的生成/理解）：[00-AIGC总揽](./generative/00-AIGC总揽与多模态地图.md) → `diffusion` / `audio-speech` / `world-models` / `multimodal`。
+- **变体**：按需跳 `moe` / `slm`。
 
 ## 相邻大类
 

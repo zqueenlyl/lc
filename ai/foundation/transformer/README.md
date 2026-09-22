@@ -1,12 +1,14 @@
-# Transformer · 自注意力与序列模型骨架
+# Transformer · LLM 全链路（自注意力骨架）
 
-> 用 **self-attention** 让序列里每个位置直接看其他位置，训练可并行、长距离依赖路径短。一句话：**RNN 靠隐状态接力传话，Transformer 当场开会。**
+> **对外**：这是文本大模型（LLM）的 01–11 环节课。**文件夹仍叫 `transformer/`**：01–07 的 Attention / FFN / RoPE / RMSNorm 是零件，[生视频环节](../video/环节00-总揽与环节导航.md) 的 DiT 直接复用，不另起一套「llm 注意力」。
+>
+> 用 **self-attention** 让序列里每个位置直接看其他位置。一句话：**RNN 靠隐状态接力传话，Transformer 当场开会；接龙机（LLM）是这套骨架最常见的装法。**
 
 代表：原论文 Encoder–Decoder（机器翻译）、BERT（Encoder-only）、GPT / 几乎所有现代 LLM（Decoder-only）。RNN / LSTM / GRU 是它取代的前代。
 
 配套 MVP：[mvp.py](./mvp.py)（缩放点积注意力 + 因果掩码 + 和 RNN 隐状态衰减对比）。
 
-> 环节主线（01–11 关卡地图）：见 [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)。本页讲**机制本身**（attention / RNN 对比 / 选型），那边讲**一条主线 + 两个生命周期怎么串**。
+> 环节主线（01–11 关卡地图）：见 [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)。本页讲**机制本身**（attention / RNN 对比 / 选型），那边讲**一条接龙主线 + 两个生命周期怎么串**。
 
 ---
 
