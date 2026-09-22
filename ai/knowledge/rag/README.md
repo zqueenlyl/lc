@@ -104,5 +104,6 @@ RAG 的动机：模型参数里只有「训练时见过、且记得住」的知�
 
 - 原论文：RAG（Lewis et al. 2020）、Self-RAG、CRAG、HyDE、RAPTOR、GraphRAG（微软 2024）
 - 构图与图工程：[../../agent/loop-graph/](../../agent/loop-graph/)
+- 组织 KM 把「查询时综合」写成进步：对照 [../../../knowledge-management-dynamics/06-ch5-LLM跨域知识转移.md](../../../knowledge-management-dynamics/06-ch5-LLM跨域知识转移.md)（本库仍把它当 Naive RAG 失败模式）
 - 相邻专题：[../vector-db/](../vector-db/)、[../knowledge-base/](../knowledge-base/)、[../context-engineering/](../context-engineering/)
 - 上级索引：[../README.md](../README.md) ｜ 总索引 [../../README.md](../../README.md)

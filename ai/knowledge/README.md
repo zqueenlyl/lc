@@ -17,6 +17,8 @@
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 
 > 跨实体 / 多跳 / 「同一个客户」要对齐：图检索见 [../agent/loop-graph/](../agent/loop-graph/)（上下文图 + GraphRAG 家族）；**对象 + 动作 + 权限**的运营建模见 [ontology/](./ontology/)（Palantir Foundry 为参照）。向量库仍然是语义召回底座。
+>
+> 组织 KM 学科把 LLM 写成「查询时综合器」、把 wiki 写成过时仓库：对照笔记见 [../../knowledge-management-dynamics/](../../knowledge-management-dynamics/)（IntechOpen 2026 论文集；当对手，不当权威）。
 
 ## 四件事的分工
 

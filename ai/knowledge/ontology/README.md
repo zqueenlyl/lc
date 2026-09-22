@@ -163,4 +163,5 @@ Palantir 把 AIP（Artificial Intelligence Platform）架在 Ontology 上：LLM 
 
 - 五维分类里的 OWL 节：[../knowledge-base/知识库类型整理.md](../knowledge-base/知识库类型整理.md) §四
 - 个人 Wiki 概念页：`my-kb/wiki/concepts/ontology.md`、`operational-ontology.md`
+- 外部教材反例（哲学 Ontology 与 OWL 混写，不覆盖本页定义）：[../../../knowledge-management-dynamics/02-ch1-本体与信息科学.md](../../../knowledge-management-dynamics/02-ch1-本体与信息科学.md)
 - 官方：[Ontology overview](https://www.palantir.com/docs/foundry/ontology/overview/) · [palantir.com](https://www.palantir.com/)

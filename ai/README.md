@@ -147,6 +147,8 @@ ai/
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./knowledge/memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./knowledge/context-engineering/) |
 
+组织 KM 外部对照（论文集笔记，与 `naval/` 同级）：[../knowledge-management-dynamics/](../knowledge-management-dynamics/)——书名像本库主题，正文把 LLM 写成查询时综合器；当对手，不当机制来源。
+
 ### ④ reliability · 治理与上线
 
 | 主题 | 一句话 | 入口 |

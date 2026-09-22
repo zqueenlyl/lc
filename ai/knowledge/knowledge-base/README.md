@@ -81,4 +81,5 @@
 
 - 正文文档：[知识库类型整理.md](./知识库类型整理.md)
 - 相邻专题：[../vector-db/](../vector-db/)、[../rag/](../rag/)、[../ontology/](../ontology/)、[../memory/](../memory/)
+- 外部 KM 对照（query-time 综合 vs 编译型 Wiki）：[../../../knowledge-management-dynamics/](../../../knowledge-management-dynamics/)
 - 上级索引：[../README.md](../README.md) ｜ 总索引 [../../README.md](../../README.md)

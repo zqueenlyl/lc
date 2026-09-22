@@ -131,4 +131,4 @@ README §七：Prompt → Context → Harness → Loop → Graph（何时加层�
 
 - Agent 流水线 / 环节 / 案例 → [ai/agent](../ai/agent/)
 - 外部课程（CS329Z 也讲 Design Patterns）→ [ai/courses.md](../ai/courses.md)
-- 同级书 / 专题笔记 → [naval](../naval/) · [game-theory](../game-theory/)
+- 同级书 / 专题笔记 → [naval](../naval/) · [game-theory](../game-theory/) · [knowledge-management-dynamics](../knowledge-management-dynamics/)（组织 KM 论文集；query-time 综合 vs 本库 Wiki/RAG）
