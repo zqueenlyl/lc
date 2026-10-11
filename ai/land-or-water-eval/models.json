@@ -1,0 +1,48 @@
+{
+  "_comment": "Model registry for run_eval.py --models. Credentials come from env vars; a model with no credential is skipped, never faked. mode=batch-recall means the prediction is a one-shot cached recall and is NOT comparable to mode=api (per-point queries).",
+  "models": [
+    {
+      "id": "hy4",
+      "label": "hy4",
+      "probe": "file",
+      "path": "predictions/hy4.intervals.json",
+      "mode": "batch-recall"
+    },
+    {
+      "id": "hy3",
+      "label": "hy3",
+      "probe": "openai",
+      "model": "hy3",
+      "base_url_env": "HY3_BASE_URL",
+      "api_key_env": "HY3_API_KEY",
+      "mode": "api",
+      "note": "needs a WorkBuddy-internal base url; export HY3_BASE_URL and HY3_API_KEY"
+    },
+    {
+      "id": "deepseek-v4.1-flash",
+      "label": "DeepSeek V4.1 Flash",
+      "probe": "openai",
+      "model": "deepseek-flash",
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "mode": "api",
+      "note": "official current model string is 'deepseek-flash'; 'deepseek-v4-flash' is a compat alias that routes to it"
+    },
+    {
+      "id": "deepseek-v4.1-pro",
+      "label": "DeepSeek V4.1 Pro",
+      "probe": "openai",
+      "model": "deepseek-v4-pro",
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "mode": "api",
+      "caveat": "V4.1-Pro has NOT launched. V4-Pro was retired 2026-09-14 and all deepseek-v4-pro requests now route to V4.1-Flash at Flash rates. Until V4.1-Pro ships, this row is the same model as deepseek-v4.1-flash."
+    },
+    {
+      "id": "baseline",
+      "label": "baseline (always land)",
+      "probe": "mock",
+      "mode": "degenerate"
+    }
+  ]
+}

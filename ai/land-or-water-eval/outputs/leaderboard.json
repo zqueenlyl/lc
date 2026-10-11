@@ -1,0 +1,48 @@
+{
+  "step": 4.0,
+  "n_points": 4050,
+  "baseline_all_land": 0.33111111111111113,
+  "rows": [
+    {
+      "id": "hy4",
+      "label": "hy4",
+      "status": "ok",
+      "mode": "batch-recall",
+      "accuracy": 0.9328395061728395,
+      "land_recall": 0.9679343773303505,
+      "water_recall": 0.9154669619785899,
+      "errors": 272
+    },
+    {
+      "id": "hy3",
+      "label": "hy3",
+      "status": "skipped",
+      "reason": "no credential: export HY3_API_KEY=...",
+      "mode": "api"
+    },
+    {
+      "id": "deepseek-v4.1-flash",
+      "label": "DeepSeek V4.1 Flash",
+      "status": "skipped",
+      "reason": "no credential: export DEEPSEEK_API_KEY=...",
+      "mode": "api"
+    },
+    {
+      "id": "deepseek-v4.1-pro",
+      "label": "DeepSeek V4.1 Pro",
+      "status": "skipped",
+      "reason": "no credential: export DEEPSEEK_API_KEY=...",
+      "mode": "api"
+    },
+    {
+      "id": "baseline",
+      "label": "baseline (always land)",
+      "status": "ok",
+      "mode": "degenerate",
+      "accuracy": 0.33111111111111113,
+      "land_recall": 1.0,
+      "water_recall": 0.0,
+      "errors": 2709
+    }
+  ]
+}
