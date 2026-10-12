@@ -17,7 +17,7 @@
 | **① 底层存储技术** | 向量库 / 图库 / 关系型 / 全文引擎 / 文档库 / KV | [§一](./知识库类型整理.md) |
 | **② 检索 / 知识组织方式** | 关键词（BM25）/ 向量 / 混合 / Graph RAG / Text-to-SQL / 多模态 | [§二](./知识库类型整理.md) |
 | **③ 知识形态** | 结构化 / 半结构化 / 非结构化 | [§三](./知识库类型整理.md) |
-| **④ 知识表示与建模** | Ontology：OWL / RDF **或** 运营本体（对象 / 链接 / 动作） | [§四](./知识库类型整理.md) ｜ 展开 [../ontology/](../ontology/) |
+| **④ 知识表示与建模** | OWL / 运营本体，或 Lean 4 证明项 | [§四](./知识库类型整理.md) ｜ [../ontology/](../ontology/) ｜ [../lean/](../lean/) |
 | **⑤ 构建与维护方式** | 人工维护 / LLM 维护型（如 Karpathy LLM Wiki） | [§五](./知识库类型整理.md) |
 
 核心认知：**存储技术决定「怎么存」，检索方式决定「怎么找」，知识形态决定「存什么」，表示方式决定「关系怎么建」，维护方式决定「谁来更新」**。五者可以自由组合，先锁需求再选组合。
@@ -42,6 +42,7 @@
 | 精确关键词 / 日志检索 | 全文检索引擎（可与向量库搭配） |
 | 海量文档内容管理 | 文档数据库 + 向量索引 |
 | 形式化领域建模 / 语义互操作 | OWL / RDF 本体 |
+| 数学陈述或程序规约要留下可复检的证明项 | Lean 4（kernel 检查；陈述翻译另审） |
 | 组织数字孪生 / 人与 LLM 受控改业务对象 | 运营本体（Palantir Foundry Ontology 为参照） |
 | 个人长期积累 / 第二大脑 | LLM 维护型知识库（Markdown + Git） |
 | 性能热点加速 | KV 存储做缓存兜底 |
@@ -63,7 +64,8 @@
 | [../memory/](../memory/) | 面向「个人 / 长期」的知识库形态，与 LLM 维护型同源 |
 | [../../agent/环节06-检索增强RAG详解.md](../../agent/环节06-检索增强RAG详解.md) | 检索链路的原理纵深 |
 | [../../agent/loop-graph/](../../agent/loop-graph/) | 图存储 / GraphRAG / 领域契约的工程展开 |
-| [../ontology/](../ontology/) | 「④ 知识表示」的展开：OWL vs Palantir 运营本体 |
+| [../ontology/](../ontology/) | 「④ 知识表示」的展开：OWL 定义、语法、推理 vs Palantir 运营本体 |
+| [../lean/](../lean/) | 「④ 知识表示」的另一条：Lean 4 证明项与 kernel |
 
 ---
 
@@ -80,6 +82,6 @@
 ## 七、延伸阅读
 
 - 正文文档：[知识库类型整理.md](./知识库类型整理.md)
-- 相邻专题：[../vector-db/](../vector-db/)、[../rag/](../rag/)、[../ontology/](../ontology/)、[../memory/](../memory/)
+- 相邻专题：[../vector-db/](../vector-db/)、[../rag/](../rag/)、[../ontology/](../ontology/)、[../lean/](../lean/)、[../memory/](../memory/)
 - 外部 KM 对照（query-time 综合 vs 编译型 Wiki）：[../../../knowledge-management-dynamics/](../../../knowledge-management-dynamics/)
 - 上级索引：[../README.md](../README.md) ｜ 总索引 [../../README.md](../../README.md)

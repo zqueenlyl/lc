@@ -1,0 +1,98 @@
+# 出口合规 · 订单 A1042 的制裁穿透
+# 剖面：OWL 2 RL。推理见同目录 reason.py（owlrl，前向链物化）。
+#
+# TBox 是规范。ABox 只放源系统愿意签字的事实。
+# 「Harbor 受制裁」「A1042 是阻断装运」不在 ABox 里，由推理器推出。
+
+@prefix tr:   <https://example.com/onto/trade#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://example.com/onto/trade> a owl:Ontology ;
+    rdfs:label "出口合规"@zh .
+
+# --- 类 ---
+
+tr:Party a owl:Class ; rdfs:label "参与方"@zh .
+tr:Person a owl:Class ;
+    rdfs:label "人"@zh ;
+    rdfs:subClassOf tr:Party ;
+    owl:disjointWith tr:Organization .
+tr:Organization a owl:Class ;
+    rdfs:label "组织"@zh ;
+    rdfs:subClassOf tr:Party .
+tr:SanctionList a owl:Class ; rdfs:label "制裁名单"@zh .
+tr:SanctionedParty a owl:Class ;
+    rdfs:label "受制裁参与方"@zh ;
+    rdfs:subClassOf tr:Party .
+tr:Shipment a owl:Class ; rdfs:label "装运"@zh .
+tr:BlockedShipment a owl:Class ;
+    rdfs:label "阻断装运"@zh ;
+    rdfs:subClassOf tr:Shipment .
+
+# --- 关系 ---
+
+tr:subsidiaryOf a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "是子公司"@zh ;
+    rdfs:domain tr:Organization ;
+    rdfs:range tr:Organization .
+
+tr:listedOn a owl:ObjectProperty ;
+    rdfs:label "列在名单上"@zh ;
+    rdfs:domain tr:Party ;
+    rdfs:range tr:SanctionList .
+
+tr:consignedTo a owl:ObjectProperty ;
+    rdfs:label "收货方"@zh ;
+    rdfs:domain tr:Shipment ;
+    rdfs:range tr:Party .
+
+tr:employs a owl:ObjectProperty ;
+    rdfs:label "雇用"@zh ;
+    rdfs:domain tr:Organization ;
+    rdfs:range tr:Person ;
+    owl:inverseOf tr:employedBy .
+tr:employedBy a owl:ObjectProperty ; rdfs:label "受雇于"@zh .
+
+# --- 公理：存在限制出现在子类公理的左侧，OWL 2 RL 可以前向链 ---
+
+# 列在某份制裁名单上的参与方，是受制裁参与方。
+[
+    a owl:Restriction ;
+    owl:onProperty tr:listedOn ;
+    owl:someValuesFrom tr:SanctionList
+] rdfs:subClassOf tr:SanctionedParty .
+
+# 受制裁参与方的子公司，仍是受制裁参与方。配合 subsidiaryOf 的传递性做股权穿透。
+[
+    a owl:Restriction ;
+    owl:onProperty tr:subsidiaryOf ;
+    owl:someValuesFrom tr:SanctionedParty
+] rdfs:subClassOf tr:SanctionedParty .
+
+# 收货方受制裁的装运，是阻断装运。
+[
+    a owl:Restriction ;
+    owl:onProperty tr:consignedTo ;
+    owl:someValuesFrom tr:SanctionedParty
+] rdfs:subClassOf tr:BlockedShipment .
+
+# --- ABox：源系统写下的事实。没有「受制裁」，也没有「阻断」。 ---
+
+tr:sdn a tr:SanctionList ; rdfs:label "SDN" .
+
+tr:globex rdfs:label "Globex International" ;
+    tr:listedOn tr:sdn .
+
+tr:acme rdfs:label "Acme Holdings" ;
+    tr:subsidiaryOf tr:globex .
+
+tr:harbor rdfs:label "Harbor Ltd" ;
+    tr:subsidiaryOf tr:acme ;
+    tr:employs tr:alice .
+
+tr:alice rdfs:label "Alice" .
+
+tr:A1042 a tr:Shipment ;
+    rdfs:label "订单 A1042"@zh ;
+    tr:consignedTo tr:harbor .

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>订单 A1042 · 发货门禁证明</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #121418;
+    --card: #1b1f27;
+    --line: #343b48;
+    --text: #ece8e1;
+    --muted: #9a9388;
+    --accent: #e6b35a;
+    --ok: #3dd68c;
+    --ok-dim: #163528;
+    --bad: #f07178;
+    --bad-dim: #3a1c22;
+    --idle: #2a303b;
+    --focus: #8eb6ff;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ef;
+      --card: #fff;
+      --line: #ddd6c8;
+      --text: #1c1915;
+      --muted: #6d655c;
+      --accent: #8a5a10;
+      --ok: #0d7a45;
+      --ok-dim: #e5f6ee;
+      --bad: #b4232c;
+      --bad-dim: #fde8e8;
+      --idle: #efeae2;
+      --focus: #1d4e89;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 16px/1.5 "Iowan Old Style", Palatino, "Songti SC", serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 28px 20px 64px; }
+  h1 { font-size: 28px; font-weight: 500; line-height: 1.25; margin: 0 0 8px; }
+  a { color: var(--accent); }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, .check {
+    font: 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    padding: 8px 12px;
+  }
+  button { cursor: pointer; }
+  button[aria-pressed="true"], button.primary { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .check { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .tree { display: flex; justify-content: center; padding: 8px 0 4px; }
+  .kids {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .kids.hot { border-top-color: var(--focus); border-top-width: 2px; }
+  .node {
+    min-width: 108px;
+    text-align: center;
+    border: 1px solid var(--line);
+    background: var(--idle);
+    border-radius: 10px;
+    padding: 8px 10px 7px;
+    font: 14px/1.3 ui-sans-serif, system-ui, sans-serif;
+  }
+  .node small { display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.02em; }
+  .node.ok { background: var(--ok-dim); border-color: var(--ok); }
+  .node.bad { background: var(--bad-dim); border-color: var(--bad); }
+  .node.focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .step-title { font: 15px/1.4 ui-sans-serif, system-ui, sans-serif; margin: 0 0 8px; }
+  pre {
+    margin: 0;
+    padding: 12px;
+    overflow: auto;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font: 13px/1.45 ui-monospace, "SF Mono", Menlo, monospace;
+    white-space: pre-wrap;
+  }
+  .note { color: var(--muted); font: 14px/1.45 ui-sans-serif, system-ui, sans-serif; margin: 8px 0 0; }
+  .warn { color: var(--bad); font: 14px/1.45 ui-sans-serif, system-ui, sans-serif; margin: 8px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <p class="lead" style="margin-bottom: 12px">阅读顺序：<a href="发货门禁.md">1 自然语言</a> → <a href="ShipGate.lean">2 Lean</a> → 3 本页</p>
+  <h1>四件叶子事实齐了，订单 A1042 才可以发货。</h1>
+  <p class="lead">少了已支付，风控通过立不住。风控通过立不住，可以发货也立不住。履约就绪照样可以成立。</p>
+
+  <section class="panel" aria-label="依赖树">
+    <div class="tree" id="tree"></div>
+  </section>
+
+  <section class="panel">
+    <div class="row" id="facts" role="group" aria-label="叶子事实"></div>
+    <p class="note" id="live"></p>
+  </section>
+
+  <section class="panel">
+    <div class="row" style="margin-bottom: 12px">
+      <button type="button" id="mode-build" aria-pressed="true">组装证明</button>
+      <button type="button" id="mode-block" aria-pressed="false">缺已支付的反证</button>
+      <span style="flex:1"></span>
+      <button type="button" id="prev">上一步</button>
+      <button type="button" id="next" class="primary">下一步</button>
+    </div>
+    <p class="step-title" id="step-title"></p>
+    <pre id="term" aria-label="当前证明项"></pre>
+    <p class="note" id="step-note"></p>
+    <p class="warn" id="step-warn" hidden></p>
+  </section>
+</main>
+<script>
+const facts = [
+  { id: "paid", name: "已支付", en: "paid" },
+  { id: "fraudClear", name: "欺诈已排除", en: "fraudClear" },
+  { id: "inStock", name: "有库存", en: "inStock" },
+  { id: "addressVerified", name: "地址已核验", en: "addressVerified" }
+];
+const state = { paid: true, fraudClear: true, inStock: true, addressVerified: true };
+const derived = () => ({
+  risk: state.paid && state.fraudClear,
+  fulfill: state.inStock && state.addressVerified,
+  get ship() { return this.risk && this.fulfill; }
+});
+
+const buildSteps = [
+  {
+    title: "第 0 步 · 只看叶子",
+    focus: [],
+    hot: [],
+    note: "四个事实由支付、库存、地址、欺诈系统写入。上层三道门还没有证明项。",
+    term: "（还没有证明项）"
+  },
+  {
+    title: "第 1 步 · 组装风控通过",
+    focus: ["paid", "fraudClear", "risk"],
+    hot: ["w-risk"],
+    note: "risk_of_paid_and_clear 调用 RiskPass.mk。两个前提都在，这一道门成立。",
+    term: "risk_of_paid_and_clear e hp hf\n  = RiskPass.mk e hp hf"
+  },
+  {
+    title: "第 2 步 · 组装履约就绪",
+    focus: ["inStock", "addressVerified", "fulfill"],
+    hot: ["w-ful"],
+    note: "fulfill_of_stock_and_address 调用 Fulfillable.mk。它不读已支付。",
+    term: "fulfill_of_stock_and_address e hs ha\n  = Fulfillable.mk e hs ha"
+  },
+  {
+    title: "第 3 步 · 组装可以发货",
+    focus: ["risk", "fulfill", "ship"],
+    hot: ["w-ship"],
+    note: "ship_of_gates 调用 CanShip.mk。可以发货只接收两道门，不直接接收叶子。",
+    term: "ship_when_all_clear e hp hf hs ha\n  = CanShip.mk e\n      (RiskPass.mk e hp hf)\n      (Fulfillable.mk e hs ha)"
+  }
+];
+
+const blockSteps = [
+  {
+    title: "第 0 步 · 前提是未支付",
+    focus: ["paid"],
+    hot: [],
+    note: "h 的类型是 ¬ 已支付。目标是 ¬ 可以发货。",
+    term: "h : ¬ e.paid\n目标 : ¬ CanShip e"
+  },
+  {
+    title: "第 1 步 · 先假设可以发货",
+    focus: ["ship"],
+    hot: [],
+    note: "要否定一个命题，先假设它成立，再推出矛盾。这里的假设叫 ship。",
+    term: "fun ship =>\n  -- ship : CanShip e"
+  },
+  {
+    title: "第 2 步 · 拆开可以发货",
+    focus: ["ship", "risk"],
+    hot: ["w-ship"],
+    note: "CanShip 只有构造子 mk。它的第一段载荷就是风控通过。",
+    term: "match ship with\n| CanShip.mk _ risk _ => ..."
+  },
+  {
+    title: "第 3 步 · 拆开风控通过",
+    focus: ["risk", "paid"],
+    hot: ["w-risk"],
+    note: "RiskPass.mk 的第一段证明就是已支付。这一步把已支付从门里取出来。",
+    term: "| CanShip.mk _ (RiskPass.mk _ hp _) _ =>"
+  },
+  {
+    title: "第 4 步 · 已支付和未支付矛盾",
+    focus: ["paid", "ship"],
+    hot: ["w-risk", "w-ship"],
+    note: "h hp 把「已支付」交给「未支付」。矛盾成立，假设作废。所以不可以发货。履约就绪没有被用到。",
+    term: "unpaid_blocks e h =\n  fun ship =>\n    match ship with\n    | CanShip.mk _ (RiskPass.mk _ hp _) _ => h hp"
+  }
+];
+
+let mode = "build";
+let step = 0;
+
+function steps() { return mode === "build" ? buildSteps : blockSteps; }
+
+function nodeClass(id, on, focus) {
+  const cls = ["node"];
+  if (focus.includes(id)) cls.push("focus");
+  cls.push(on ? "ok" : "bad");
+  return cls.join(" ");
+}
+
+function render() {
+  const d = derived();
+  const s = steps()[step];
+  const hot = (id) => s.hot.includes(id) ? " hot" : "";
+  document.getElementById("tree").innerHTML = `
+    <div>
+      ${box("ship", "可以发货", "CanShip", d.ship, s.focus)}
+      <div class="kids${hot("w-ship")}">
+        <div>
+          ${box("risk", "风控通过", "RiskPass", d.risk, s.focus)}
+          <div class="kids${hot("w-risk")}">
+            ${box("paid", "已支付", "paid", state.paid, s.focus)}
+            ${box("fraudClear", "欺诈已排除", "fraudClear", state.fraudClear, s.focus)}
+          </div>
+        </div>
+        <div>
+          ${box("fulfill", "履约就绪", "Fulfillable", d.fulfill, s.focus)}
+          <div class="kids${hot("w-ful")}">
+            ${box("inStock", "有库存", "inStock", state.inStock, s.focus)}
+            ${box("addressVerified", "地址已核验", "addressVerified", state.addressVerified, s.focus)}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("step-title").textContent = s.title;
+  document.getElementById("term").textContent = s.term;
+  document.getElementById("step-note").textContent = s.note;
+  const warn = document.getElementById("step-warn");
+  const buildBroken = mode === "build" && !d.ship;
+  const blockBroken = mode === "block" && state.paid;
+  warn.hidden = !(buildBroken || blockBroken);
+  warn.textContent = buildBroken
+    ? "有叶子是关的。组装证明的前提不成立。打开四件事实，或改看反证。"
+    : blockBroken
+      ? "反证的前提是未支付。关闭已支付后再看这几步。"
+      : "";
+  document.getElementById("prev").disabled = step === 0;
+  document.getElementById("next").disabled = step === steps().length - 1;
+  document.getElementById("mode-build").setAttribute("aria-pressed", String(mode === "build"));
+  document.getElementById("mode-block").setAttribute("aria-pressed", String(mode === "block"));
+  const live = document.getElementById("live");
+  if (d.ship) live.textContent = "四件事实都开着。三道门都成立。这是 ship_when_all_clear 的前提。";
+  else if (!state.paid && d.fulfill) live.textContent = "未支付。风控通过失败。可以发货失败。履约就绪仍然成立。这是 unpaid_blocks 在说的事。";
+  else live.textContent = `风控通过 ${d.risk ? "成立" : "失败"}。履约就绪 ${d.fulfill ? "成立" : "失败"}。可以发货 ${d.ship ? "成立" : "失败"}。`;
+}
+
+function box(id, name, en, on, focus) {
+  return `<div class="${nodeClass(id, on, focus)}" data-id="${id}"><small>${en}</small>${name}</div>`;
+}
+
+document.getElementById("facts").innerHTML = facts.map(f =>
+  `<label class="check"><input type="checkbox" data-fact="${f.id}" checked /> ${f.name}</label>`
+).join("");
+document.getElementById("facts").addEventListener("change", (ev) => {
+  const id = ev.target.getAttribute("data-fact");
+  if (!id) return;
+  state[id] = ev.target.checked;
+  render();
+});
+document.getElementById("mode-build").onclick = () => { mode = "build"; step = 0; render(); };
+document.getElementById("mode-block").onclick = () => {
+  mode = "block";
+  step = 0;
+  state.paid = false;
+  document.querySelector('[data-fact="paid"]').checked = false;
+  render();
+};
+document.getElementById("prev").onclick = () => { step = Math.max(0, step - 1); render(); };
+document.getElementById("next").onclick = () => { step = Math.min(steps().length - 1, step + 1); render(); };
+render();
+</script>
+</body>
+</html>

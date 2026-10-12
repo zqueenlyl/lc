@@ -1,10 +1,38 @@
-# Ontology · 本体（学术 OWL vs 运营层）
+# Ontology · 本体
 
-> **定位**：知识库五维里的「④ 表示与建模」展开。OWL / RDF 是语义网那一套；Palantir Foundry Ontology 是**组织数字孪生**那一套——同一词、不同工程目标。
+> 一句话：本体是一份**写下来、大家共用、机器能据此推出新事实**的领域契约。工程里这个词有两条线。学术 OWL 推出「什么蕴含成立」。Palantir 运营本体规定「什么变更被允许」。
 >
-> 快照：**2026-09-18**。官方文档口径见 [Palantir Ontology Overview](https://www.palantir.com/docs/foundry/ontology/overview/) 与 [Core concepts](https://www.palantir.com/docs/foundry/ontology/core-concepts/)；首页 [palantir.com](https://www.palantir.com/)。未在文档出现的数字 / 内部实现不写。
+> 快照：运营线 **2026-09-18**（[Ontology Overview](https://www.palantir.com/docs/foundry/ontology/overview/)、[Core concepts](https://www.palantir.com/docs/foundry/ontology/core-concepts/)）。学术线 **2026-10-12**，见 [学术本体.md](./学术本体.md)。未在文档出现的数字不写。
 
 上级：[../README.md](../README.md) ｜ 五维总表：[../knowledge-base/](../knowledge-base/) ｜ 跨实体事实轴：[../../agent/loop-graph/context-graph.md](../../agent/loop-graph/context-graph.md)
+
+---
+
+## 怎么读
+
+先跑例子，再读定义。定义离开例子会变成术语表。
+
+```mermaid
+flowchart LR
+  A["1. 跑出口合规"] --> B["2. 用输出读定义"]
+  B --> C["3. 按需读语法 / 推理器"]
+  C --> D["4. 另一条线：运营本体"]
+```
+
+| 顺序 | 读 | 读完能回答 |
+|---|---|---|
+| 1 | [出口合规](./出口合规/)：`python3 reason.py` | 源系统没写「受制裁」，为什么 A1042 仍是阻断装运 |
+| 2 | [学术本体 §一](./学术本体.md) | 类、公理、开放世界、定义域为什么是蕴含 |
+| 3 | [学术本体 §二](./学术本体.md)、[§三](./学术本体.md) | `.ttl` 是什么写法；`reason.py` 在做哪一种推理 |
+| 4 | 本文 §三 | 人和 Agent 要改对象时，为什么不能靠推理器 |
+
+同一张订单有两道门，回答的不是同一个问题：
+
+| | [发货门禁](../../lean/发货门禁.md) | [出口合规](./出口合规/) |
+|---|---|---|
+| 问句 | 已支付，且履约就绪？ | 收货方会不会沿股权被制裁名单穿透？ |
+| 没写下来的事实 | 未支付，就不能发货 | 没写收货方，不等于阻断 |
+| 计算器 | Lean | OWL 2 RL |
 
 ---
 
@@ -30,14 +58,11 @@
 
 ---
 
-## 二、学术本体（OWL / RDF）在本目录的位置
+## 二、学术线放在哪
 
-五维正文仍以 OWL 为主：[知识库类型整理 §四](../knowledge-base/知识库类型整理.md)。要点不重复展开：
+定义、Turtle、EL / QL / RL / DL、推理器，以及它和 RAG、SHACL、Agent 的分工，都在 [学术本体.md](./学术本体.md)。读的时候对着 [出口合规](./出口合规/) 的终端输出，不要另起一套「雇用 / 合同」的故事当主线。五维选型摘要仍在 [知识库类型整理 §四](../knowledge-base/知识库类型整理.md)。
 
-- Taxonomy ⊂ Ontology：只有 is-a 是分类法；加上属性、实例、不相交 / 等价等才是本体。
-- Ontology ≈ KG 的 **TBox**；实例是 **ABox**。
-- 优点：语义精确、可推理、可共享。缺点：构建贵、大规模推理慢、难表达模糊常识。
-- LLM 时代双重角色：帮人更快建本体；本体当白名单约束 LLM。个人 Wiki 侧见 `my-kb/wiki/concepts/ontology.md`。
+分界以第一节为准：OWL 回答「哪条蕴含成立」。Foundry Ontology 回答「哪次变更被允许」。推理器不做表单必填。Action 不是 SWRL。
 
 ---
 
@@ -161,6 +186,9 @@ Palantir 把 AIP（Artificial Intelligence Platform）架在 Ontology 上：LLM 
 
 ## 延伸
 
+- 学术线定义、语法、推理器与企业知识库：[学术本体.md](./学术本体.md)
+- 可运行的 OWL 2 RL 例子：[出口合规/](./出口合规/)
+- 订单流转状态图（与 Lean 对照）：[订单流转/](./订单流转/) ｜ 说明 [../../lean/订单流转.md](../../lean/订单流转.md)
 - 五维分类里的 OWL 节：[../knowledge-base/知识库类型整理.md](../knowledge-base/知识库类型整理.md) §四
 - 个人 Wiki 概念页：`my-kb/wiki/concepts/ontology.md`、`operational-ontology.md`
 - 外部教材反例（哲学 Ontology 与 OWL 混写，不覆盖本页定义）：[../../../knowledge-management-dynamics/02-ch1-本体与信息科学.md](../../../knowledge-management-dynamics/02-ch1-本体与信息科学.md)

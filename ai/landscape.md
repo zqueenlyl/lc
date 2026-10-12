@@ -541,7 +541,7 @@ Agent 要大规模调工具
 |---|---|
 | **具体模型 ID / 上下文 / 端点 / 协议字段** | [model-cases/providers/](./model-cases/providers/)（工程速查层，本页只管"谁是谁"） |
 | Agent 怎么转起来 | [agent/](./agent/)、[loop-graph/](./agent/loop-graph/)、[langgraph/](./agent/case-studies/langgraph/)、[harness/](./agent/harness/) |
-| 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[ontology/](./knowledge/ontology/)、[memory/](./knowledge/memory/) |
+| 知识怎么塞进模型 | [rag/](./knowledge/rag/)、[知识库/](./knowledge/knowledge-base/)、[ontology/](./knowledge/ontology/)、[lean/](./knowledge/lean/)、[memory/](./knowledge/memory/) |
 | 工具和多 Agent | [mcp/](./agent/mcp/)、[a2a/](./agent/a2a/)、[agent-skills/](./agent/agent-skills/) |
 | 模型骨架（RNN → 注意力 → Transformer） | [transformer/](./foundation/transformer/) |
 | 模型内部在升级什么 | [推理侧横切](./foundation/rl/推理侧搜索与test-time-scaling.md)、[moe/](./foundation/moe/)、[multimodal/](./foundation/generative/multimodal/) |

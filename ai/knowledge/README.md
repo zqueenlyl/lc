@@ -12,7 +12,8 @@
 | **RAG** | 检索增强生成：Naive → Advanced → Agentic 全谱系 | [rag/](./rag/) |
 | **向量数据库** | Milvus / Qdrant / pgvector：ANN 索引 + 语义检索底座 | [vector-db/](./vector-db/) |
 | **知识库** | 知识库类型五维整理 | [knowledge-base/](./knowledge-base/) |
-| **Ontology** | 学术 OWL vs Palantir 运营本体（组织数字孪生） | [ontology/](./ontology/) |
+| **Ontology** | 先跑制裁穿透例子，再读 OWL 定义与运营本体 | [ontology/](./ontology/) |
+| **Lean 4** | 依赖类型上的证明项；kernel 检查，Agent 只负责提出 | [lean/](./lean/) |
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 

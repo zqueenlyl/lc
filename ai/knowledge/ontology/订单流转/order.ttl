@@ -1,0 +1,118 @@
+# 订单流转的状态图。剖面：OWL 2 RL。
+# 这里写的是「有哪些状态、状态属于哪一阶段、允许哪条边、订单当前停在哪」。
+# 不从边推出「发过货就一定付过款」。那条历史定理在 Lean 的 OrderFlow.lean。
+
+@prefix od:   <https://example.com/onto/order#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://example.com/onto/order> a owl:Ontology ;
+    rdfs:label "订单流转"@zh .
+
+# --- 阶段。一个状态个体只属于一个阶段。 ---
+
+od:Status a owl:Class ; rdfs:label "状态"@zh .
+
+od:BeforePay a owl:Class ;
+    rdfs:label "付款前"@zh ;
+    rdfs:subClassOf od:Status ;
+    owl:disjointWith od:Funded, od:Fulfilled, od:Terminal .
+
+od:Funded a owl:Class ;
+    rdfs:label "款已进入"@zh ;
+    rdfs:subClassOf od:Status ;
+    owl:disjointWith od:Fulfilled, od:Terminal .
+
+od:Fulfilled a owl:Class ;
+    rdfs:label "已履约"@zh ;
+    rdfs:subClassOf od:Status ;
+    owl:disjointWith od:Terminal .
+
+od:Terminal a owl:Class ;
+    rdfs:label "已结束"@zh ;
+    rdfs:subClassOf od:Status .
+
+# --- 订单当前状态。函数性：不能同时停在两个状态。 ---
+
+od:Order a owl:Class ; rdfs:label "订单"@zh .
+od:BeforePayOrder a owl:Class ; rdfs:label "付款前的订单"@zh ; rdfs:subClassOf od:Order .
+od:FundedOrder a owl:Class ; rdfs:label "款已进入的订单"@zh ; rdfs:subClassOf od:Order .
+od:FulfilledOrder a owl:Class ; rdfs:label "已履约的订单"@zh ; rdfs:subClassOf od:Order .
+od:TerminalOrder a owl:Class ; rdfs:label "已结束的订单"@zh ; rdfs:subClassOf od:Order .
+
+od:hasStatus a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:label "当前状态"@zh ;
+    rdfs:domain od:Order ;
+    rdfs:range od:Status .
+
+od:mayProceedTo a owl:ObjectProperty ;
+    rdfs:label "可以迁到"@zh ;
+    rdfs:domain od:Status ;
+    rdfs:range od:Status .
+
+# 当前状态落在某阶段，订单就属于该阶段。
+[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:BeforePay
+] rdfs:subClassOf od:BeforePayOrder .
+
+[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:Funded
+] rdfs:subClassOf od:FundedOrder .
+
+[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:Fulfilled
+] rdfs:subClassOf od:FulfilledOrder .
+
+[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:Terminal
+] rdfs:subClassOf od:TerminalOrder .
+
+# --- 十条状态，以及十四条允许的边 ---
+
+od:draft a od:BeforePay ; rdfs:label "草稿"@zh ;
+    owl:differentFrom od:shipped ;
+    od:mayProceedTo od:submitted .
+
+od:submitted a od:BeforePay ; rdfs:label "已提交"@zh ;
+    od:mayProceedTo od:paid, od:cancelled .
+
+od:paid a od:Funded ; rdfs:label "已支付"@zh ;
+    od:mayProceedTo od:allocated, od:riskHold, od:refunding .
+
+od:riskHold a od:Funded ; rdfs:label "风控挂起"@zh ;
+    od:mayProceedTo od:allocated, od:refunding .
+
+od:allocated a od:Funded ; rdfs:label "已占库"@zh ;
+    od:mayProceedTo od:shipped, od:refunding .
+
+od:shipped a od:Fulfilled ; rdfs:label "已发货"@zh ;
+    od:mayProceedTo od:delivered .
+
+od:delivered a od:Fulfilled ; rdfs:label "已签收"@zh ;
+    od:mayProceedTo od:closed .
+
+od:cancelled a od:BeforePay ; rdfs:label "已取消"@zh ;
+    od:mayProceedTo od:closed .
+
+od:refunding a od:Funded ; rdfs:label "退款中"@zh ;
+    od:mayProceedTo od:closed .
+
+od:closed a od:Terminal ; rdfs:label "已关闭"@zh .
+
+# --- 两笔订单的当前状态。历史不在这张图里。 ---
+
+od:A1042 a od:Order ;
+    rdfs:label "订单 A1042"@zh ;
+    od:hasStatus od:shipped .
+
+od:B7 a od:Order ;
+    rdfs:label "订单 B7"@zh ;
+    od:hasStatus od:cancelled .
