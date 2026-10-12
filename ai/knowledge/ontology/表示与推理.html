@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本体的写法与推理</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #10131a;
+    --panel: #181d27;
+    --panel-2: #202736;
+    --line: #31394a;
+    --text: #e8edf5;
+    --muted: #93a0b5;
+    --blue: #9ecbff;
+    --blue-dim: #1a334d;
+    --amber: #f0c14a;
+    --amber-dim: #3a3116;
+    --red: #ffb0b0;
+    --red-dim: #4a2428;
+    --green: #9ad7b8;
+    --green-dim: #173228;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.55 ui-sans-serif, system-ui, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  code, .mono, pre { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace; }
+  #app { max-width: 1080px; margin: 0 auto; padding: 28px 22px 64px; }
+  h1 { font-size: 26px; line-height: 1.3; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.02em; }
+  h2 { font-size: 16px; margin: 0 0 8px; font-weight: 650; }
+  .lead { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
+  .tabs { display: flex; gap: 6px; margin: 0 0 16px; flex-wrap: wrap; }
+  .tabs button, .seg button, .syn button, .mini button, .step, .scene, .layer, .construct {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    color: var(--muted);
+  }
+  .tabs button.on, .seg button.on, .syn button.on, .mini button.on,
+  .step.on, .scene.on, .layer.on, .construct.on {
+    background: var(--panel-2);
+    color: var(--text);
+    border-color: #4d5b73;
+  }
+  .walk { display: grid; grid-template-columns: 232px 1fr; gap: 16px; align-items: start; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .check {
+    display: inline-flex; gap: 6px; align-items: center;
+    color: var(--muted); font-size: 13px;
+  }
+  .ask { margin: 0 0 12px; }
+  .ask b { font-weight: 650; }
+  .stage { overflow-x: auto; padding-bottom: 4px; }
+  .chain { display: flex; align-items: stretch; min-width: 820px; }
+  .chain.order { min-width: 640px; flex-direction: column; gap: 10px; }
+  .chain.order .line { display: flex; align-items: stretch; }
+  .node {
+    width: 156px; flex: 0 0 156px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+  }
+  .node.hot { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); }
+  .node.cold { opacity: 1; }
+  .nm { font-weight: 650; }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .chips { display: flex; flex-direction: column; gap: 4px; }
+  .chip {
+    display: block;
+    border-radius: 7px;
+    padding: 3px 6px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .chip i { font-style: normal; font-family: ui-monospace, Menlo, monospace; opacity: 0.85; }
+  .chip.asserted { background: var(--blue-dim); color: var(--blue); }
+  .chip.inferred { background: var(--amber-dim); color: var(--amber); }
+  .chip.conflict { background: var(--red-dim); color: var(--red); }
+  .chip.fresh { outline: 1px solid currentColor; }
+  .arr {
+    width: 92px; flex: 0 0 92px;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center; padding: 0 4px;
+  }
+  .arr .lbl { font-size: 11px; line-height: 1.3; color: var(--blue); }
+  .arr.inferred .lbl { color: var(--amber); }
+  .arr.off { opacity: 0.28; }
+  .arr.fresh .lbl { font-weight: 650; }
+  .shaft { width: 100%; height: 0; border-top: 1.5px solid currentColor; margin-top: 5px; position: relative; color: var(--muted); }
+  .arr.inferred .shaft { color: var(--amber); }
+  .arr.asserted .shaft { color: #5f87b3; }
+  .shaft::after {
+    content: "";
+    position: absolute; right: -1px; top: -4px;
+    border: 4px solid transparent;
+    border-left: 6px solid currentColor;
+  }
+  .extra, .branch, .ghost, .note {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .extra.on, .branch .on { color: var(--amber); }
+  .ghost {
+    margin-top: 10px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    max-width: 280px;
+  }
+  .steps { display: flex; flex-direction: column; gap: 6px; }
+  .step { border-radius: 10px; text-align: left; padding: 8px 10px; }
+  .step small { display: block; color: var(--muted); font-size: 12px; }
+  .step.on small { color: var(--muted); }
+  .nav { display: flex; gap: 8px; margin-top: 10px; }
+  .nav button { border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); padding: 6px 10px; }
+  .axiom { margin-top: 12px; }
+  .axiom h2 { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+  pre {
+    margin: 8px 0 0;
+    background: #0d1118;
+    border-radius: 10px;
+    padding: 12px 14px;
+    overflow: auto;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #d7e0ec;
+  }
+  .why { margin: 8px 0 0; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 99px; margin-right: 4px; }
+  .dot.a { background: var(--blue); }
+  .dot.i { background: var(--amber); }
+  .dot.r { background: var(--red); }
+  .split { display: grid; grid-template-columns: 200px 1fr; gap: 14px; }
+  .construct, .scene, .layer { display: block; width: 100%; text-align: left; border-radius: 10px; margin-bottom: 6px; }
+  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card h3 { margin: 0 0 6px; font-size: 14px; }
+  .card p, .detail p { margin: 0 0 8px; color: var(--muted); }
+  .card p:last-child, .detail p:last-child { margin-bottom: 0; }
+  .k { color: var(--text); }
+  .profiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .profiles button {
+    text-align: left;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 10px;
+  }
+  .profiles button.on { border-color: var(--amber); background: var(--panel-2); }
+  .profiles b { display: block; margin-bottom: 4px; }
+  .profiles span { color: var(--muted); font-size: 12px; }
+  .scenes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .scene { width: auto; border-radius: 999px; }
+  .answer {
+    margin-top: 10px;
+    background: var(--green-dim);
+    color: var(--green);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .foot { margin-top: 22px; color: var(--muted); max-width: 78ch; }
+  .foot p { margin: 0 0 8px; }
+  .banner {
+    background: var(--red-dim);
+    color: var(--red);
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  @media (max-width: 860px) {
+    .walk { display: flex; flex-direction: column; }
+    .maincol { order: -1; }
+    .split, .cols3, .cols2, .profiles { grid-template-columns: 1fr; }
+    .chain, .chain.order { min-width: 0; flex-direction: column; align-items: stretch; }
+    .chain.order .line { flex-direction: column; align-items: stretch; }
+    .node { width: auto; flex: 1 1 auto; }
+    .arr { width: auto; flex: 0 0 auto; flex-direction: row; justify-content: flex-start; gap: 8px; padding: 2px 0 2px 8px; }
+    .shaft { width: 28px; margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const state = {
+  tab: "walk",
+  caseId: "trade",
+  step: 4,
+  contradict: false,
+  openWorld: false,
+  syn: "turtle",
+  construct: "gci",
+  profile: "RL",
+  scene: "block",
+};
+
+const SYN_LABEL = { manchester: "Manchester", turtle: "Turtle", functional: "函数式" };
+
+function esc(s) {
+  return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
+const tradeSteps = [
+  {
+    title: "源事实",
+    sub: "没有结论",
+    hot: ["A1042", "harbor", "acme", "globex", "sdn", "alice"],
+    why: "股权、名单、人事、订单各写一条边。没有人写「受制裁」，也没有人写「阻断」。",
+    axioms: [{
+      name: "ABox · 个体断言",
+      manchester: `Individual: tr:globex
+    Facts: tr:listedOn tr:sdn
+
+Individual: tr:acme
+    Facts: tr:subsidiaryOf tr:globex
+
+Individual: tr:harbor
+    Facts: tr:subsidiaryOf tr:acme, tr:employs tr:alice
+
+Individual: tr:A1042
+    Types: tr:Shipment
+    Facts: tr:consignedTo tr:harbor
+
+Individual: tr:sdn
+    Types: tr:SanctionList`,
+      turtle: `tr:globex tr:listedOn tr:sdn .
+tr:acme tr:subsidiaryOf tr:globex .
+tr:harbor tr:subsidiaryOf tr:acme ;
+    tr:employs tr:alice .
+tr:A1042 a tr:Shipment ;
+    tr:consignedTo tr:harbor .
+tr:sdn a tr:SanctionList .`,
+      functional: `ObjectPropertyAssertion( tr:listedOn tr:globex tr:sdn )
+ObjectPropertyAssertion( tr:subsidiaryOf tr:acme tr:globex )
+ObjectPropertyAssertion( tr:subsidiaryOf tr:harbor tr:acme )
+ObjectPropertyAssertion( tr:employs tr:harbor tr:alice )
+ClassAssertion( tr:Shipment tr:A1042 )
+ObjectPropertyAssertion( tr:consignedTo tr:A1042 tr:harbor )
+ClassAssertion( tr:SanctionList tr:sdn )`,
+    }],
+  },
+  {
+    title: "名单推出受制裁",
+    sub: "Globex",
+    hot: ["globex", "sdn"],
+    why: "Globex 列在 SDN 上，SDN 是制裁名单。存在限制写在子类公理的左侧，所以 Globex 成为受制裁参与方。listedOn 的定义域再推出 Globex 是参与方。定义域是蕴含，不是拒收。",
+    axioms: [{
+      name: "列在制裁名单上 ⊑ 受制裁参与方",
+      manchester: `SubClassOf: tr:listedOn some tr:SanctionList, tr:SanctionedParty`,
+      turtle: `[
+    a owl:Restriction ;
+    owl:onProperty tr:listedOn ;
+    owl:someValuesFrom tr:SanctionList
+] rdfs:subClassOf tr:SanctionedParty .`,
+      functional: `SubClassOf(
+  ObjectSomeValuesFrom( tr:listedOn tr:SanctionList )
+  tr:SanctionedParty
+)`,
+    }, {
+      name: "listedOn 的定义域",
+      manchester: `ObjectProperty: tr:listedOn
+    Domain: tr:Party
+    Range: tr:SanctionList`,
+      turtle: `tr:listedOn a owl:ObjectProperty ;
+    rdfs:domain tr:Party ;
+    rdfs:range tr:SanctionList .`,
+      functional: `ObjectPropertyDomain( tr:listedOn tr:Party )
+ObjectPropertyRange( tr:listedOn tr:SanctionList )`,
+    }],
+  },
+  {
+    title: "定义域推出类型",
+    sub: "组织、人、逆关系",
+    hot: ["acme", "globex", "harbor", "alice"],
+    why: "subsidiaryOf 的两端被推出为组织。Harbor 雇用 Alice，Alice 被推出为人。employs 与 employedBy 互逆，所以 Alice employedBy Harbor。组织、人再沿子类成为参与方。",
+    axioms: [{
+      name: "subsidiaryOf 的定义域和值域",
+      manchester: `ObjectProperty: tr:subsidiaryOf
+    Characteristics: Transitive
+    Domain: tr:Organization
+    Range: tr:Organization`,
+      turtle: `tr:subsidiaryOf a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:domain tr:Organization ;
+    rdfs:range tr:Organization .`,
+      functional: `TransitiveObjectProperty( tr:subsidiaryOf )
+ObjectPropertyDomain( tr:subsidiaryOf tr:Organization )
+ObjectPropertyRange( tr:subsidiaryOf tr:Organization )`,
+    }, {
+      name: "employs 的定义域、值域、逆属性",
+      manchester: `ObjectProperty: tr:employs
+    Domain: tr:Organization
+    Range: tr:Person
+    InverseOf: tr:employedBy`,
+      turtle: `tr:employs a owl:ObjectProperty ;
+    rdfs:domain tr:Organization ;
+    rdfs:range tr:Person ;
+    owl:inverseOf tr:employedBy .`,
+      functional: `ObjectPropertyDomain( tr:employs tr:Organization )
+ObjectPropertyRange( tr:employs tr:Person )
+InverseObjectProperties( tr:employs tr:employedBy )`,
+    }],
+  },
+  {
+    title: "股权穿透",
+    sub: "子公司仍受制裁",
+    hot: ["harbor", "acme", "globex"],
+    why: "subsidiaryOf 可传递。Harbor 的母公司的母公司是 Globex。受制裁参与方的子公司仍是受制裁参与方。Acme、Harbor 因此受制裁。",
+    axioms: [{
+      name: "传递",
+      manchester: `ObjectProperty: tr:subsidiaryOf
+    Characteristics: Transitive`,
+      turtle: `tr:subsidiaryOf a owl:TransitiveProperty .`,
+      functional: `TransitiveObjectProperty( tr:subsidiaryOf )`,
+    }, {
+      name: "受制裁参与方的子公司 ⊑ 受制裁参与方",
+      manchester: `SubClassOf: tr:subsidiaryOf some tr:SanctionedParty, tr:SanctionedParty`,
+      turtle: `[
+    a owl:Restriction ;
+    owl:onProperty tr:subsidiaryOf ;
+    owl:someValuesFrom tr:SanctionedParty
+] rdfs:subClassOf tr:SanctionedParty .`,
+      functional: `SubClassOf(
+  ObjectSomeValuesFrom( tr:subsidiaryOf tr:SanctionedParty )
+  tr:SanctionedParty
+)`,
+    }],
+  },
+  {
+    title: "阻断装运",
+    sub: "A1042",
+    hot: ["A1042", "harbor"],
+    why: "订单 A1042 的收货方是 Harbor。Harbor 已经是受制裁参与方。所以 A1042 是阻断装运。这句话不是名单系统写的。",
+    axioms: [{
+      name: "收货方受制裁 ⊑ 阻断装运",
+      manchester: `SubClassOf: tr:consignedTo some tr:SanctionedParty, tr:BlockedShipment`,
+      turtle: `[
+    a owl:Restriction ;
+    owl:onProperty tr:consignedTo ;
+    owl:someValuesFrom tr:SanctionedParty
+] rdfs:subClassOf tr:BlockedShipment .`,
+      functional: `SubClassOf(
+  ObjectSomeValuesFrom( tr:consignedTo tr:SanctionedParty )
+  tr:BlockedShipment
+)`,
+    }],
+  },
+];
+
+const tradeConflict = {
+  title: "人和组织冲突",
+  sub: "闭合后报错",
+  hot: ["harbor"],
+  why: "再断言 Harbor 是人。定义域已经推出 Harbor 是组织。人和组织不相交。owlrl 在闭合之后报告冲突。类型三元组仍然留下。拒收要另做 SHACL 或 API。",
+  axioms: [{
+    name: "不相交",
+    manchester: `DisjointClasses: tr:Person, tr:Organization`,
+    turtle: `tr:Person owl:disjointWith tr:Organization .`,
+    functional: `DisjointClasses( tr:Person tr:Organization )`,
+  }, {
+    name: "多出来的断言",
+    manchester: `Individual: tr:harbor
+    Types: tr:Person`,
+    turtle: `tr:harbor a tr:Person .`,
+    functional: `ClassAssertion( tr:Person tr:harbor )`,
+  }],
+};
+
+const orderSteps = [
+  {
+    title: "当前停在哪",
+    sub: "写上的状态",
+    hot: ["A1042", "shipped", "B7", "cancelled"],
+    why: "A1042 的当前状态是已发货。已发货属于已履约。B7 的当前状态是已取消。已取消属于付款前。mayProceedTo 十四条边是写进去的，这一步不推历史。",
+    axioms: [{
+      name: "两笔订单的当前状态",
+      manchester: `Individual: od:shipped
+    Types: od:Fulfilled
+
+Individual: od:A1042
+    Types: od:Order
+    Facts: od:hasStatus od:shipped
+
+Individual: od:cancelled
+    Types: od:BeforePay
+
+Individual: od:B7
+    Types: od:Order
+    Facts: od:hasStatus od:cancelled`,
+      turtle: `od:shipped a od:Fulfilled .
+od:A1042 a od:Order ; od:hasStatus od:shipped .
+od:cancelled a od:BeforePay .
+od:B7 a od:Order ; od:hasStatus od:cancelled .`,
+      functional: `ClassAssertion( od:Fulfilled od:shipped )
+ClassAssertion( od:Order od:A1042 )
+ObjectPropertyAssertion( od:hasStatus od:A1042 od:shipped )
+ClassAssertion( od:BeforePay od:cancelled )
+ClassAssertion( od:Order od:B7 )
+ObjectPropertyAssertion( od:hasStatus od:B7 od:cancelled )`,
+    }],
+  },
+  {
+    title: "状态个体抬到 Status",
+    sub: "子类，加上值域",
+    hot: ["shipped", "cancelled"],
+    why: "已履约、付款前、已结束都是状态的子类。hasStatus 的值域也是状态。已发货、已取消因此是状态。已关闭没有订单停在上面，它只靠子类成为状态。",
+    axioms: [{
+      name: "阶段 ⊑ 状态",
+      manchester: `Class: od:Fulfilled
+    SubClassOf: od:Status
+
+Class: od:BeforePay
+    SubClassOf: od:Status
+
+DisjointClasses: od:BeforePay, od:Fulfilled`,
+      turtle: `od:Fulfilled rdfs:subClassOf od:Status .
+od:BeforePay rdfs:subClassOf od:Status ;
+    owl:disjointWith od:Fulfilled .`,
+      functional: `SubClassOf( od:Fulfilled od:Status )
+SubClassOf( od:BeforePay od:Status )
+DisjointClasses( od:BeforePay od:Fulfilled )`,
+    }, {
+      name: "hasStatus 的值域",
+      manchester: `ObjectProperty: od:hasStatus
+    Characteristics: Functional
+    Domain: od:Order
+    Range: od:Status`,
+      turtle: `od:hasStatus a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain od:Order ;
+    rdfs:range od:Status .`,
+      functional: `FunctionalObjectProperty( od:hasStatus )
+ObjectPropertyDomain( od:hasStatus od:Order )
+ObjectPropertyRange( od:hasStatus od:Status )`,
+    }],
+  },
+  {
+    title: "阶段抬到订单",
+    sub: "A1042 与 B7",
+    hot: ["A1042", "shipped", "B7", "cancelled"],
+    why: "当前状态落在已履约，订单就是已履约订单。A1042 因此是已履约订单。B7 因此是付款前的订单。没人直接写这两个类型。",
+    axioms: [{
+      name: "hasStatus some 已履约 ⊑ 已履约订单",
+      manchester: `SubClassOf: od:hasStatus some od:Fulfilled, od:FulfilledOrder
+
+SubClassOf: od:hasStatus some od:BeforePay, od:BeforePayOrder`,
+      turtle: `[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:Fulfilled
+] rdfs:subClassOf od:FulfilledOrder .
+
+[
+    a owl:Restriction ;
+    owl:onProperty od:hasStatus ;
+    owl:someValuesFrom od:BeforePay
+] rdfs:subClassOf od:BeforePayOrder .`,
+      functional: `SubClassOf(
+  ObjectSomeValuesFrom( od:hasStatus od:Fulfilled )
+  od:FulfilledOrder
+)
+SubClassOf(
+  ObjectSomeValuesFrom( od:hasStatus od:BeforePay )
+  od:BeforePayOrder
+)`,
+    }],
+  },
+  {
+    title: "这次物化停在这里",
+    sub: "历史不在图里",
+    hot: ["A1042", "shipped"],
+    why: "mayProceedTo 仍是写进去的边。推理器没有推出「走到已发货就一定付过款」。那条归纳在 Lean 的 funded_saw_paid。",
+    axioms: [{
+      name: "允许的边，不是历史定理",
+      manchester: `ObjectProperty: od:mayProceedTo
+    Domain: od:Status
+    Range: od:Status
+
+Individual: od:shipped
+    Facts: od:mayProceedTo od:delivered`,
+      turtle: `od:mayProceedTo a owl:ObjectProperty ;
+    rdfs:domain od:Status ;
+    rdfs:range od:Status .
+od:shipped od:mayProceedTo od:delivered .`,
+      functional: `ObjectPropertyDomain( od:mayProceedTo od:Status )
+ObjectPropertyRange( od:mayProceedTo od:Status )
+ObjectPropertyAssertion( od:mayProceedTo od:shipped od:delivered )`,
+    }],
+  },
+];
+
+const orderConflict = {
+  title: "两个当前状态",
+  sub: "函数性合并",
+  hot: ["A1042", "shipped", "draft"],
+  why: "再给 A1042 一个草稿状态。hasStatus 是函数性的，草稿和已发货被并成同一个体。付款前与已履约不相交。推理器报告不一致。",
+  axioms: [{
+    name: "函数性",
+    manchester: `ObjectProperty: od:hasStatus
+    Characteristics: Functional`,
+    turtle: `od:hasStatus a owl:FunctionalProperty .`,
+    functional: `FunctionalObjectProperty( od:hasStatus )`,
+  }, {
+    name: "多出来的断言",
+    manchester: `Individual: od:A1042
+    Facts: od:hasStatus od:draft
+
+Individual: od:draft
+    Types: od:BeforePay
+    DifferentFrom: od:shipped`,
+    turtle: `od:A1042 od:hasStatus od:draft .
+od:draft a od:BeforePay ; owl:differentFrom od:shipped .`,
+    functional: `ObjectPropertyAssertion( od:hasStatus od:A1042 od:draft )
+ClassAssertion( od:BeforePay od:draft )
+DifferentIndividuals( od:draft od:shipped )`,
+  }],
+};
+
+const CASES = {
+  trade: {
+    name: "出口合规",
+    ask: "收货方会不会沿股权被制裁名单穿透？",
+    file: "出口合规/trade.ttl",
+    script: "python3 reason.py",
+    conclusion: "A1042 被推出为阻断装运。源系统没写这句话。",
+    end: 4,
+  },
+  order: {
+    name: "订单流转",
+    ask: "当前状态落在哪一阶段，订单就算哪一类？",
+    file: "订单流转/order.ttl",
+    script: "python3 reason.py",
+    conclusion: "A1042 被推出为已履约订单。没人写这个类型。",
+    end: 2,
+  },
+};
+
+function stepsOf(caseId) {
+  const base = caseId === "trade" ? tradeSteps : orderSteps;
+  if (!state.contradict) return base;
+  return base.concat([caseId === "trade" ? tradeConflict : orderConflict]);
+}
+
+const chips = {
+  trade: {
+    A1042: [
+      { t: "装运", n: "Shipment", step: 0, kind: "asserted" },
+      { t: "阻断装运", n: "BlockedShipment", step: 4, kind: "inferred" },
+    ],
+    harbor: [
+      { t: "组织", n: "Organization", step: 2, kind: "inferred" },
+      { t: "参与方", n: "Party", step: 2, kind: "inferred" },
+      { t: "受制裁参与方", n: "SanctionedParty", step: 3, kind: "inferred" },
+      { t: "人", n: "Person", step: 5, kind: "conflict", need: "contradict" },
+    ],
+    acme: [
+      { t: "组织", n: "Organization", step: 2, kind: "inferred" },
+      { t: "参与方", n: "Party", step: 2, kind: "inferred" },
+      { t: "受制裁参与方", n: "SanctionedParty", step: 3, kind: "inferred" },
+    ],
+    globex: [
+      { t: "受制裁参与方", n: "SanctionedParty", step: 1, kind: "inferred" },
+      { t: "参与方", n: "Party", step: 1, kind: "inferred" },
+      { t: "组织", n: "Organization", step: 2, kind: "inferred" },
+    ],
+    sdn: [
+      { t: "制裁名单", n: "SanctionList", step: 0, kind: "asserted" },
+    ],
+    alice: [
+      { t: "人", n: "Person", step: 2, kind: "inferred" },
+      { t: "参与方", n: "Party", step: 2, kind: "inferred" },
+    ],
+  },
+  order: {
+    A1042: [
+      { t: "订单", n: "Order", step: 0, kind: "asserted" },
+      { t: "已履约订单", n: "FulfilledOrder", step: 2, kind: "inferred" },
+    ],
+    shipped: [
+      { t: "已履约", n: "Fulfilled", step: 0, kind: "asserted" },
+      { t: "状态", n: "Status", step: 1, kind: "inferred" },
+    ],
+    B7: [
+      { t: "订单", n: "Order", step: 0, kind: "asserted" },
+      { t: "付款前订单", n: "BeforePayOrder", step: 2, kind: "inferred" },
+    ],
+    cancelled: [
+      { t: "付款前", n: "BeforePay", step: 0, kind: "asserted" },
+      { t: "状态", n: "Status", step: 1, kind: "inferred" },
+    ],
+    draft: [
+      { t: "付款前", n: "BeforePay", step: 4, kind: "asserted", need: "contradict" },
+    ],
+  },
+};
+
+function chipHtml(caseId, id) {
+  const list = (chips[caseId][id] || []).filter((c) => {
+    if (c.need === "contradict" && !state.contradict) return false;
+    if (c.need === "contradict" && state.step < c.step) return false;
+    return state.step >= c.step;
+  });
+  return list.map((c) => {
+    const fresh = c.step === state.step ? " fresh" : "";
+    return `<span class="chip ${c.kind}${fresh}">${esc(c.t)} <i>${esc(c.n)}</i></span>`;
+  }).join("");
+}
+
+function nodeHtml(caseId, id, name, sub, hot) {
+  const cls = hot ? "node hot" : "node cold";
+  return `<div class="${cls}"><div class="nm">${esc(name)}</div><div class="sub">${esc(sub)}</div><div class="chips">${chipHtml(caseId, id)}</div></div>`;
+}
+
+function arrHtml(label, kind) {
+  return `<div class="arr ${kind}"><div class="lbl">${esc(label)}</div><div class="shaft"></div></div>`;
+}
+
+function renderTradeMap(hot) {
+  const h = (id) => hot.includes(id);
+  const transOn = state.step >= 3;
+  const invOn = state.step >= 2;
+  return `
+    <div class="chain">
+      ${nodeHtml("trade", "A1042", "订单 A1042", "装运", h("A1042"))}
+      ${arrHtml("consignedTo", "asserted")}
+      ${nodeHtml("trade", "harbor", "Harbor Ltd", "收货方", h("harbor"))}
+      ${arrHtml("subsidiaryOf", "asserted")}
+      ${nodeHtml("trade", "acme", "Acme", "母公司", h("acme"))}
+      ${arrHtml("subsidiaryOf", "asserted")}
+      ${nodeHtml("trade", "globex", "Globex", "再上一层", h("globex"))}
+      ${arrHtml("listedOn", "asserted")}
+      ${nodeHtml("trade", "sdn", "SDN", "名单", h("sdn"))}
+    </div>
+    <div class="extra ${transOn ? "on" : ""}">${transOn ? "推出" : "尚未推出"}：harbor subsidiaryOf globex（传递）</div>
+    <div class="branch">
+      ${nodeHtml("trade", "alice", "Alice", "雇员", h("alice"))}
+      <div>Harbor — employs → Alice，这是断言。</div>
+      <div class="${invOn ? "on" : ""}">${invOn ? "推出" : "尚未推出"}：Alice — employedBy → Harbor</div>
+    </div>
+    ${state.openWorld ? `<div class="ghost"><div class="nm">订单 C9</div><div class="sub">另一张订单，没写收货方</div><span class="chip asserted">装运 <i>Shipment</i></span><p>没写 consignedTo。开放世界不把它当成阻断装运。</p></div>` : ""}
+  `;
+}
+
+function renderOrderMap(hot) {
+  const h = (id) => hot.includes(id);
+  const showDraft = state.contradict && state.step >= 4;
+  return `
+    <div class="chain order">
+      <div class="line">
+        ${nodeHtml("order", "A1042", "订单 A1042", "当前已发货", h("A1042"))}
+        ${arrHtml("hasStatus", "asserted")}
+        ${nodeHtml("order", "shipped", "已发货", "shipped", h("shipped"))}
+        ${showDraft ? arrHtml("hasStatus 另一值", "inferred") + nodeHtml("order", "draft", "草稿", "draft", true) : ""}
+      </div>
+      <div class="line">
+        ${nodeHtml("order", "B7", "订单 B7", "当前已取消", h("B7"))}
+        ${arrHtml("hasStatus", "asserted")}
+        ${nodeHtml("order", "cancelled", "已取消", "cancelled", h("cancelled"))}
+      </div>
+    </div>
+    <div class="note">十条状态、十四条 mayProceedTo 写在 order.ttl 里。图上只展开两笔订单的当前状态。</div>
+  `;
+}
+
+const constructs = [
+  {
+    id: "triple",
+    name: "三元组",
+    point: "RDF 的句子只有主语、谓语、宾语。主语是 IRI 或空白节点。谓语是 IRI。宾语还可以是字面量。",
+    manchester: `Individual: tr:acme
+    Facts: tr:subsidiaryOf tr:globex`,
+    turtle: `tr:acme tr:subsidiaryOf tr:globex .`,
+    functional: `ObjectPropertyAssertion( tr:subsidiaryOf tr:acme tr:globex )`,
+  },
+  {
+    id: "sub",
+    name: "子类",
+    point: "RDFS 加上继承。组织是参与方。实例沿子类上升。skos:broader 不是这条边。",
+    manchester: `Class: tr:Organization
+    SubClassOf: tr:Party`,
+    turtle: `tr:Organization a owl:Class ;
+    rdfs:subClassOf tr:Party .`,
+    functional: `SubClassOf( tr:Organization tr:Party )`,
+  },
+  {
+    id: "disj",
+    name: "不相交",
+    point: "人和组织不能是同一个体。这是 OWL 加上的。冲突在推理闭合之后出现，写入本身不失败。",
+    manchester: `DisjointClasses: tr:Person, tr:Organization`,
+    turtle: `tr:Person owl:disjointWith tr:Organization .`,
+    functional: `DisjointClasses( tr:Person tr:Organization )`,
+  },
+  {
+    id: "domain",
+    name: "定义域是蕴含",
+    point: "谁出现在 employs 的主语位置，就被推出为组织。这条三元组不会因此写不进去。要拒收，用 SHACL。",
+    manchester: `ObjectProperty: tr:employs
+    Domain: tr:Organization
+    Range: tr:Person`,
+    turtle: `tr:employs rdfs:domain tr:Organization ;
+    rdfs:range tr:Person .`,
+    functional: `ObjectPropertyDomain( tr:employs tr:Organization )
+ObjectPropertyRange( tr:employs tr:Person )`,
+  },
+  {
+    id: "trans",
+    name: "传递属性",
+    point: "子公司的子公司仍然是子公司。出口合规靠它把 Harbor 连到 Globex。",
+    manchester: `ObjectProperty: tr:subsidiaryOf
+    Characteristics: Transitive`,
+    turtle: `tr:subsidiaryOf a owl:TransitiveProperty .`,
+    functional: `TransitiveObjectProperty( tr:subsidiaryOf )`,
+  },
+  {
+    id: "inv",
+    name: "逆属性",
+    point: "employs 与 employedBy 是同一关系的两个方向。断言一边，推理器写出另一边。",
+    manchester: `ObjectProperty: tr:employs
+    InverseOf: tr:employedBy`,
+    turtle: `tr:employs owl:inverseOf tr:employedBy .`,
+    functional: `InverseObjectProperties( tr:employs tr:employedBy )`,
+  },
+  {
+    id: "gci",
+    name: "存在限制在左侧",
+    point: "逗号左边是条件，右边是推出的类。写反就变成「受制裁者一定列在某份名单上」。左侧存在限制落在 OWL 2 RL，前向链推得出新类型。",
+    manchester: `SubClassOf: tr:listedOn some tr:SanctionList, tr:SanctionedParty`,
+    turtle: `[ a owl:Restriction ;
+  owl:onProperty tr:listedOn ;
+  owl:someValuesFrom tr:SanctionList
+] rdfs:subClassOf tr:SanctionedParty .`,
+    functional: `SubClassOf(
+  ObjectSomeValuesFrom( tr:listedOn tr:SanctionList )
+  tr:SanctionedParty
+)`,
+  },
+  {
+    id: "fun",
+    name: "函数性",
+    point: "hasStatus 只能有一个当前值。两个值会把两个状态并成同一个体。订单流转用它抓住「又是草稿又是已发货」。",
+    manchester: `ObjectProperty: od:hasStatus
+    Characteristics: Functional
+    Domain: od:Order
+    Range: od:Status`,
+    turtle: `od:hasStatus a owl:FunctionalProperty, owl:ObjectProperty ;
+    rdfs:domain od:Order ;
+    rdfs:range od:Status .`,
+    functional: `FunctionalObjectProperty( od:hasStatus )
+ObjectPropertyDomain( od:hasStatus od:Order )
+ObjectPropertyRange( od:hasStatus od:Status )`,
+  },
+];
+
+const layers = [
+  { id: "rdf", name: "RDF", text: "只有三元组。有 rdf:type。没有子类。" },
+  { id: "rdfs", name: "RDFS", text: "加上类、子类、子属性、定义域、值域、标签。能做简单继承。" },
+  { id: "owl", name: "OWL 2", text: "加上不相交、等价、布尔组合、量词、基数、属性特征、键、个体是否同一。" },
+  { id: "skos", name: "SKOS", text: "词表。首选词、同义词、宽窄概念。broader 不是 subClassOf。" },
+  { id: "shacl", name: "SHACL", text: "检查形状，产出违规。不增加蕴含三元组。缺了就拒绝，放在这里。" },
+  { id: "sparql", name: "SPARQL", text: "查询和更新。它不定义本体。推理关掉时，查不到只被推出的类型。" },
+  { id: "swrl", name: "SWRL", text: "在 OWL 上加 Horn 规则。本目录的两个 reason.py 都没有用它。" },
+];
+
+const profiles = {
+  EL: {
+    name: "OWL 2 EL",
+    fit: "类很多的大术语表",
+    cost: "标准推理是 PTime",
+    drop: "全称限制、析取、否定、一般基数、一般逆属性",
+    how: "后承算法。ELK 做分类。SNOMED CT 落在这一档。",
+    here: "本目录不用。两个例子要的是实例上的新类型，不是几万个类的层次。",
+  },
+  QL: {
+    name: "OWL 2 QL",
+    fit: "本体浅，ABox 留在关系数据库",
+    cost: "合取查询的数据复杂度是 AC0",
+    drop: "很多 TBox 构造，换查询重写进 SQL",
+    how: "Ontop 把 TBox 编译进 SQL。数据不搬进推理器。",
+    here: "本目录不用。trade.ttl 和 order.ttl 的实例就在文件里，直接物化。",
+  },
+  RL: {
+    name: "OWL 2 RL",
+    fit: "用规则做前向链，把新三元组写进图",
+    cost: "标准推理是 PTime",
+    drop: "要真正 tableau 才能处理的量词组合",
+    how: "owlrl 的 DeductiveClosure 做一次闭合。RDFox 能增量维护。图库里的制裁穿透、股权穿透、成员资格继承走这一档。",
+    here: "本目录就是这个。存在限制写在子类公理左侧，前向链推得出 BlockedShipment 和 FulfilledOrder。脚本声明自己不是 OWL 2 DL。",
+  },
+  DL: {
+    name: "OWL 2 DL",
+    fit: "要完整直接语义",
+    cost: "一致性最坏是 N2ExpTime",
+    drop: "不放弃表达。放弃在线跑全库。",
+    how: "直接语义对应描述逻辑 SROIQ(D)。HermiT、Konclude 用 tableau。放在发布前的一致性门禁。",
+    here: "reason.py 不跑它。不需要 Java。在线问答读物化结果，不在请求路径上启动 tableau。",
+  },
+};
+
+const scenes = [
+  { id: "block", tag: "RL", q: "母公司在名单上，这票货阻断吗？", a: "OWL 2 RL 前向链。出口合规 reason.py 推出 A1042 a BlockedShipment。" },
+  { id: "phase", tag: "RL", q: "已发货的订单算已履约订单吗？", a: "OWL 2 RL。订单流转把状态的阶段抬到订单上，推出 A1042 a FulfilledOrder。" },
+  { id: "owa", tag: "开放世界", q: "没写收货方，算阻断吗？", a: "不算。没写 consignedTo 只表示还不知道收货方。开放世界不把缺失当成违规。" },
+  { id: "shacl", tag: "SHACL", q: "收货方没填，入库拒绝吗？", a: "要拒绝就写 SHACL 的 minCount。OWL 推理器不拒收。本目录没有 SHACL 形状。" },
+  { id: "lean", tag: "Lean", q: "未支付能不能发货？", a: "OWL 不回答。那是否定，在 Lean 发货门禁里。没写已支付，不等于未支付。" },
+  { id: "hist", tag: "Lean", q: "走到已发货，一定付过款吗？", a: "这次物化不回答。那条归纳在 OrderFlow.lean 的 funded_saw_paid。" },
+  { id: "clash", tag: "RL", q: "Harbor 既是人又是组织？", a: "人和组织不相交。owlrl 闭合后报告错误。类型仍会被物化出来。" },
+  { id: "action", tag: "动作", q: "谁能批准并回写 ERP？", a: "运营本体的 Action。一次事务，带校验和权限。不是这两份 ttl 里的公理。" },
+  { id: "el", tag: "EL", q: "几万个临床类怎么分类？", a: "OWL 2 EL，ELK。本目录的例子不是术语表分类。" },
+  { id: "ql", tag: "QL", q: "事实在数仓，只按本体提问？", a: "OWL 2 QL。查询重写成 SQL。实例留在原库。" },
+  { id: "dl", tag: "DL", q: "发布前公理自相矛盾吗？", a: "OWL 2 DL。HermiT 或 Konclude。只在离线流水线跑。在线不跑 tableau。" },
+];
+
+const parts = [
+  { name: "类 Class", q: "有哪些种类", ex: "Party、Shipment、BlockedShipment、FulfilledOrder" },
+  { name: "属性 Property", q: "能有什么关系", ex: "subsidiaryOf、consignedTo、hasStatus、mayProceedTo" },
+  { name: "个体 Individual", q: "谁是实例", ex: "harbor、globex、A1042、shipped。这一层是知识图谱的数据。" },
+  { name: "公理 Axiom", q: "什么被蕴含", ex: "子公司的子公司仍受制裁。当前状态落在已履约，订单就是已履约订单。" },
+];
+
+function renderWalk() {
+  const meta = CASES[state.caseId];
+  const steps = stepsOf(state.caseId);
+  const step = steps[Math.min(state.step, steps.length - 1)];
+  const hot = step.hot;
+  const map = state.caseId === "trade" ? renderTradeMap(hot) : renderOrderMap(hot);
+  const axiomBlocks = step.axioms.map((ax) => `
+    <h2>${esc(ax.name)}<span class="syn">${["manchester", "turtle", "functional"].map((k) =>
+      `<button data-act="syn" data-syn="${k}" class="${state.syn === k ? "on" : ""}">${SYN_LABEL[k]}</button>`
+    ).join("")}</span></h2>
+    <pre>${esc(ax[state.syn])}</pre>
+  `).join("");
+  return `
+    <div class="row">
+      <div class="seg">
+        <button data-act="case" data-case="trade" class="${state.caseId === "trade" ? "on" : ""}">出口合规</button>
+        <button data-act="case" data-case="order" class="${state.caseId === "order" ? "on" : ""}">订单流转</button>
+      </div>
+      <label class="check"><input type="checkbox" data-act="contradict" ${state.contradict ? "checked" : ""}>制造矛盾</label>
+      ${state.caseId === "trade" ? `<label class="check"><input type="checkbox" data-act="openworld" ${state.openWorld ? "checked" : ""}>另一张没写收货方的订单</label>` : ""}
+    </div>
+    <p class="ask"><b>${esc(meta.ask)}</b> ${esc(meta.file)} · ${esc(meta.script)} · 一次 DeductiveClosure。</p>
+    ${state.contradict && state.step === steps.length - 1 ? `<div class="banner">不一致。RL 引擎在闭合之后报告冲突，不在写入时拒收。</div>` : ""}
+    <div class="walk">
+      <div class="steps">
+        ${steps.map((s, i) => `<button class="step ${i === state.step ? "on" : ""}" data-act="step" data-step="${i}">${i + 1}. ${esc(s.title)}<small>${esc(s.sub)}</small></button>`).join("")}
+        <div class="nav">
+          <button data-act="prev" ${state.step === 0 ? "disabled" : ""}>上一步</button>
+          <button data-act="next" ${state.step >= steps.length - 1 ? "disabled" : ""}>下一步</button>
+        </div>
+      </div>
+      <div class="maincol">
+        <div class="stage panel">${map}
+          <div class="legend"><span><i class="dot a"></i>写在 ttl 里</span><span><i class="dot i"></i>物化新出现</span><span><i class="dot r"></i>冲突断言</span><span>亮边框 = 这一步</span></div>
+        </div>
+        <div class="panel axiom">
+          <p class="why">${esc(step.why)}</p>
+          ${axiomBlocks}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSyntax() {
+  const item = constructs.find((c) => c.id === state.construct) || constructs[6];
+  const layer = layers.find((l) => l.id === (state.layer || "owl")) || layers[2];
+  return `
+    <div class="panel" style="margin-bottom:12px">
+      <h2>四个构件</h2>
+      <div class="cols2" style="margin-top:8px">
+        ${parts.map((p) => `<div class="card"><h3>${esc(p.name)}</h3><p><span class="k">${esc(p.q)}</span> ${esc(p.ex)}</p></div>`).join("")}
+      </div>
+      <p class="why">术语叫法：类和公理是 TBox。个体事实是 ABox。关系上的传递、逆、函数性常并进 TBox。换序列化不换这四层。</p>
+    </div>
+    <div class="stack">
+      ${layers.map((l) => `<button class="layer ${layer.id === l.id ? "on" : ""}" data-act="layer" data-layer="${l.id}">${esc(l.name)}</button>`).join("")}
+    </div>
+    <p class="why">${esc(layer.text)}</p>
+    <div class="split" style="margin-top:14px">
+      <div>
+        ${constructs.map((c) => `<button class="construct ${c.id === item.id ? "on" : ""}" data-act="construct" data-id="${c.id}">${esc(c.name)}</button>`).join("")}
+      </div>
+      <div class="panel">
+        <h2>${esc(item.name)}</h2>
+        <p>${esc(item.point)}</p>
+        <div class="cols3">
+          ${["manchester", "turtle", "functional"].map((k) => `<div><h3>${SYN_LABEL[k]}</h3><pre>${esc(item[k])}</pre></div>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderReason() {
+  const p = profiles[state.profile];
+  const scene = scenes.find((s) => s.id === state.scene) || scenes[0];
+  return `
+    <div class="cols2" style="margin-bottom:12px">
+      <div class="panel card">
+        <h3>学术 OWL</h3>
+        <p><span class="k">问：</span>哪条蕴含成立。</p>
+        <p><span class="k">写：</span>改公理或断言，推理器重算。</p>
+        <p>本目录两份 ttl 都在这条线上。</p>
+      </div>
+      <div class="panel card">
+        <h3>运营本体</h3>
+        <p><span class="k">问：</span>哪次变更被允许。</p>
+        <p><span class="k">写：</span>Action 一次事务，可校验、可回写源系统。</p>
+        <p>批准、派工、回写不在 reason.py 里。</p>
+      </div>
+    </div>
+    <div class="profiles">
+      ${Object.entries(profiles).map(([id, item]) => `<button data-act="profile" data-id="${id}" class="${id === state.profile ? "on" : ""}"><b>${esc(item.name)}</b><span>${esc(item.fit)}</span></button>`).join("")}
+    </div>
+    <div class="panel detail">
+      <h2>${esc(p.name)}</h2>
+      <p><span class="k">复杂度。</span>${esc(p.cost)}</p>
+      <p><span class="k">放弃。</span>${esc(p.drop)}</p>
+      <p><span class="k">算法。</span>${esc(p.how)}</p>
+      <p><span class="k">和本目录。</span>${esc(p.here)}</p>
+    </div>
+    <h2 style="margin:16px 0 8px">点一个问题</h2>
+    <div class="scenes">
+      ${scenes.map((s) => `<button class="scene ${s.id === scene.id ? "on" : ""}" data-act="scene" data-id="${s.id}">${esc(s.q)}</button>`).join("")}
+    </div>
+    <div class="answer"><b>${esc(scene.tag)}</b> · ${esc(scene.a)}</div>
+  `;
+}
+
+function render() {
+  const meta = CASES[state.caseId];
+  const steps = stepsOf(state.caseId);
+  if (state.step > steps.length - 1) state.step = steps.length - 1;
+  const body = state.tab === "syntax" ? renderSyntax() : state.tab === "reason" ? renderReason() : renderWalk();
+  document.getElementById("app").innerHTML = `
+    <h1>写下来的契约，推出没人写过的事实</h1>
+    <p class="lead">${esc(meta.conclusion)} 页面把同一次物化按依赖拆开。三种写法是同一条公理。reason.py 读 Turtle。</p>
+    <div class="tabs">
+      <button data-act="tab" data-tab="walk" class="${state.tab === "walk" ? "on" : ""}">推出过程</button>
+      <button data-act="tab" data-tab="syntax" class="${state.tab === "syntax" ? "on" : ""}">写法</button>
+      <button data-act="tab" data-tab="reason" class="${state.tab === "reason" ? "on" : ""}">推理与场景</button>
+    </div>
+    ${body}
+    <div class="foot">
+      <p>换 Manchester、Turtle 或函数式语法，公理不变。owlrl 吃三元组，所以文件是 Turtle。文件后缀不带来推理。</p>
+      <p>剖面是 OWL 2 RL。推理器一次前向链闭合，区分断言和推出。完整 DL 的 tableau 不在这两份脚本里。</p>
+      <p>缺了就拒绝，用 SHACL。人要改状态并回写，用动作。未支付就不能发货，用 Lean。三件事都不是这两份本体在算的蕴含。</p>
+    </div>
+  `;
+}
+
+document.addEventListener("click", (event) => {
+  const el = event.target.closest("[data-act]");
+  if (!el || el.matches("input")) return;
+  const act = el.dataset.act;
+  if (act === "tab") state.tab = el.dataset.tab;
+  if (act === "case") {
+    state.caseId = el.dataset.case;
+    state.step = CASES[state.caseId].end;
+    state.contradict = false;
+    state.openWorld = false;
+  }
+  if (act === "step") state.step = Number(el.dataset.step);
+  if (act === "syn") state.syn = el.dataset.syn;
+  if (act === "construct") state.construct = el.dataset.id;
+  if (act === "layer") state.layer = el.dataset.layer;
+  if (act === "profile") state.profile = el.dataset.id;
+  if (act === "scene") {
+    state.scene = el.dataset.id;
+    const tag = (scenes.find((s) => s.id === state.scene) || {}).tag;
+    if (profiles[tag]) state.profile = tag;
+  }
+  if (act === "prev") state.step = Math.max(0, state.step - 1);
+  if (act === "next") state.step += 1;
+  render();
+});
+
+document.addEventListener("change", (event) => {
+  const el = event.target.closest("[data-act]");
+  if (!el) return;
+  if (el.dataset.act === "contradict") {
+    state.contradict = el.checked;
+    if (state.contradict) state.step = stepsOf(state.caseId).length - 1;
+  }
+  if (el.dataset.act === "openworld") state.openWorld = el.checked;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
