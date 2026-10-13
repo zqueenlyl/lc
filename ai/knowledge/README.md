@@ -14,6 +14,7 @@
 | **知识库** | 知识库类型五维整理 | [knowledge-base/](./knowledge-base/) |
 | **Ontology** | 先跑制裁穿透例子，再读 OWL 定义与运营本体 | [ontology/](./ontology/) |
 | **Lean 4** | 依赖类型上的证明项；kernel 检查，Agent 只负责提出 | [lean/](./lean/) |
+| **业务规格到代码** | 文档 → Lean → 本体 → 先失败的测试 → 实现；ABAC 为切片 | [业务规格到代码.md](./业务规格到代码.md) |
 | **Memory** | Agent 工作 / 短期 / 长期记忆 | [memory/](./memory/) |
 | **Context Engineering** | 在合适时机把合适信息放进窗口 | [context-engineering/](./context-engineering/) |
 
