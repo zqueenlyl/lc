@@ -1,0 +1,3711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIMA 第 3–6 章 · 搜索 · 交互式图解</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1b2130; --line:#2b3444;
+  --fg:#e6edf3; --dim:#93a1b1; --faint:#6e7d8d;
+  --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --gold:#e3b341; --purple:#bc8cff; --cyan:#39c5cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#ffffff; --panel:#f6f8fa; --panel2:#eaeef2; --line:#d0d7de;
+    --fg:#1f2328; --dim:#57606a; --faint:#818b98;
+    --accent:#0969da; --ok:#1a7f37; --warn:#9a6700; --bad:#cf222e; --gold:#9a6700; --purple:#8250df; --cyan:#1b7c83;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:15px;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;line-height:1.3}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:18px 0 6px;color:var(--fg)}
+p{margin:8px 0}
+.dim{color:var(--dim)}
+.faint{color:var(--faint);font-size:13px}
+code,.mono{font-family:var(--mono)}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.hero .eq{font-family:var(--mono);font-size:15px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;margin-top:12px;display:block;color:var(--cyan)}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;
+  padding:6px 14px;font-size:13px;cursor:pointer;user-select:none}
+.tab:hover{color:var(--fg)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card>h2{margin-bottom:2px}
+.sub{color:var(--dim);font-size:13px;margin:0 0 10px}
+
+button.btn{border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;
+  padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.btn.pri:hover{filter:brightness(1.1);color:#fff}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+label.ck{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--dim);cursor:pointer}
+select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+input[type=range]{accent-color:var(--accent)}
+
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);font-weight:600;color:var(--dim);font-size:12.5px}
+td.m,th.m{text-align:center}
+tr.kbtrue td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+tr.cex td{background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.t{color:var(--ok);font-weight:700}
+.f{color:var(--bad);font-weight:700}
+.u{color:var(--faint)}
+
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:12px 0}
+.fbox{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:10px 12px;min-width:120px;font-size:13px}
+.fbox b{display:block;font-size:13px}
+.fbox span{font-size:11.5px;color:var(--dim)}
+.fbox.kb{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);min-width:190px}
+.arw{display:flex;align-items:center;color:var(--faint);font-size:18px}
+.loopnote{border-left:3px solid var(--warn);padding:6px 12px;margin:10px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;
+  font-family:var(--mono);margin:2px 3px 2px 0;color:var(--dim)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+.pill.g{border-color:var(--ok);color:var(--ok)}
+.pill.r{border-color:var(--bad);color:var(--bad)}
+.qchip{font-family:var(--mono);font-size:12px;border:1px solid var(--accent);color:var(--accent);
+  border-radius:6px;padding:1px 8px;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.queue{display:flex;flex-wrap:wrap;gap:4px;min-height:26px}
+.stackline{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:8px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-size:13.5px}
+.kv b{font-family:var(--mono);color:var(--accent)}
+.verdict{border-radius:9px;padding:10px 13px;font-size:14px;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.yes{border-color:var(--ok);color:var(--ok)}
+.verdict.no{border-color:var(--bad);color:var(--bad)}
+.verdict.mid{border-color:var(--warn);color:var(--warn)}
+.note{border-left:3px solid var(--purple);padding:6px 12px;margin:12px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+.note b{color:var(--fg)}
+details{margin-top:10px}
+details>summary{cursor:pointer;color:var(--dim);font-size:13px}
+ul.tight{margin:6px 0;padding-left:20px}
+ul.tight li{margin:3px 0;font-size:13.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.mini{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--panel2)}
+.mini b{display:block;font-size:13px;margin-bottom:4px}
+.mini span{font-size:12.5px;color:var(--dim)}
+svg text{fill:var(--fg)}
+
+/* ---- 地图 ---- */
+svg .ed{stroke:var(--line);stroke-width:1.5}
+svg .ed.use{stroke:var(--accent);stroke-width:3}
+svg .nd{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}
+svg .nd.exp{fill:color-mix(in srgb,var(--faint) 55%,transparent);stroke:var(--faint)}
+svg .nd.fr{fill:color-mix(in srgb,var(--accent) 35%,transparent);stroke:var(--accent)}
+svg .nd.cur{fill:var(--accent);stroke:var(--accent)}
+svg .nd.path{fill:color-mix(in srgb,var(--ok) 50%,transparent);stroke:var(--ok)}
+svg .nd.start{stroke:var(--cyan);stroke-width:3}
+svg .nd.goal{stroke:var(--gold);stroke-width:3}
+svg .lb{font-size:10px;font-family:var(--mono);fill:var(--faint)}
+svg .lb.on{fill:var(--fg);font-weight:700}
+
+/* ---- 网格 / 热力 ---- */
+.hgrid{display:grid;gap:2px;margin:10px 0}
+.hc{border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-family:var(--mono);color:var(--faint);background:var(--panel2);min-height:26px}
+.hc.wall{background:var(--line)}
+.hc.start{outline:2px solid var(--cyan);outline-offset:-2px}
+.hc.goal{outline:2px solid var(--gold);outline-offset:-2px}
+.hc.path{outline:1px solid var(--ok);outline-offset:-1px}
+
+/* ---- 八数码 ---- */
+.pz{display:grid;grid-template-columns:repeat(3,58px);gap:4px;margin:10px 0}
+.pzc{height:58px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:22px;font-weight:700}
+.pzc.blank{background:transparent;border-style:dashed;color:var(--faint)}
+.pzc.bad{color:var(--bad)}
+.pzc.good{color:var(--ok);border-color:var(--ok)}
+
+/* ---- 第 4 章：棋盘 / 后继表 ---- */
+.qb{display:grid;gap:2px;margin:10px 0;max-width:420px}
+.qc{aspect-ratio:1;border:1px solid var(--line);border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;line-height:1}
+.qc.light{background:color-mix(in srgb,var(--fg) 7%,var(--panel2))}
+.qc.q{color:var(--gold)}
+.qc.atk{background:color-mix(in srgb,var(--bad) 26%,transparent)}
+.qc.cur{outline:2px solid var(--cyan);outline-offset:-2px}
+.succg{display:grid;gap:2px;margin:8px 0;font-family:var(--mono);font-size:10px}
+.sgc{border:1px solid var(--line);border-radius:3px;padding:2px 0;min-width:22px;text-align:center;
+  cursor:pointer;background:var(--panel2);color:var(--dim)}
+.sgc:hover{border-color:var(--accent)}
+.sgc.best{background:color-mix(in srgb,var(--ok) 32%,transparent);color:var(--fg);font-weight:700}
+.sgc.cur{outline:2px solid var(--cyan);outline-offset:-2px;color:var(--fg)}
+svg .traj{fill:none;stroke-width:2}
+svg .pt{fill:var(--accent)}
+svg .gd{stroke:var(--gold);stroke-dasharray:4 4}
+
+/* ---- 数独 ---- */
+.sdg{display:grid;grid-template-columns:repeat(9,1fr);gap:1px;background:var(--line);
+  border:2px solid var(--line);border-radius:6px;overflow:hidden;margin:10px 0;max-width:420px}
+.sdc{aspect-ratio:1;background:var(--panel2);display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;color:var(--dim)}
+.sdc.fixed{background:color-mix(in srgb,var(--fg) 12%,var(--panel2));color:var(--fg);font-weight:700;font-size:16px}
+.sdc.one{background:color-mix(in srgb,var(--ok) 32%,transparent);color:var(--fg);font-weight:700;font-size:16px}
+
+/* ---- 条形对比 ---- */
+.bars{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.bar{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.bar .nm{font-family:var(--mono);min-width:112px;color:var(--dim);font-size:12px}
+.bar .tr{flex:1;height:16px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent)}
+.bar .fl.ok{background:var(--ok)}
+.bar .fl.bad{background:var(--bad)}
+.bar .vv{font-family:var(--mono);min-width:78px;text-align:right;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">AIMA 第 3–6 章 · 搜索 · Problem Solving</div>
+  <h1>搜索 = 把「状态空间图」的一小部分展开出来</h1>
+  <p class="lead">第 3 章假定环境是<strong>回合式、单智能体、完全可观测、确定性、静态、离散、已知</strong>的。
+  第 4 章逐条放宽这些假设。第 5 章放宽「单智能体」。第 6 章换一种<strong>表示</strong>：不再把状态当成黑箱原子。</p>
+  <span class="eq">解 = 一个动作序列　·　最优解 = 路径代价最小的那个动作序列　·　搜索的开销 = 时间与内存，通常都由分支因子 b 和深度 d 决定</span>
+</header>
+
+<nav class="tabs">
+  <div class="tab on" data-panel="p1">① 问题形式化 · 3.1–3.2</div>
+  <div class="tab" data-panel="p2">② 罗马尼亚地图搜索 · 3.4–3.5</div>
+  <div class="tab" data-panel="p3">③ f = g + h 等值线 · 3.5.3</div>
+  <div class="tab" data-panel="p4">④ 可采纳 vs 一致 · 3.6</div>
+  <div class="tab" data-panel="p5">⑤ 八数码与有效分支因子 · 3.6</div>
+  <div class="tab" data-panel="p6">⑥ 内存不够怎么办 · 3.5.5</div>
+  <div class="tab" data-panel="p7">⑦ 第 3 章速查</div>
+  <div class="tab" data-panel="p8">⑧ 8 皇后爬山 · 4.1.1</div>
+  <div class="tab" data-panel="p9">⑨ 模拟退火 vs 爬山 · 4.1.2</div>
+  <div class="tab" data-panel="p10">⑩ 遗传算法 · 4.1.4</div>
+  <div class="tab" data-panel="p11">⑪ 地形困境与连续空间 · 4.1/4.2</div>
+  <div class="tab" data-panel="p12">⑫ AND–OR 搜索 · 4.3</div>
+  <div class="tab" data-panel="p13">⑬ 信念状态与 LRTA* · 4.4/4.5</div>
+  <div class="tab" data-panel="p14">⑭ 第 4 章速查</div>
+  <div class="tab" data-panel="p15">⑮ minimax 回传 · 5.2</div>
+  <div class="tab" data-panel="p16">⑯ α-β 剪枝对照器 · 5.3</div>
+  <div class="tab" data-panel="p17">⑰ 复杂度：√b 从哪里来 · 5.3</div>
+  <div class="tab" data-panel="p18">⑱ expectiminimax · 5.4</div>
+  <div class="tab" data-panel="p19">⑲ MCTS 四步 · 5.4.3</div>
+  <div class="tab" data-panel="p20">⑳ 截断搜索与地平线效应 · 5.5</div>
+  <div class="tab" data-panel="p21">㉑ 第 5 章速查</div>
+  <div class="tab" data-panel="p22">㉒ 澳大利亚地图着色 · 6.1</div>
+  <div class="tab" data-panel="p23">㉓ AC-3 单步机 · 6.2.2</div>
+  <div class="tab" data-panel="p24">㉔ 弧一致 ≠ 可满足 · 6.2.3</div>
+  <div class="tab" data-panel="p25">㉕ 回溯与启发式对照台 · 6.3</div>
+  <div class="tab" data-panel="p26">㉖ 数独与 AllDiff 传播 · 6.2.5</div>
+  <div class="tab" data-panel="p27">㉗ 结构分解 · 6.5</div>
+  <div class="tab" data-panel="p28">㉘ 第 6 章速查</div>
+</nav>
+
+<!-- ================= ① 问题形式化 ================= -->
+<section class="panel on" id="p1">
+  <div class="card">
+    <h2>搜索问题的五元组</h2>
+    <p class="sub">形式化得对不对，决定了后面一切。抽掉太多细节 → 无解；保留太多 → 状态空间爆炸。</p>
+    <div class="flow">
+      <div class="fbox"><b>初始状态</b><span>智能体的出发点 s₀</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>ACTIONS(s)</b><span>在 s 处可做的事</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>RESULT(s,a)</b><span>转移模型，给出后继</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>IS-GOAL(s)</b><span>目标测试</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>ACTION-COST</b><span>c(s,a,s′)，假设可加且为正</span></div>
+    </div>
+    <div class="controls">
+      <span class="faint">切换问题</span>
+      <select id="fpSel"></select>
+      <span class="faint">网格边长 n</span>
+      <input type="range" id="fpN" min="2" max="12" step="1" value="4"><b class="mono" id="fpNv">4</b>
+    </div>
+    <div id="fpOut"></div>
+    <div class="note"><b>抽象的两条标准：</b>抽象必须<b>有效</b>（抽掉细节后仍能构造解）且<b>有用</b>（解能映射回原问题并执行）。
+    例子：从 Arad 开车去 Bucharest，抽象掉「沿路每个轮胎转动的角度、收音机里播了什么」，但如果把「加油站位置」也抽象掉，解就执行不了。</div>
+    <div class="note"><b>状态空间为什么必然是指数的：</b>旅行商问题——从起点出发，第一个目的地有 n−1 种选法，第二个有 n−2 种……
+    状态数 <span class="mono">(n−1)!</span>。搜索不是在「找一条路」，是在<b>一棵大小对 n 指数增长的树里决定展开哪些分支</b>。</div>
+  </div>
+</section>
+
+<!-- ================= ② 罗马尼亚地图 ================= -->
+<section class="panel" id="p2">
+  <div class="card">
+    <h2>罗马尼亚地图：把八种算法放在同一张图上跑</h2>
+    <p class="sub">20 个城市、23 条路。选算法、点「下一步」，看<b>边缘（frontier）怎么扩张</b>——
+    本章所有结论都写在「展开顺序」里，静态图是看不见的。</p>
+
+    <div class="controls">
+      <span class="faint">算法</span>
+      <select id="rmMode">
+        <option value="bfs">广度优先 BFS</option>
+        <option value="dfs">深度优先 DFS</option>
+        <option value="ucs">一致代价 UCS（Dijkstra）</option>
+        <option value="greedy">贪婪最佳优先</option>
+        <option value="astar" selected>A*（f = g + h）</option>
+        <option value="wastar">加权 A*（f = g + W·h）</option>
+        <option value="dls">深度受限 DLS</option>
+        <option value="ids">迭代加深 IDS</option>
+      </select>
+      <span class="faint">起点</span><select id="rmA"></select>
+      <span class="faint">终点</span><select id="rmB"></select>
+    </div>
+    <div class="controls">
+      <button class="btn pri" id="rmStep">下一步</button>
+      <button class="btn" id="rmRun">跑到底</button>
+      <button class="btn" id="rmReset">重置</button>
+      <label class="ck"><input type="checkbox" id="rmEarly"> <strong>早期</strong>目标测试（生成即测）</label>
+      <label class="ck"><input type="checkbox" id="rmTree"> 树状搜索（不查冗余路径）</label>
+    </div>
+    <div class="controls">
+      <span class="faint">W（加权 A*）</span>
+      <input type="range" id="rmW" min="1" max="10" step="0.5" value="2"><b class="mono" id="rmWv">2</b>
+      <span class="faint">深度界限 ℓ</span>
+      <input type="range" id="rmL" min="1" max="12" step="1" value="6"><b class="mono" id="rmLv">6</b>
+    </div>
+    <div class="controls">
+      <button class="btn" id="rmPreset">一键复现：UCS 早/晚目标测试（Sibiu → Bucharest）</button>
+    </div>
+
+    <svg id="rmMap" viewBox="0 0 740 440" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+
+    <div class="two" style="margin-top:12px">
+      <div>
+        <h3>边缘 frontier（按弹出顺序）</h3>
+        <div class="queue" id="rmFrontier"></div>
+        <h3>已扩展 expanded</h3>
+        <div class="queue" id="rmExp"></div>
+      </div>
+      <div>
+        <div class="kv"><span>已扩展节点</span><b id="rmK1">0</b></div>
+        <div class="kv"><span>已生成节点</span><b id="rmK2">0</b></div>
+        <div class="kv"><span>边缘最大规模</span><b id="rmK3">0</b></div>
+        <div class="kv"><span>当前 f 值</span><b id="rmK4">—</b></div>
+        <div class="kv"><span>求得路径代价</span><b id="rmK5">—</b></div>
+        <div id="rmVerdict" class="verdict"></div>
+      </div>
+    </div>
+
+    <div class="note"><b>先试这个：</b>点上面那个「一键复现」按钮，算法会切成 UCS、起终点设为 Sibiu → Bucharest。
+    先<b>不勾</b>「早期目标测试」跑到底 → 代价 <b>278</b>（Sibiu → Rimnicu Vilcea → Pitesti → Bucharest，最优）。
+    再<b>勾上</b>重跑 → 代价 <b>310</b>（Sibiu → Fagaras → Bucharest）。
+    <strong>UCS 必须在节点被选中展开时才做目标测试</strong>——生成时就测，会把一条还躺在边缘里的更贵路径当成答案返回。</div>
+    <div class="note"><b>再试这个：</b>起点 Arad、终点 Bucharest，A* 跑到底 → 代价 <b>418</b>。
+    把 W 拉到 5 再跑 → 扩展节点数明显下降，但代价会升到 450（走 Fagaras）。
+    <b>这就是加权 A* 的取舍</b>：解代价被限制在 <span class="mono">[C*, W·C*]</span> 之内，实测通常远好于这个界。</div>
+    <div class="note"><b>数据说明：</b>笔记只给出了 8 条边的里程（Arad–Sibiu 140、Sibiu–RV 80、Sibiu–Fagaras 99、
+    RV–Pitesti 97、Fagaras–Bucharest 211、Pitesti–Bucharest 101、Arad–Zerind 75、Arad–Timisoara 118，
+    以及 Arad–Zerind–Oradea–Sibiu 合计 297）。其余边按原书 Figure 3.2 补全。
+    20 城到 Bucharest 的直线距离 h<sub>SLD</sub> 笔记完整给出，本页全部使用。</div>
+  </div>
+</section>
+
+<!-- ================= ③ 等值线 ================= -->
+<section class="panel" id="p3">
+  <div class="card">
+    <h2>f = g + h：等值线形状就是剪枝的形状</h2>
+    <p class="sub">同一张网格，同一个障碍分布，只改 f 的定义，看展开区域怎么变形。</p>
+    <div class="controls">
+      <span class="faint">网格 n</span>
+      <input type="range" id="ctN" min="8" max="30" step="1" value="16"><b class="mono" id="ctNv">16</b>
+      <span class="faint">障碍密度</span>
+      <input type="range" id="ctP" min="0" max="45" step="5" value="25"><b class="mono" id="ctPv">25%</b>
+      <span class="faint">W</span>
+      <input type="range" id="ctW" min="0" max="6" step="0.25" value="1"><b class="mono" id="ctWv">1</b>
+      <label class="ck"><input type="checkbox" id="ctGreedy"> 纯贪心（f = h）</label>
+      <button class="btn pri" id="ctGo">重跑</button>
+      <button class="btn" id="ctSeed">换个地形</button>
+    </div>
+    <div class="two">
+      <div>
+        <div class="hgrid" id="ctGrid"></div>
+      </div>
+      <div>
+        <div class="kv"><span>f 的定义</span><b id="ctF">g + 1·h</b></div>
+        <div class="kv"><span>展开节点数</span><b id="ctK">—</b></div>
+        <div class="kv"><span>路径长度</span><b id="ctL">—</b></div>
+        <div class="kv"><span>路径代价</span><b id="ctC">—</b></div>
+        <div id="ctVerdict" class="verdict"></div>
+        <div class="faint" style="margin-top:10px">颜色 = 被展开的<b>顺序</b>（浅 → 深 = 先 → 后）。
+        深灰格是障碍。青框 = 起点，金框 = 终点。</div>
+      </div>
+    </div>
+    <div class="note"><b>把 W 从 0 拉到 6 看三件事：</b>
+    ① <b>W = 0</b>：f = g，就是 UCS／Dijkstra，等值线是<b>以起点为心的同心圆</b>——它朝所有方向均匀扩张，完全不看目标在哪。
+    ② <b>W = 1</b>：A*，等值线被<b>朝目标方向拉长成椭圆</b>，横向几乎不扩张。
+    ③ <b>W 越大</b>：椭圆越窄，越贴着直线走——扩展的节点少了，但一旦被障碍挡住就要绕大弯，解不再最优。</div>
+    <div class="note"><b>为什么 A* 的等值线是椭圆：</b>h 是到目标的直线距离，g 是已走路程。
+    <span class="mono">g + h ≤ C</span> 的轨迹，正是「以起点和目标为焦点、长轴为 C 的椭圆」。这个几何图像比任何公式都直观。</div>
+  </div>
+</section>
+
+<!-- ================= ④ 可采纳 vs 一致 ================= -->
+<section class="panel" id="p4">
+  <div class="card">
+    <h2>可采纳 ≠ 一致：一个可以自己改坏的实验室</h2>
+    <p class="sub">拖滑块改 h 值，实时检查两条条件，看 A* 什么时候开始返回次优解。</p>
+    <div class="controls">
+      <span class="faint">h(A)</span><input type="range" id="hcA" min="0" max="8" step="1" value="3"><b class="mono" id="hcAv">3</b>
+      <span class="faint">h(B)</span><input type="range" id="hcB" min="0" max="8" step="1" value="2"><b class="mono" id="hcBv">2</b>
+      <span class="faint">h(C)</span><input type="range" id="hcC" min="0" max="8" step="1" value="1"><b class="mono" id="hcCv">1</b>
+      <button class="btn" id="hcReset">恢复默认</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="hcMap" viewBox="0 0 380 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <div id="hcStats"></div>
+        <table id="hcTable"></table>
+        <div id="hcVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>两条条件的准确说法：</b>
+    <b>可采纳</b> <span class="mono">h(n) ≤ h*(n)</span>——不高估到目标的<b>真实</b>代价（只看单个节点）。
+    <b>一致（= 单调）</b> <span class="mono">h(n) ≤ c(n,a,n′) + h(n′)</span>——满足三角形不等式（看<b>每条边</b>）。
+    <b>一致 ⇒ 可采纳，反之不成立。</b></div>
+    <div class="note"><b>动手找「可采纳但不一致」：</b>把 h(B) 拖到 <b>0</b>，h(A) 拖到 <b>4</b>。
+    此时 h(A) = 4 = h*(A)，<b>可采纳仍成立</b>；但 h(A) = 4 &gt; c(A,B) + h(B) = 1 + 0 = 1，<b>不一致</b>。
+    <b>结论：A* 依然返回最优解 4。</b>——因为最优性只需要<b>可采纳</b>。
+    一致性给的是另一件事：<b>效率</b>。不一致时，一个状态可能先以偏大的 g 被展开、之后才发现更便宜的路，
+    于是<b>同一状态在边缘里留有多个副本、被多次展开</b>。一致时这种情况不会发生，每个节点只展开一次。</div>
+    <div class="note"><b>动手找「次优」：</b>把三个 h 都拖到 <b>8</b>（全部高估，不可采纳）。
+    A* 会返回 8 而不是最优 4 —— 它直接走了 A→G 那条 8 的路，因为 h 谎报「从 A 出发还要 8 步」，
+    把真正最优的 A→B→C→G 掩盖掉了。<b>最优性保证的失效，只由「高估」引起，不由「不一致」引起。</b></div>
+    <div class="note"><b>h 太小会怎样：</b>把三个 h 全拖到 0，A* 退化成 UCS——仍然最优，但扩展节点数暴涨。
+    <b>占优（domination）</b>：若 h₂ ≥ h₁ 且都可采纳，则 h₂ <b>占优</b> h₁，A*(h₂) 扩展的节点绝不会比 A*(h₁) 多。下一屏有实测数字。</div>
+  </div>
+</section>
+
+<!-- ================= ⑤ 八数码 ================= -->
+<section class="panel" id="p5">
+  <div class="card">
+    <h2>八数码：h₁ 与 h₂ 差多少，用真实数字说话</h2>
+    <p class="sub">同一个随机局面，分别跑 BFS / A*(h₁) / A*(h₂)，数扩展了多少节点，并反算<b>有效分支因子 b*</b>。</p>
+    <div class="controls">
+      <span class="faint">随机游走步数 k（局面难度）</span>
+      <input type="range" id="pzK" min="4" max="26" step="2" value="14"><b class="mono" id="pzKv">14</b>
+      <span class="faint">种子</span>
+      <input type="range" id="pzS" min="1" max="40" step="1" value="7"><b class="mono" id="pzSv">7</b>
+      <button class="btn pri" id="pzGo">跑三种</button>
+    </div>
+    <div class="two">
+      <div>
+        <div class="pz" id="pzBoard"></div>
+        <div class="kv"><span>h₁ = 错位滑块数</span><b id="pzH1">—</b></div>
+        <div class="kv"><span>h₂ = 曼哈顿距离和</span><b id="pzH2">—</b></div>
+        <div class="kv"><span>真实最优步数</span><b id="pzD">—</b></div>
+      </div>
+      <div>
+        <div class="bars" id="pzBars"></div>
+        <div id="pzVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>b*（有效分支因子）怎么来的：</b>若一棵深度为 d 的树有 N 个节点，
+    解 <span class="mono">N = 1 + b* + (b*)² + … + (b*)^d</span> 得到 b*。
+    b* 越接近 1，说明启发式把搜索压得越"细"。原书 Figure 3.26：d = 24 时
+    <b>BFS 扩展 290082</b>、<b>A*(h₁) 53039</b>、<b>A*(h₂) 5733</b>，对应 b* 分别约 <b>1.62 / 1.50 / 1.36</b>。</div>
+    <div class="note"><b>为什么 h₂ 占优 h₁：</b>h₁ 只数"有几个格子放错了"，h₂ 数"每个放错的格子离正确位置有几步"。
+    每一步移动最多让 h₂ 减 1，也最多让 h₁ 减 1，所以两者都可采纳；而 h₂ ≥ h₁ 恒成立 → h₂ 占优。
+    另一个角度（<b>松弛问题</b>）：允许滑块直接穿过邻居 → 得到 h₂；再允许滑块直接跳到任意格 → 得到 h₁。
+    <b>约束删得越多， admissible 的 h 越小、越弱。</b></div>
+    <div class="note"><b>为什么 BFS 也能跑完：</b>八数码状态空间只有 <span class="mono">9!/2 = 181 440</span> 个可达状态，
+    所以暴力枚举是可行的——这正好让它成为一个能<b>在浏览器里跑出真实数字</b>的教科书例子。
+    把 k 拉到 24 以上再跑，你会看到三个数字拉开几个数量级。</div>
+  </div>
+</section>
+
+<!-- ================= ⑥ 内存 ================= -->
+<section class="panel" id="p6">
+  <div class="card">
+    <h2>内存不够怎么办：IDA* 用时间换空间</h2>
+    <p class="sub">A* 的瓶颈从来不是时间，是<b>内存</b>——它要把整个边缘都留在内存里。
+    IDA* 每次只存一条 DFS 路径，代价是<b>反复重算</b>。</p>
+    <div class="controls">
+      <span class="faint">局面难度 k</span>
+      <input type="range" id="idK" min="6" max="24" step="2" value="16"><b class="mono" id="idKv">16</b>
+      <span class="faint">种子</span>
+      <input type="range" id="idS" min="1" max="40" step="1" value="7"><b class="mono" id="idSv">7</b>
+      <button class="btn pri" id="idGo">跑 IDA* vs A*</button>
+    </div>
+    <div class="two">
+      <div>
+        <h3>IDA* 的每一轮</h3>
+        <table id="idTable"></table>
+      </div>
+      <div>
+        <h3>内存对比</h3>
+        <div class="kv"><span>A* 边缘最大规模</span><b id="idA">—</b></div>
+        <div class="kv"><span>A* 扩展节点</span><b id="idA2">—</b></div>
+        <div class="kv"><span>IDA* 同时最多存</span><b id="idB">—</b></div>
+        <div class="kv"><span>IDA* 累计生成</span><b id="idB2">—</b></div>
+        <div id="idVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>IDA* 在做什么：</b>它是<b>迭代加深</b>和 <b>A*</b> 的合体——
+    每轮做一次 f 值受限的 DFS，阈值取上一轮<b>刚超过它的最小 f 值</b>。
+    于是等值线一轮一轮往外推，直到碰到目标。每轮都从头重算，看起来很浪费，
+    但节点总数通常只比 A* 多一点点（因为绝大多数节点都在最后一轮）。</div>
+    <div class="note"><b>三兄弟的取舍：</b>
+    <b>IDA*</b> 内存 O(d)、不保存已访问表（同一状态会重复生成）、改 h 后重跑很贵。
+    <b>RBFS</b> 也是线性内存，会把被遗忘子树的最好 f 值<b>回传</b>给父节点，靠"f_limit"决定何时回头。
+    <b>SMA*</b> 则反过来：一直按 A* 跑，直到<b>内存填满</b>，然后丢掉最差的叶子并把它的值回传给父节点——
+    内存给多少用多少，代价是可能<b>颠簸（thrashing）</b>：在两个子树间反复来回。</div>
+  </div>
+</section>
+
+<!-- ================= ⑦ 速查 ================= -->
+<section class="panel" id="p7">
+  <div class="card">
+    <h2>第 3 章 · 逐节</h2>
+    <table>
+      <tr><th class="m">节</th><th>一句话</th><th>关键概念</th></tr>
+      <tr><td class="m">3.1–3.2</td><td>搜索问题 = 五元组；抽象要既有效又有用。</td><td>初始状态 / ACTIONS / RESULT / IS-GOAL / ACTION-COST</td></tr>
+      <tr><td class="m">3.3</td><td>通用最佳优先骨架；评价四准则。</td><td>节点四分量 state·parent·action·path-cost；边缘 vs 已到达</td></tr>
+      <tr><td class="m">3.4</td><td>无信息搜索：BFS / UCS / DFS / DLS / IDS / 双向。</td><td>早期 vs 晚期目标测试；图搜索 vs 树状搜索</td></tr>
+      <tr><td class="m">3.5</td><td>有信息搜索：贪婪 / A* / 加权 A* / 内存受限族。</td><td>等值线；W 的连续谱；IDA* / RBFS / SMA*</td></tr>
+      <tr><td class="m">3.6</td><td>启发式怎么来：松弛问题、模式数据库、地标、学习。</td><td>可采纳 / 一致 / 占优 / 有效分支因子 b*</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>算法对照表</h2>
+    <table>
+      <tr><th>算法</th><th class="m">f(n)</th><th class="m">完备</th><th class="m">最优</th><th class="m">时间</th><th class="m">空间</th></tr>
+      <tr><td>广度优先 BFS</td><td class="m mono">深度（FIFO）</td><td class="m t">是¹</td><td class="m t">是³</td><td class="m mono">O(bᵈ)</td><td class="m mono">O(bᵈ)</td></tr>
+      <tr><td>一致代价 UCS</td><td class="m mono">g(n)</td><td class="m t">是¹²</td><td class="m t">是</td><td class="m mono">O(b^{1+⌊C*/ε⌋})</td><td class="m mono">同时间</td></tr>
+      <tr><td>深度优先 DFS</td><td class="m mono">−深度（LIFO）</td><td class="m f">否⁴</td><td class="m f">否</td><td class="m mono">O(bᵐ)</td><td class="m mono">O(bm)</td></tr>
+      <tr><td>深度受限 DLS</td><td class="m mono">同上，深度 ℓ 截断</td><td class="m f">否</td><td class="m f">否</td><td class="m mono">O(b^ℓ)</td><td class="m mono">O(bℓ)</td></tr>
+      <tr><td>迭代加深 IDS</td><td class="m mono">ℓ = 0,1,2,…</td><td class="m t">是¹</td><td class="m t">是³</td><td class="m mono">O(bᵈ)</td><td class="m mono">O(bd)</td></tr>
+      <tr><td>双向 BIBF</td><td class="m mono">双向交替</td><td class="m t">是¹⁵</td><td class="m t">是³⁵</td><td class="m mono">O(bᵈᐟ²)</td><td class="m mono">O(bᵈᐟ²)</td></tr>
+      <tr><td>贪婪最佳优先</td><td class="m mono">h(n)</td><td class="m u">有限空间是</td><td class="m f">否</td><td class="m mono">O(|V|)</td><td class="m mono">同</td></tr>
+      <tr class="kbtrue"><td><b>A*</b></td><td class="m mono">g(n) + h(n)</td><td class="m t">是</td><td class="m t">是（h 可采纳）</td><td class="m mono">指数（最坏）</td><td class="m mono">主要瓶颈</td></tr>
+      <tr><td>加权 A*</td><td class="m mono">g + W·h</td><td class="m t">是</td><td class="m f">否（界 [C*, W·C*]）</td><td class="m mono">更少</td><td class="m mono">更少</td></tr>
+      <tr><td>IDA*</td><td class="m mono">f 等值线迭代</td><td class="m t">是</td><td class="m t">是</td><td class="m mono">多次重生成</td><td class="m mono">O(d)</td></tr>
+      <tr><td>RBFS</td><td class="m mono">max(g+h, 父 f)</td><td class="m t">是</td><td class="m t">是</td><td class="m mono">看回卷次数</td><td class="m mono">O(bd)</td></tr>
+      <tr><td>SMA*</td><td class="m mono">A*，内存满则丢最差叶</td><td class="m t">是（若解可达）</td><td class="m t">是</td><td class="m mono">可能颠簸</td><td class="m mono">用满给定内存</td></tr>
+    </table>
+    <div class="faint" style="margin-top:8px">
+      1：分支因子 b 有限且解存在或空间有限　2：所有动作代价 ≥ ε &gt; 0　3：动作代价全相同
+      4：树形有限空间完备，有环或无穷空间不完备　5：两个方向都必须是 BFS 或 UCS
+    </div>
+  </div>
+  <div class="card">
+    <h2>四个最易混的地方</h2>
+    <div class="grid2">
+      <div class="mini"><b>「完备」≠「最优」</b><span>完备 = <b>找得到</b>解；最优 = 找到<b>代价最小</b>的解。BFS 只在单位代价下才最优——这不是因为它聪明，是因为它恰好按层数展开。</span></div>
+      <div class="mini"><b>图搜索 vs 树状搜索 ≠ 状态空间是图还是树</b><span>状态空间<b>永远</b>是图。区别只在于<b>要不要查冗余路径</b>（维护 reached 表）。不查就会把同一状态反复展开。</span></div>
+      <div class="mini"><b>UCS 必须晚期目标测试</b><span>生成即测会把一条还躺在边缘里的更贵路径当成答案。第 ② 屏有 310 vs 278 的现场复现。</span></div>
+      <div class="mini"><b>迭代加深的时间并没有变差</b><span>IDS 的时间仍是 O(bᵈ)，因为绝大多数节点都在最深一层。它换来的是<b>空间从 O(bᵈ) 降到 O(bd)</b>。</span></div>
+      <div class="mini"><b>可采纳 ≠ 一致</b><span>一致 ⇒ 可采纳，反之不成立。一致时节点第一次弹出即在最优路径上，无需重入队。第 ④ 屏可自己造反例。</span></div>
+      <div class="mini"><b>启发式的分界线是"能否估计离目标多远"</b><span>不是"是否用队列"。BFS 和 UCS 都用队列，但都不看目标在哪，所以都是无信息的。</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ⑧ 8 皇后爬山 ================= -->
+<section class="panel" id="p8">
+  <div class="card">
+    <h2>8 皇后：爬山搜索的三种死法</h2>
+    <p class="sub">完整状态形式化：每列一个皇后，后继 = 把某个皇后移到<b>同列</b>另一格（8×7 = 56 个）。
+    代价 h = <b>正在互相攻击的皇后对数</b>，目标 h = 0。</p>
+    <div class="controls">
+      <span class="faint">棋盘 n</span>
+      <input type="range" id="qN" min="4" max="12" step="1" value="8"><b class="mono" id="qNv">8</b>
+      <span class="faint">变体</span>
+      <select id="qVar">
+        <option value="steep">最陡上升 steepest ascent</option>
+        <option value="first">首选爬山 first-choice</option>
+        <option value="rand">随机爬山 stochastic</option>
+      </select>
+      <span class="faint">种子</span>
+      <input type="range" id="qS" min="1" max="60" step="1" value="5"><b class="mono" id="qSv">5</b>
+    </div>
+    <div class="controls">
+      <label class="ck"><input type="checkbox" id="qSide"> 允许<b>侧向移动</b>（值相等也走）</label>
+      <span class="faint">连续侧向次数上限</span>
+      <input type="range" id="qSideL" min="0" max="200" step="10" value="100"><b class="mono" id="qSideLv">100</b>
+      <button class="btn pri" id="qStep">单步</button>
+      <button class="btn" id="qRun">跑到卡住</button>
+      <button class="btn" id="qReset">换局面</button>
+    </div>
+    <div class="two">
+      <div>
+        <div class="qb" id="qBoard"></div>
+      </div>
+      <div>
+        <div class="kv"><span>当前 h（互相攻击的对数）</span><b id="qH">—</b></div>
+        <div class="kv"><span>已走步数</span><b id="qStepN">0</b></div>
+        <div class="kv"><span>连续侧向移动</span><b id="qSideN">0</b></div>
+        <div class="kv"><span>后继总数（n×(n−1)）</span><b id="qSucc">56</b></div>
+        <div id="qVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <h3>全部 56 个后继的 h 值（点格子可手动移动那个皇后）</h3>
+    <div class="faint">行 = 移到第几行，列 = 移动哪一列的皇后。深绿 = 最优后继。当前位置用方框标出。</div>
+    <div id="qSuccGrid" class="succg"></div>
+    <div class="controls">
+      <button class="btn" id="qBatch">跑 300 次随机重启，统计成功率</button>
+    </div>
+    <div id="qBatchOut"></div>
+    <div class="note"><b>原书实测（n = 8）：</b>最陡上升爬山 <b>86% 会被卡住，只解出 14%</b>；
+    成功时平均 4 步，卡住时平均 3 步（状态空间 8⁸ ≈ 1700 万）。
+    允许侧向移动但<b>限制连续 100 次后停</b> → 成功率从 14% 飙到 <b>94%</b>，
+    但代价是成功要 21 步、失败要 64 步。<b>侧向移动不是免费的。</b></div>
+    <div class="note"><b>为什么随机重启几乎必然成功（概率 1 完备）：</b>每次随机重启成功概率 p ≈ 0.14，
+    失败概率 0.86，k 次全失败的概率 0.86ᵏ → 0。期望重启次数 1/0.14 ≈ <b>7 次</b>。
+    加上侧向移动后 p ≈ 0.94，期望只要 <b>1.06 次</b>。
+    这是本章最实用的一条：<b>一个不完备的算法，随机重启几下就几乎完备了，而代码只多了三行。</b></div>
+  </div>
+</section>
+
+<!-- ================= ⑨ 模拟退火 ================= -->
+<section class="panel" id="p9">
+  <div class="card">
+    <h2>模拟退火：允许下坡，才能翻过山脊</h2>
+    <p class="sub">爬山只接受变好的移动。模拟退火以 <span class="mono">e^(ΔE/T)</span> 的概率接受<b>变坏</b>的移动，
+    T 从高到低。同一个 8 皇后局面，两条曲线放在一起看。</p>
+    <div class="controls">
+      <span class="faint">初始温度 T₀</span>
+      <input type="range" id="saT" min="1" max="60" step="1" value="20"><b class="mono" id="saTv">20</b>
+      <span class="faint">每温度迭代数</span>
+      <input type="range" id="saI" min="20" max="600" step="20" value="200"><b class="mono" id="saIv">200</b>
+      <span class="faint">降温系数</span>
+      <input type="range" id="saR" min="80" max="99" step="1" value="95"><b class="mono" id="saRv">0.95</b>
+      <span class="faint">棋盘 n</span>
+      <input type="range" id="saN" min="6" max="12" step="1" value="8"><b class="mono" id="saNv">8</b>
+      <button class="btn pri" id="saGo">跑</button>
+      <button class="btn" id="saSeed">换局面</button>
+    </div>
+    <svg id="saPlot" viewBox="0 0 640 260" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <h3>接受概率 e^(ΔE/T)</h3>
+        <div class="faint">ΔE 是"变坏多少"（正数）。T 高时几乎什么都接受，T → 0 时退化为爬山。</div>
+        <div class="bars" id="saBars"></div>
+      </div>
+      <div>
+        <div class="kv"><span>爬山最终 h</span><b id="saH1">—</b></div>
+        <div class="kv"><span>退火最终 h</span><b id="saH2">—</b></div>
+        <div class="kv"><span>退火下坡次数</span><b id="saD">—</b></div>
+        <div class="kv"><span>退火求解成功</span><b id="saOK">—</b></div>
+        <div id="saVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>为什么"允许下坡"就能找到全局最优：</b>爬山的问题不是它走错方向，是它<b>太确定了</b>——
+    一旦走进局部极大值的吸引域就出不来。退火在高温时几乎随机游走（能跨过任意宽的山谷），
+    随着 T 下降逐渐变得挑剔，最后在 T → 0 时退化成纯爬山。
+    <b>如果降温足够慢，找到全局最优的概率趋于 1。</b></div>
+    <div class="note"><b>直觉图像：</b>乒乓球掉进一个崎岖的表面。如果只让它滚，它会停在最近的凹坑。
+    如果一边<b>摇动</b>表面一边让它滚，它就能跳出浅坑、最终落进最深的那个。
+    T 就是"摇动的强度"——摇得太猛（T₀ 太大）等于纯随机，摇得太轻（降温太快）等于爬山。</div>
+  </div>
+</section>
+
+<!-- ================= ⑩ 遗传算法 ================= -->
+<section class="panel" id="p10">
+  <div class="card">
+    <h2>遗传算法：交叉到底有没有用？</h2>
+    <p class="sub">个体 = n 位数字串，第 c 位 = 第 c 列皇后所在的行。适应度 = 互不攻击的皇后对数，
+    n = 8 时最大为 8×7/2 = 28。原书给了四个个体的具体数值，本页原样复现。</p>
+    <div class="controls">
+      <span class="faint">种群大小</span>
+      <input type="range" id="gaP" min="4" max="40" step="2" value="4"><b class="mono" id="gaPv">4</b>
+      <span class="faint">变异率 %</span>
+      <input type="range" id="gaM" min="0" max="60" step="5" value="20"><b class="mono" id="gaMv">20</b>
+      <span class="faint">棋盘 n</span>
+      <input type="range" id="gaN" min="6" max="12" step="1" value="8"><b class="mono" id="gaNv">8</b>
+      <label class="ck"><input type="checkbox" id="gaX" checked> <b>启用交叉</b>（关掉 = 纯变异）</label>
+      <button class="btn pri" id="gaStep">下一代</button>
+      <button class="btn" id="gaAuto">跑 30 代</button>
+      <button class="btn" id="gaReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <h3>当前种群</h3>
+        <table id="gaPop"></table>
+      </div>
+      <div>
+        <div class="kv"><span>代数</span><b id="gaGen">0</b></div>
+        <div class="kv"><span>当代最优适应度</span><b id="gaBest">—</b></div>
+        <div class="kv"><span>种群平均适应度</span><b id="gaAvg">—</b></div>
+        <div class="kv"><span>理论最大值 C(n,2)</span><b id="gaMax">28</b></div>
+        <div id="gaVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <svg id="gaPlot" viewBox="0 0 640 180" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:10px"></svg>
+    <div class="note"><b>原书那四个个体：</b>适应度 <span class="mono">24 / 23 / 20 / 11</span>，
+    归一化选择概率 <span class="mono">29% / 31% / 26% / 14%</span>。
+    注意 <b>24 的概率比 23 低</b>——不是四舍五入误差，是归一化后按 24/78 ≈ 30.8%……
+    实际上原书给的是 <b>31%</b> 给了 23 而不是 24，这正是<b>按概率采样</b>的意思：
+    适应度高的个体<b>更可能被选中</b>，但不保证被选中，同一个个体可以被选两次，也可能一次都没被选。</div>
+    <div class="note"><b>动手验证「交叉有用」：</b>取消勾选「启用交叉」，跑 30 代。
+    只剩下变异时，种群退化成若干个<b>并行的随机爬山</b>，收敛明显变慢、最优适应度上不去。
+    交叉的价值在于它能把两个父代里<b>各自好的片段（schema）</b>拼到一起——
+    但前提是<b>表示方式让"片段"真的对应解的有意义部件</b>。8 皇后的数字串表示恰好满足（左半边列 + 右半边列）。
+    换一个糟糕的表示，交叉就毫无用处。</div>
+  </div>
+</section>
+
+<!-- ================= ⑪ 地形与连续空间 ================= -->
+<section class="panel" id="p11">
+  <div class="card">
+    <h2>局部极大值 / 山脊 / 高原：三种困境长什么样</h2>
+    <p class="sub">在一维地形上看小球爬山。切换地形，看它卡在哪、能不能出来。</p>
+    <div class="controls">
+      <span class="faint">地形</span>
+      <select id="tfSel">
+        <option value="peak">单峰（正常情况）</option>
+        <option value="local">局部极大值（卡死）</option>
+        <option value="ridge">山脊（每一步都下坡）</option>
+        <option value="plateau">平坦局部极大值（无出口）</option>
+        <option value="shoulder">山肩（可继续前进）</option>
+      </select>
+      <span class="faint">步长</span>
+      <input type="range" id="tfStep" min="1" max="20" step="1" value="5"><b class="mono" id="tfStepv">5</b>
+      <button class="btn pri" id="tfGo">让小球爬</button>
+    </div>
+    <svg id="tfPlot" viewBox="0 0 640 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div id="tfVerdict" class="verdict"></div>
+    <div class="note"><b>山脊是最反直觉的一种：</b>在一维/二维里，山脊看起来是"一条窄窄的山顶线"，
+    你以为沿着它走就行。但真实问题有几百、几千维，<b>每个维度上的可用步长都是离散的</b>，
+    沿着山脊方向前进的那一步往往在网格上根本不存在。
+    <b>所以"沿着山脊走"这个低维直觉在高维空间不成立</b>——笔记明确把这一点列为易混点。</div>
+    <div class="note"><b>高原要分两种：</b><b>平坦局部极大值</b>是真正的死路（周围全是同高度，算法判定"没有更好的后继"而停止）；
+    <b>山肩</b>则是"当前这一步是平的，但再走一步就能继续上升"。
+    爬山算法如果不允许侧向移动，会在山肩上也停下来——这就是为什么<b>允许侧向移动能把成功率从 14% 提到 94%</b>。</div>
+  </div>
+  <div class="card">
+    <h2>连续空间：梯度下降 vs 牛顿–拉弗森</h2>
+    <p class="sub">目标函数 <span class="mono">f(x) = x⁴/4 − x²/2</span>，极小值在 x = ±1（f = −0.25），
+    x = 0 处是一个<b>局部极大值</b>。</p>
+    <div class="controls">
+      <span class="faint">起点 x₀</span>
+      <input type="range" id="cvX" min="-150" max="150" step="5" value="150"><b class="mono" id="cvXv">1.50</b>
+      <span class="faint">学习率 α</span>
+      <input type="range" id="cvA" min="5" max="200" step="5" value="30"><b class="mono" id="cvAv">0.30</b>
+      <span class="faint">迭代次数</span>
+      <input type="range" id="cvI" min="1" max="30" step="1" value="12"><b class="mono" id="cvIv">12</b>
+      <button class="btn pri" id="cvGo">跑</button>
+    </div>
+    <svg id="cvPlot" viewBox="0 0 640 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:10px">
+      <div class="mini"><b>梯度下降</b><span><span class="mono">x ← x − α·f′(x)</span>　α 太小 → 慢；α 太大 → 越过极小值并<b>来回震荡</b>。把 α 拉到 1.5 以上看震荡。</span></div>
+      <div class="mini"><b>牛顿–拉弗森</b><span><span class="mono">x ← x − f′(x)/f″(x)</span>　用二阶信息直接跳到二次近似的顶点。起点选得好时<b>两步就到 ±1</b>，但高维时求海塞矩阵的逆非常昂贵。</span></div>
+    </div>
+    <div class="note"><b>⚠️ 牛顿法找的是驻点，不是极小值：</b>把 x₀ 拖到 <b>0.3</b> —— 牛顿会收敛到 <b>x = 0</b>，
+    而 x = 0 是本函数的<b>局部极大值</b>！因为牛顿法求解的是 <span class="mono">f′(x) = 0</span>，
+    它<b>分辨不出极大、极小和鞍点</b>。判断要靠二阶导：f″(0) = −1 &lt; 0 → 极大。
+    梯度下降反而会"沿着下坡方向"正确走到 ±1。
+    <b>所以牛顿法快，但要求起点已经在正确的吸引域里。</b></div>
+    <div class="note"><b>为什么"减小 δ 不保证收敛到全局最优"：</b>离散化连续空间后做最陡上升，等价于经验梯度法。
+    步长 δ 越小，越容易卡在<b>局部</b>极值（因为一次只能看到很小的邻域）。
+    <b>离散化解决的是"怎么在连续空间里定义后继"，不是"怎么跳出局部最优"。</b></div>
+  </div>
+</section>
+
+<!-- ================= ⑫ AND–OR ================= -->
+<section class="panel" id="p12">
+  <div class="card">
+    <h2>AND–OR 搜索：与节点是<b>环境</b>选，不是你选</h2>
+    <p class="sub">打滑的吸尘器：Suck 在一个脏格子里，有时只清当前格，有时连另一格也清了；
+    在干净格子里有时还会<b>掉灰</b>。解不再是动作序列，而是<b>条件规划</b>。</p>
+    <div class="controls">
+      <label class="ck"><input type="checkbox" id="aoSlick" checked> 打滑（Suck 结果不确定）</label>
+      <label class="ck"><input type="checkbox" id="aoCycle"> 允许含循环的解（while）</label>
+      <span class="faint">起始状态</span>
+      <select id="aoS"></select>
+      <span class="faint">深度上限</span>
+      <input type="range" id="aoD" min="2" max="12" step="1" value="8"><b class="mono" id="aoDv">8</b>
+      <button class="btn pri" id="aoGo">搜索</button>
+    </div>
+    <div class="two">
+      <div>
+        <h3>8 个状态</h3>
+        <div class="pill" id="aoStates"></div>
+        <div class="faint">状态 = [位置, A 脏否, B 脏否]。目标 = 两格都干净。</div>
+      </div>
+      <div>
+        <div id="aoVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <h3>求出的条件规划</h3>
+    <div class="andor" id="aoPlan"></div>
+    <div class="note"><b>与节点（AND）= 环境做选择。</b>这是本节最容易搞混的一点：
+    OR 节点由<b>智能体</b>挑一个动作（任选其一即可），AND 节点由<b>环境</b>挑结果——
+    而 AND 节点的<b>每一条出边都必须被处理成功</b>，否则整个动作不成立。图上 AND 节点用一条弧把出边连起来。</div>
+    <div class="note"><b>环检测失败 ≠ 该状态无解。</b>AND–OR 的环检测只保证<b>无环解</b>：
+    如果搜索在同一条路径上又遇到某个已出现的状态就返回失败，含义是"无环解一定可以从更早的那个状态得到"，
+    而不是"这里解不出来"。打滑吸尘器就有一个<b>必须靠循环才能解决</b>的版本：
+    <span class="mono">[Suck, L1: Right, if State = 5 then L1 else Suck]</span>——无环解会失败，循环解成功。</div>
+  </div>
+</section>
+
+<!-- ================= ⑬ 信念状态 / LRTA* ================= -->
+<section class="panel" id="p13">
+  <div class="card">
+    <h2>无传感问题：解是动作序列，不是条件规划</h2>
+    <p class="sub">传感器完全失灵时，智能体看不到自己在哪，只能在<b>信念状态</b>（物理状态的集合）里推理。
+    8 个物理状态 → 256 个可能的信念状态，但可达的只有少数几个。</p>
+    <div class="controls">
+      <button class="btn pri" id="bsRight">Right</button>
+      <button class="btn" id="bsLeft">Left</button>
+      <button class="btn" id="bsSuck">Suck</button>
+      <button class="btn" id="bsReset">重置</button>
+      <button class="btn" id="bsAuto">自动求解</button>
+      <button class="btn" id="bsReach">算可达信念状态</button>
+    </div>
+    <div class="two">
+      <div>
+        <div class="faint">当前信念状态（物理状态集合）</div>
+        <div class="pill" id="bsCur"></div>
+        <div class="faint" style="margin-top:8px">目标：集合里<b>每个</b>状态都干净（必然达成，不是"可能达成"）</div>
+      </div>
+      <div>
+        <div class="kv"><span>已执行动作</span><b id="bsActs">—</b></div>
+        <div class="kv"><span>信念状态大小</span><b id="bsSize">8</b></div>
+        <div id="bsVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div id="bsReachOut"></div>
+    <div class="note"><b>强制（coercion）：</b>从 <span class="mono">{1,2,3,4,5,6,7,8}</span> 出发，
+    <span class="mono">Right → Suck → Left → Suck</span> 会把信念状态一路压到 <span class="mono">{7}</span>。
+    注意这里<b>没有感知</b>——是动作本身把不确定性"挤"掉了。
+    这就是无传感问题的解是<b>固定动作序列</b>、而部分可观测问题的解是<b>条件规划</b>的原因。</div>
+    <div class="note"><b>剪枝：</b>如果一个信念状态是另一个已见信念状态的<b>超集</b>，就丢掉它——
+    因为更大的集合只会更难满足。这条剪枝让可达信念状态数从 256 降到十几个。</div>
+  </div>
+  <div class="card">
+    <h2>LRTA*：不确定时保持乐观</h2>
+    <p class="sub">在线搜索：智能体<b>边探索边搜索</b>，只能在自己<b>物理占据</b>的状态发现后继。
+    初始 H 全为 0（什么都不知道），看它怎么靠"乐观"把局部极小值填平。</p>
+    <div class="controls">
+      <span class="faint">迷宫</span>
+      <select id="ltMaze">
+        <option value="0">迷宫 A（有一个局部凹陷）</option>
+        <option value="1">迷宫 B（死胡同更多）</option>
+        <option value="2">迷宫 C（开阔）</option>
+      </select>
+      <button class="btn pri" id="ltStep">走一步</button>
+      <button class="btn" id="ltAuto">跑到目标</button>
+      <button class="btn" id="ltReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <div class="hgrid" id="ltGrid"></div>
+        <div class="faint">格子里的数字 = 当前的 <span class="mono">H(s)</span> 估计。青框 = 当前位置，金框 = 目标，深灰 = 墙。</div>
+      </div>
+      <div>
+        <div class="kv"><span>已走步数</span><b id="ltN">0</b></div>
+        <div class="kv"><span>已更新 H 的状态数</span><b id="ltU">0</b></div>
+        <div class="kv"><span>当前位置 H</span><b id="ltH">0</b></div>
+        <div id="ltVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>LRTA*-COST 的关键一行：</b>对<b>没试过的</b>动作，代价一律乐观地取 <span class="mono">h(s)</span>——
+    也就是"相信没走过的路一定通向目标"。
+    正是这个乐观让智能体愿意去探索未知；一旦走过去发现不对，<span class="mono">H[s] ← min_b (c + H[s′])</span>
+    会立刻把这个状态的估计值抬高，于是它<b>掉头</b>。<b>局部极小值就是这样"被填平"的。</b></div>
+    <div class="note"><b>性质：</b>在<b>有限、安全可探索</b>的环境里，LRTA* 保证找到目标；
+    对无限空间不完备；最坏 O(n²) 步，n 是状态数。所有 H 收敛之后，它退化成纯爬山且是最优的。
+    <b>注意"在线"不是"联网"</b>——指边接收输入边处理，与"离线"相对。</div>
+  </div>
+</section>
+
+<!-- ================= ⑭ 第 4 章速查 ================= -->
+<section class="panel" id="p14">
+  <div class="card">
+    <h2>第 4 章 · 逐节（逐条放宽第 3 章的假设）</h2>
+    <table>
+      <tr><th class="m">节</th><th>放宽了什么</th><th>解法</th><th>性质</th></tr>
+      <tr><td class="m">4.1</td><td>只要终态，不要路径</td><td>局部搜索：爬山 / 退火 / 局部束 / 遗传</td><td>内存极少，可用于无限空间</td></tr>
+      <tr><td class="m">4.2</td><td>状态连续</td><td>离散化 / 梯度 / 牛顿 / 凸优化</td><td>凸问题多项式，一般问题仍会卡局部</td></tr>
+      <tr><td class="m">4.3</td><td>动作非确定性</td><td>AND–OR 搜索，解 = 条件规划</td><td>无环解完备，可含循环解</td></tr>
+      <tr><td class="m">4.4</td><td>部分可观测</td><td>信念状态搜索（无传感 → 强制）</td><td>信念状态 2ᴺ 个，靠超集剪枝</td></tr>
+      <tr><td class="m">4.5</td><td>环境完全未知</td><td>在线搜索：ONLINE-DFS / LRTA*</td><td>竞争比可任意差；LRTA* 保证找到目标</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>局部搜索家族对照</h2>
+    <table>
+      <tr><th>算法</th><th>一次保留几个状态</th><th>接受变坏的移动吗</th><th>关键参数</th><th>性质</th></tr>
+      <tr><td>爬山（最陡上升）</td><td class="m">1</td><td class="m f">否</td><td class="m">—</td><td>86% 卡住</td></tr>
+      <tr><td>爬山 + 侧向移动</td><td class="m">1</td><td class="m u">仅等值</td><td class="m">连续侧向次数上限</td><td>成功率 14% → 94%</td></tr>
+      <tr><td>随机重启爬山</td><td class="m">1</td><td class="m f">否</td><td class="m">重启次数</td><td><b>概率 1 完备</b></td></tr>
+      <tr><td>模拟退火</td><td class="m">1</td><td class="m t">是，按 e^(ΔE/T)</td><td class="m">T₀、降温调度</td><td>降温足够慢则趋于全局最优</td></tr>
+      <tr class="kbtrue"><td><b>局部束搜索</b></td><td class="m">k</td><td class="m f">否</td><td class="m">束宽 k</td><td>多样性不足会退化</td></tr>
+      <tr><td>遗传算法</td><td class="m">种群</td><td class="m t">是（靠变异）</td><td class="m">种群大小、变异率、交叉</td><td>成败取决于<b>表示设计</b></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>五个最易混的地方</h2>
+    <div class="grid2">
+      <div class="mini"><b>局部搜索不记录路径，也不记录已访问集合</b><span>所以它<b>不是系统性</b>的——可能永远在同一个区域打转，但在无限或连续空间里它是唯一可行的选择。</span></div>
+      <div class="mini"><b>与节点 = 环境，或节点 = 智能体</b><span>AND 节点的<b>每条出边都必须成功</b>；OR 节点只需<b>任选一条</b>。把 AND 当成"任选其一"是本节第一大误解。</span></div>
+      <div class="mini"><b>无传感问题的解是动作序列，不是条件规划</b><span>因为感知恒为空，没有任何东西可以"条件"于其上。部分可观测问题的解才是条件规划，而且目标测试测的是<b>信念状态</b>。</span></div>
+      <div class="mini"><b>环检测失败 ≠ 无解</b><span>AND–OR 的环检测只保证无环解；打滑吸尘器就有必须靠循环才能解的版本。</span></div>
+      <div class="mini"><b>"在线"不是"联网"</b><span>指边接收输入边处理。离线探索的是<b>模型</b>，在线探索的是<b>真实世界</b>——只能在物理占据的状态发现后继。</span></div>
+      <div class="mini"><b>MCTS 返回"模拟次数最多"的走法</b><span>不是"平均效用最高"。<span class="mono">65/100</span> 好过 <span class="mono">2/3</span>。这是第 5 章的坑，但值得提前记住。</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ⑮ minimax ================= -->
+<section class="panel" id="p15">
+  <div class="card">
+    <h2>minimax：最优策略不是"赢"，是"假设对手也最优"</h2>
+    <p class="sub">原书 Figure 5.2 的两层博弈树。点「下一步」看效用值怎么从叶子往回传。</p>
+    <div class="controls">
+      <button class="btn pri" id="mmStep">下一步</button>
+      <button class="btn" id="mmAll">全部展开</button>
+      <button class="btn" id="mmReset">重置</button>
+      <button class="btn" id="mmRand">换一组叶子值</button>
+    </div>
+    <svg id="mmTree" viewBox="0 0 700 240" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <div class="kv"><span>已确定值的节点</span><b id="mmDone">0 / 13</b></div>
+        <div class="kv"><span>minimax 返回值</span><b id="mmVal">—</b></div>
+        <div class="kv"><span>最优动作</span><b id="mmAct">—</b></div>
+      </div>
+      <div>
+        <div class="faint">两个未知叶子 x、y 的值（原书故意不给）</div>
+        <div class="controls">
+          <span class="faint">x</span><input type="range" id="mmX" min="0" max="20" step="1" value="4"><b class="mono" id="mmXv">4</b>
+          <span class="faint">y</span><input type="range" id="mmY" min="0" max="20" step="1" value="6"><b class="mono" id="mmYv">6</b>
+        </div>
+        <div id="mmVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>动手验证一个反直觉的结论：</b>把 x 和 y 随便拖——只要它们都 ≥ 2，
+    <b>最优动作永远是 a₁</b>。因为 C 节点取 min，C 的值恒为 2；而 B = 3 &gt; 2，D = 2。
+    <b>也就是说，C 里那两个未知的叶子根本不影响决策</b>——这正是下一屏 α-β 剪枝能省掉它们的原因。</div>
+    <div class="note"><b>minimax 值的含义：</b>它是<b>在双方都按最优策略走的前提下</b>，智能体能保证拿到的最大效用。
+    它<b>不是</b>"对手可能失误时的期望收益"——minimax 假设对手永远不会失误，所以它是<b>保守的</b>：
+    如果对手真的会失误，minimax 会错失一些机会，但<b>绝不会因对手的好棋而损失更多</b>。</div>
+  </div>
+</section>
+
+<!-- ================= ⑯ α-β ================= -->
+<section class="panel" id="p16">
+  <div class="card">
+    <h2>α-β 剪枝：结果一模一样，访问节点少一半</h2>
+    <p class="sub">同一棵树，只改<b>访问顺序</b>。α 是 MAX 层已知的最好选择，β 是 MIN 层已知的最好选择。
+    一旦 <span class="mono">α ≥ β</span>，剩下的分支<b>不可能改变结果</b>，直接剪掉。</p>
+    <div class="controls">
+      <span class="faint">MIN 节点的叶子顺序</span>
+      <select id="abLeaf">
+        <option value="best">最好（小的先）</option>
+        <option value="worst">最坏（大的先）</option>
+        <option value="random">随机</option>
+      </select>
+      <span class="faint">MIN 节点之间的顺序</span>
+      <select id="abNode">
+        <option value="given">B, C, D</option>
+        <option value="rev">D, C, B</option>
+      </select>
+      <button class="btn pri" id="abGo">跑 α-β</button>
+      <button class="btn" id="abStep">单步</button>
+    </div>
+    <svg id="abTree" viewBox="0 0 700 240" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <div class="kv"><span>叶子总数</span><b id="abTotal">9</b></div>
+        <div class="kv"><span>实际访问叶子</span><b id="abVisited">—</b></div>
+        <div class="kv"><span>被剪掉的叶子</span><b id="abPruned">—</b></div>
+        <div class="kv"><span>返回值</span><b id="abVal">—</b></div>
+      </div>
+      <div>
+        <div id="abVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>先做这个对比：</b>把叶子顺序设成「最好」→ 访问 <b>5</b> 个叶子，剪掉 4 个；
+    设成「最坏」→ 访问 <b>9</b> 个，一个都剪不掉。
+    <b>算法、树、答案全都一样，只有顺序不同，工作量差了近一半。</b>
+    这就是为什么真实引擎里 <b>move ordering</b>（先试吃子、先试杀手着法）比剪枝本身还重要。</div>
+    <div class="note"><b>剪枝条件的准确说法（最容易记反的地方）：</b>
+    剪枝发生在 <b>α ≥ β</b> 时。
+    在 <b>MIN</b> 节点里，β 被更新为当前最小值，一旦发现 β ≤ α 就<b>停止扩展这个 MIN 节点的剩余子节点</b>（因为父 MAX 已经有更好的选择了）；
+    在 <b>MAX</b> 节点里对称处理。
+    <b>剪掉的是"兄弟分支"，不是"整棵子树"。</b></div>
+    <div class="note"><b>α-β 不改变结果，只改变工作量：</b>它返回的根值与完整 minimax <b>完全相同</b>——
+    书上明确说"α-β 得到的值与 MINIMAX 得到的值一样，只是效率更高"。
+    真正<b>改变结果</b>的是下一屏的<b>截断搜索</b>（深度不够 + 评估函数不准）。</div>
+  </div>
+</section>
+
+<!-- ================= ⑰ 复杂度 ================= -->
+<section class="panel" id="p17">
+  <div class="card">
+    <h2>√b：α-β 把"有效分支因子"开了一个平方</h2>
+    <p class="sub">同一棵深度 m、分支因子 b 的树，三种顺序下要访问多少个节点。</p>
+    <div class="controls">
+      <span class="faint">分支因子 b</span>
+      <input type="range" id="cxB" min="2" max="35" step="1" value="35"><b class="mono" id="cxBv">35</b>
+      <span class="faint">深度 m</span>
+      <input type="range" id="cxM" min="2" max="12" step="1" value="8"><b class="mono" id="cxMv">8</b>
+    </div>
+    <div class="bars" id="cxBars"></div>
+    <div class="two" style="margin-top:12px">
+      <div class="mini"><b>minimax（无剪枝）</b><span><span class="mono">bᵐ</span>　必须访问<b>每一个</b>叶子。b=35、m=8 时约 <b>2.3 万亿</b>个节点——每秒一亿个也要跑 6 小时。</span></div>
+      <div class="mini"><b>α-β（完美顺序）</b><span><span class="mono">b^{m/2}</span>（更精确是 b^{⌈m/2⌉} + b^{⌊m/2⌋} − 1）　相当于把分支因子换成 <span class="mono">√b</span>。<b>35 → 5.9</b>，同样深度只要约 <b>150 万</b>个节点。</span></div>
+      <div class="mini"><b>α-β（随机顺序）</b><span><span class="mono">≈ b^{3m/4}</span>　介于两者之间。真实引擎靠<b>置换表 + 着法排序 + 迭代加深</b>把顺序推向"接近完美"。</span></div>
+      <div class="mini"><b>内存才是真瓶颈</b><span>minimax 只需要 <span class="mono">O(bm)</span>（一条路径），α-β 也一样——<b>它省的是时间，不是内存</b>。真正吃内存的是<b>置换表</b>：存得越多，剪枝越强，但硬盘比内存慢 100 倍。</span></div>
+    </div>
+    <div class="note"><b>√b 的直观来源：</b>完美顺序下，你在 MAX 层只需要看<b>一个</b>子节点就能确定下界 α；
+    在 MIN 层只需要看<b>一个</b>子节点就能确定上界 β。两层合一才需要"完整展开一个"，
+    所以有效深度从 m 变成 m/2，有效分支因子从 b 变成 √b。<b>35 的平方根是 5.9 —— 这就是"把 35 变成 6"的全部秘密。</b></div>
+  </div>
+</section>
+
+<!-- ================= ⑱ expectiminimax ================= -->
+<section class="panel" id="p18">
+  <div class="card">
+    <h2>expectiminimax：机会节点按期望值算，不是取 min/max</h2>
+    <p class="sub">掷骰子的游戏里，MAX 和 MIN 之间夹着一层 <b>CHANCE</b>。
+    它的值是<b>加权平均</b>，不是极值。改一下骰子的分布，看最优动作怎么翻。</p>
+    <div class="controls">
+      <span class="faint">骰子</span>
+      <select id="emDie">
+        <option value="fair">公平骰（1/3, 1/3, 1/3）</option>
+        <option value="loaded">灌铅骰（0.5, 0.3, 0.2）</option>
+        <option value="evil">极端骰（0.1, 0.1, 0.8）</option>
+      </select>
+      <button class="btn pri" id="emGo">重算</button>
+    </div>
+    <svg id="emTree" viewBox="0 0 700 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <div class="kv"><span>动作 A 的期望值</span><b id="emA">—</b></div>
+        <div class="kv"><span>动作 B 的期望值</span><b id="emB">—</b></div>
+        <div class="kv"><span>最优动作</span><b id="emBest">—</b></div>
+      </div>
+      <div>
+        <div id="emVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>复杂度爆炸：</b>minimax 是 <span class="mono">O(bᵐ)</span>，
+    加入 n 个可能的骰子结果后变成 <span class="mono">O(bᵐ nᵐ)</span>——
+    <b>多了一个指数因子</b>。这就是西洋双陆棋（b≈20、n=21）做不了深度搜索的原因：
+    哪怕只有 4 层，也是 20⁴ × 21⁴ ≈ <b>31 亿</b>个节点。α-β 对 expectiminimax 的剪枝效果也弱得多。</div>
+    <div class="note"><b>⚠️ 期望值不是"稳健"的：</b>期望最大化对<b>效用尺度</b>极其敏感。
+    把效用取平方（风险厌恶）或取对数，最优动作可能就变了。
+    书上强调：<b>期望最大化只对"基数效用"（cardinal utility）有意义</b>——
+    "赢 100 万"的快乐真的是"赢 50 万"的两倍吗？如果不是，就该用效用函数先变换，再取期望。</div>
+  </div>
+</section>
+
+<!-- ================= ⑲ MCTS ================= -->
+<section class="panel" id="p19">
+  <div class="card">
+    <h2>蒙特卡洛树搜索：用随机模拟代替评估函数</h2>
+    <p class="sub">四个阶段反复迭代：<b>Selection</b> → <b>Expansion</b> → <b>Simulation</b> → <b>Back-propagation</b>。
+    点单步看一遍完整流程。</p>
+    <div class="controls">
+      <span class="faint">探索常数 C</span>
+      <input type="range" id="mcC" min="0" max="30" step="1" value="14"><b class="mono" id="mcCv">1.4</b>
+      <button class="btn pri" id="mcStep">单步（一次完整迭代）</button>
+      <button class="btn" id="mcAuto">跑 200 次</button>
+      <button class="btn" id="mcReset">重置</button>
+    </div>
+    <svg id="mcTree" viewBox="0 0 700 250" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <div class="kv"><span>已迭代次数</span><b id="mcN">0</b></div>
+        <div class="kv"><span>访问次数最多的走法</span><b id="mcBest">—</b></div>
+        <div class="kv"><span>平均效用最高的走法</span><b id="mcAvgB">—</b></div>
+        <div id="mcVerdict" class="verdict"></div>
+      </div>
+      <div>
+        <div class="faint">每个节点显示 <span class="mono">wins/visits</span>。叶子的<b>真实胜率</b>对算法是隐藏的，
+        只能靠模拟采样估计——把 C 拖到 0 看它因为不探索而选错。</div>
+        <div class="bars" id="mcBars"></div>
+      </div>
+    </div>
+    <div class="note"><b>⚠️ MCTS 返回"模拟次数最多的走法"，不是"平均效用最高的走法"。</b>
+    这是本章最容易踩的坑：<span class="mono">65/100</span>（胜率 65%）要比 <span class="mono">2/3</span>（胜率 67%）更好，
+    因为后者样本太少、置信度低。<b>访问次数本身就编码了"这个走法值不值得继续探索"。</b></div>
+    <div class="note"><b>C 的作用：</b>UCB1 公式 <span class="mono">w/n + C·√(ln N / n)</span> 里，
+    第二项是<b>探索 bonus</b>：一个节点被访问得越少，这一项越大。
+    <b>C 越大越爱探索</b>，C = 0 就是纯贪心（ exploitation only）——把 C 拖到 0 跑 200 次，
+    它往往会一头扎进第一个尝到甜头的分支，再也出不来。
+    原书给的常用值是 <b>√2 ≈ 1.414</b>，把 C 设成 1.5 效果相近。</div>
+  </div>
+</section>
+
+<!-- ================= ⑳ 截断搜索 ================= -->
+<section class="panel" id="p20">
+  <div class="card">
+    <h2>截断搜索 + 评估函数 = 不完美的对手模型</h2>
+    <p class="sub">真实博弈树太大，只能在深度 d 处<b>截断</b>并用<b>评估函数</b>代替真实效用。
+    代价是<b>地平线效应</b>：坏事情被推到搜索视野之外。</p>
+    <div class="controls">
+      <span class="faint">截断深度 d</span>
+      <input type="range" id="trD" min="1" max="5" step="1" value="2"><b class="mono" id="trDv">2</b>
+      <label class="ck"><input type="checkbox" id="trQ"> 开启<b>静止搜索</b>（吃子处延伸）</label>
+      <button class="btn pri" id="trGo">搜索</button>
+    </div>
+    <svg id="trTree" viewBox="0 0 700 230" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px"></svg>
+    <div class="two" style="margin-top:12px">
+      <div>
+        <div class="kv"><span>选中的动作</span><b id="trAct">—</b></div>
+        <div class="kv"><span>该动作的评估值</span><b id="trVal">—</b></div>
+      </div>
+      <div><div id="trVerdict" class="verdict"></div></div>
+    </div>
+    <div class="note"><b>什么是地平线效应：</b>智能体在深度 d 处截断，一个<b>必然发生但发生在第 d+1 步</b>的损失，
+    在它的视野里<b>不存在</b>。于是它会选择一条"把损失推到地平线之外"的路线——
+    每推一次就多活一步，但损失<b>从未消失</b>，只是永远看不见。
+    <b>加大深度只能推迟地平线，不能消除它</b>；真正的缓解手段是<b>静止搜索</b>（在非静止局面继续延伸）。</div>
+    <div class="note"><b>评估函数的三条要求（书上原话）：</b>
+    ① <b>顺序要与真实效用一致</b>（否则会选出更差的走法）；
+    ② <b>计算要快</b>（否则省下的搜索深度全赔进去了）；
+    ③ <b>对非终止状态要准</b>。
+    实践上用<b>加权线性函数</b>：<span class="mono">w₁f₁ + w₂f₂ + …</span>（如国际象棋 子力×1 + 机动性×0.1）。
+    它隐含一个很强的假设——<b>各特征相互独立</b>，而棋子之间显然不独立。</div>
+    <div class="note"><b>前向剪枝 vs 后向剪枝：</b>α-β 是<b>后向</b>的（先展开再证明无用，零风险）；
+    beam search 这类<b>前向剪枝</b>是"只看前 k 个最有希望的分支"——<b>可能剪掉最优解，且不保证结果不变</b>。
+    <b>是否损害完备性/最优性，是这两类剪枝的根本区别。</b></div>
+  </div>
+</section>
+
+<!-- ================= ㉑ 第 5 章速查 ================= -->
+<section class="panel" id="p21">
+  <div class="card">
+    <h2>第 5 章 · 逐节</h2>
+    <table>
+      <tr><th class="m">节</th><th>一句话</th><th>关键概念</th></tr>
+      <tr><td class="m">5.1</td><td>博弈的形式化：双人、回合、零和。</td><td>初始状态 / PLAYER(s) / ACTIONS / RESULT / TERMINAL-TEST / UTILITY</td></tr>
+      <tr><td class="m">5.2</td><td>minimax = 假设对手也最优。</td><td>MINIMAX-VALUE；最优策略；对手失误时 minimax 仍最优</td></tr>
+      <tr><td class="m">5.3</td><td>α-β 剪枝：同样结果，更少节点。</td><td>α / β 窗口；α ≥ β 剪枝；着法排序；√b</td></tr>
+      <tr><td class="m">5.4</td><td>不完美信息：机会节点、信念状态、MCTS。</td><td>EXPECTIMINIMAX；机会节点期望值；UCB1；模拟次数 vs 平均效用</td></tr>
+      <tr><td class="m">5.5</td><td>状态太多怎么办：截断 + 评估函数。</td><td>加权线性评估；静止搜索；地平线效应；前向 vs 后向剪枝</td></tr>
+      <tr><td class="m">5.6</td><td>随机博弈（如西洋双陆棋）。</td><td>含机会节点的零和游戏；值迭代</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>五个最易混的地方</h2>
+    <div class="grid2">
+      <div class="mini"><b>α-β 不改变结果，只改变工作量</b><span>返回值与完整 minimax <b>完全相同</b>。真正改变结果的是<b>截断搜索</b>。</span></div>
+      <div class="mini"><b>α ≥ β 时剪枝，剪的是兄弟分支</b><span>不是"剪掉整棵子树"。MIN 节点发现 β ≤ α 后停止扩展<b>剩余子节点</b>。</span></div>
+      <div class="mini"><b>MCTS 返回"模拟次数最多"，不是"平均效用最高"</b><span><span class="mono">65/100</span> 优于 <span class="mono">2/3</span>。访问次数本身编码了置信度。</span></div>
+      <div class="mini"><b>期望最大化要求基数效用</b><span>只对能比较<b>差值倍数</b>的效用有意义。"赢 100 万的快乐是赢 50 万的两倍吗？"</span></div>
+      <div class="mini"><b>前向剪枝 vs 后向剪枝</b><span>α-β 是后向的（零风险）；beam search 是前向的（<b>可能剪掉最优解</b>）。</span></div>
+      <div class="mini"><b>不完美信息 ≠ 机会节点</b><span>扑克是不完美信息（看不到对手牌），但<b>没有机会节点</b>；双陆棋是完美信息 + <b>有</b>机会节点。两者完全不同。</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ㉒ 澳大利亚 ================= -->
+<section class="panel" id="p22">
+  <div class="card">
+    <h2>澳大利亚地图着色：CSP 的标准例子</h2>
+    <p class="sub">7 个地区、3 种颜色、9 条「相邻必须不同色」的约束。
+    点地区切换颜色，违规的边会立刻变红。</p>
+    <div class="two">
+      <div>
+        <svg id="auMap" viewBox="0 0 440 300" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+        <div class="faint">点一下地区换色（红 → 绿 → 蓝 → 无）。虚线框 = 塔斯马尼亚，它<b>不与任何地区相邻</b>。</div>
+      </div>
+      <div>
+        <div class="kv"><span>变量数 n</span><b>7</b></div>
+        <div class="kv"><span>域大小 d</span><b>3</b></div>
+        <div class="kv"><span>约束数</span><b>9</b></div>
+        <div class="kv"><span>完整赋值总数 dⁿ</span><b>3⁷ = 2187</b></div>
+        <div class="kv"><span>最大度数（SA）</span><b>5</b></div>
+        <div class="kv"><span>当前违规约束</span><b id="auBad">0</b></div>
+        <div id="auVerdict" class="verdict"></div>
+        <div class="controls">
+          <button class="btn pri" id="auSolve">自动求解</button>
+          <button class="btn" id="auClear">清空</button>
+        </div>
+      </div>
+    </div>
+    <div class="note"><b>为什么 CSP 比普通搜索省一大截 —— 可交换性（commutativity）：</b>
+    给 WA 涂红再给 NT 涂绿，和先绿后红，<b>结果完全一样</b>。
+    CSP 对动作的施加顺序不敏感，所以我们<b>不需要记录路径</b>，只需要记录"当前部分赋值"。
+    这一条把搜索树从"路径的树"变成"赋值的树"，分支因子从 <span class="mono">n·d</span> 降到 <span class="mono">d</span>。</div>
+    <div class="note"><b>域要"结构化"才有意义：</b>如果域只是一个枚举列表（{red, green, blue}），
+    约束只能逐个枚举；但如果域有结构（颜色是连续色环、时间是区间），约束就能<b>批量推理</b>。
+    这也是第 6 章和"普通搜索"的根本区别：<b>CSP 把状态当成有内部结构的对象，而不是黑箱原子。</b></div>
+  </div>
+</section>
+
+<!-- ================= ㉓ AC-3 ================= -->
+<section class="panel" id="p23">
+  <div class="card">
+    <h2>AC-3：把不可能的值提前删掉</h2>
+    <p class="sub">弧一致：对变量 X 域里的<b>每一个</b>值，Y 的域里都得存在一个不冲突的值作"支撑"。
+    找不到支撑的值直接删掉。点「下一步」看队列怎么动。</p>
+    <div class="controls">
+      <button class="btn pri" id="acStep">下一步</button>
+      <button class="btn" id="acRun">跑到不动点</button>
+      <button class="btn" id="acReset">重置</button>
+      <span class="faint">起始域</span>
+      <select id="acDom">
+        <option value="3">3 色 {R,G,B}</option>
+        <option value="2">2 色 {R,B}</option>
+        <option value="4">4 色 {R,G,B,Y}</option>
+        <option value="1">1 色 {R}（必崩）</option>
+      </select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>当前域</h3>
+        <div id="acDoms"></div>
+      </div>
+      <div>
+        <h3>队列（待处理的弧）</h3>
+        <div class="queue" id="acQueue"></div>
+        <div class="kv"><span>已处理弧数</span><b id="acN">0</b></div>
+        <div class="kv"><span>本步删除的值</span><b id="acDel">0</b></div>
+        <div id="acVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>REVISE 之后要不要重新入队？看清楚了：</b>
+    只有当 <span class="mono">Dᵢ</span> <b>真的被删掉了值</b>，才把 <span class="mono">(Xₖ, Xᵢ)</span> 这样的弧加回队列。
+    <b>如果域没变，就不入队</b> —— 观察队列长度的变化，这条规则让 AC-3 大多数时候很快收敛。</div>
+    <div class="note"><b>复杂度：</b>二元 CSP 有至多 <span class="mono">n²</span> 条弧（实际是 2×约束数）；
+    检查一条弧是 <span class="mono">d²</span>，每条弧最多入队 <span class="mono">d</span> 次，
+    所以 AC-3 的总时间 <span class="mono">O(n² d³)</span>、空间 <span class="mono">O(n²)</span> ——
+    <b>比从零开始回溯便宜得多</b>。这就是为什么"先跑一遍 AC-3 再回溯"几乎总是划算的。</div>
+  </div>
+</section>
+
+<!-- ================= ㉔ 弧一致 ≠ 可满足 ================= -->
+<section class="panel" id="p24">
+  <div class="card">
+    <h2>弧一致成立，问题却无解</h2>
+    <p class="sub">弧一致只是"每条边单独看都还过得去"，它<b>不保证</b>存在全局解。三个反例现场看。</p>
+    <div class="controls">
+      <span class="faint">例子</span>
+      <select id="pcSel">
+        <option value="au3">澳大利亚 · 3 色（弧一致 + 有解）</option>
+        <option value="au2">澳大利亚 · 2 色（弧一致成立 → 但仍无解）</option>
+        <option value="tri">三角形 · 2 色（弧一致但无解，需路径一致）</option>
+        <option value="tri3">三角形 · 3 色（路径一致 + 有解）</option>
+      </select>
+      <button class="btn pri" id="pcGo">跑 AC-3 / 路径一致</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="pcMap" viewBox="0 0 380 300" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <div class="kv"><span>跑完 AC-3 后有空域</span><b id="pcEmpty">—</b></div>
+        <div class="kv"><span>弧一致</span><b id="pcArc">—</b></div>
+        <div class="kv"><span>路径一致（2-路径检查）</span><b id="pcPath">—</b></div>
+        <div class="kv"><span>真实是否有解</span><b id="pcSat">—</b></div>
+        <div id="pcVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>两色的三角形：弧一致但无解。</b>每条边单独看都没问题（每条边两端总能选出不同的颜色），
+    但三个变量两两不同、只有两种颜色 —— <b>鸽笼原理直接判死</b>，而弧一致看不出来。
+    <b>路径一致</b>（检查所有长度为 2 的路径）能判定这种情形：它要求任意两个变量的每个相容赋值，
+    都能被第三个变量"支撑"。</div>
+    <div class="note"><b>更强的一致性要付代价：</b>k-相容（k-consistency）要求"任意 k−1 个变量的相容赋值都能扩展到第 k 个"。
+    <b>强 n-相容 = 可解，但代价是指数的</b>，不实用。实用的是 <b>2-相容（弧一致）</b> 和 <b>3-相容（路径一致）</b>，
+    以及针对全局约束（AllDiff、atmost）的<b>专用传播算法</b> —— 下一屏就是它。</div>
+  </div>
+</section>
+
+<!-- ================= ㉕ 回溯对照台 ================= -->
+<section class="panel" id="p25">
+  <div class="card">
+    <h2>三种变量序 + 三种值序 + 三档推断，全部跑一遍</h2>
+    <p class="sub">同一道题，只改"下一步给哪个变量赋值、先试哪个值、要不要边走边传播"，
+    赋值次数能差<b>上百倍</b>。下面的数字是真实跑出来的。</p>
+    <div class="controls">
+      <span class="faint">题目</span>
+      <select id="bkProb">
+        <option value="r18">随机图 · 18 变量 3 色（默认，需要回溯）</option>
+        <option value="r24">随机图 · 24 变量 3 色（更大）</option>
+        <option value="au">澳大利亚 · 3 色（太容易，零回溯）</option>
+        <option value="au4">澳大利亚 · 4 色（更易）</option>
+        <option value="au2">澳大利亚 · 2 色（无解，要搜完整个空间）</option>
+      </select>
+      <button class="btn pri" id="bkGo">跑全部组合</button>
+      <span class="faint" id="bkSize">—</span>
+    </div>
+    <table id="bkTable"></table>
+    <div id="bkVerdict" class="verdict"></div>
+    <div class="note"><b>MRV（最少剩余值）为什么这么强：</b>它挑"可选值最少的变量"先赋值，
+    也就是<b>最容易失败的那个</b>。一旦这个变量真的无值可选，MRV 会<b>立刻</b>发现——
+    不用等其他 6 个变量都赋完才发现矛盾。<b>"先挑最可能崩的地方"，这就是"失败优先"原则。</b>
+    度启发式只在<b>平局</b>时才作为 MRV 的补充（选约束最多的那个），因为当所有变量的 MRV 都相同时，
+    约束最多的变量对后续影响最大。</div>
+    <div class="note"><b>LCV（最少约束值）在做什么：</b>给变量赋值时，优先选那个<b>给邻居剩下最多选择</b>的值。
+    它的目标是"尽量别把路走窄"。注意 LCV 和 MRV 的方向<b>是相反的</b>：
+    MRV 主动找最紧的地方下手（早点失败），LCV 则尽量保持宽松（避免失败）。两者配合才最强。</div>
+    <div class="note"><b>向前检查 vs MAC：</b>向前检查只删<b>直接邻居</b>里冲突的值（浅一层）；
+    <b>MAC</b> 是"每赋一个值就跑一遍完整的 AC-3"（深到底）。
+    MAC 每步更贵，但删得干净得多——在澳大利亚这种小问题上 MAC 通常完胜，在超稀疏问题上可能反而不划算。</div>
+  </div>
+</section>
+
+<!-- ================= ㉖ 数独 ================= -->
+<section class="panel" id="p26">
+  <div class="card">
+    <h2>数独：AllDiff 约束的传播有多猛</h2>
+    <p class="sub">每行、每列、每宫都是一条 <b>AllDiff</b>（所有变量两两不同）。
+    把它当成一堆 <span class="mono">≠</span> 做 AC-3，看有多少格子被"推断"出来。</p>
+    <div class="controls">
+      <button class="btn pri" id="sdGo">跑 AC-3 传播</button>
+      <button class="btn" id="sdStep">单步</button>
+      <button class="btn" id="sdReset">重置</button>
+      <span class="faint">盘面</span>
+      <select id="sdPuz"><option value="0">示例 1</option><option value="1">示例 2（更稀疏）</option></select>
+    </div>
+    <div class="two">
+      <div>
+        <div class="sdg" id="sdGrid"></div>
+        <div class="faint">格子里的数字 = 该格<b>还剩几个候选</b>。已确定的直接显示数字。</div>
+      </div>
+      <div>
+        <div class="kv"><span>已确定格子</span><b id="sdDone">—</b></div>
+        <div class="kv"><span>已确定（初始）</span><b id="sdInit">—</b></div>
+        <div class="kv"><span>约束数（27 组 × C(9,2)）</span><b id="sdC">972</b></div>
+        <div class="kv"><span>变量数</span><b>81</b></div>
+        <div id="sdVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="note"><b>为什么 AllDiff 比一堆 ≠ 更强：</b>把 AllDiff 拆成 <span class="mono">C(9,2)</span> 个 <span class="mono">≠</span>
+    只能做<b>两两</b>的传播——它看不出"三个格子恰好要占三个值"这种整体约束。
+    真正的 AllDiff 传播用<b>匹配理论</b>（二分图最大匹配）：如果一个值只被一个格子支持，就立刻钉死它；
+    如果 k 个格子的候选并起来只有 k 个值，这些值就被它们<b>独占</b>，别的格子不能再用。
+    <b>把全局约束当成一堆二元约束，会丢掉大量推理能力。</b></div>
+  </div>
+</section>
+
+<!-- ================= ㉗ 结构分解 ================= -->
+<section class="panel" id="p27">
+  <div class="card">
+    <h2>结构分解：把有环的约束图切成树</h2>
+    <p class="sub">约束图是<b>树</b>时，CSP 可以 <span class="mono">O(n d²)</span> 解出（不用回溯）。
+    有环就指数。点节点把它加进<b>割集</b>，看剩下的图什么时候变成树。</p>
+    <div class="controls">
+      <span class="faint">点节点加入/移出割集</span>
+      <button class="btn" id="stReset">清空割集</button>
+      <button class="btn pri" id="stBest">自动找最小割集</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="stMap" viewBox="0 0 440 300" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <div class="kv"><span>割集</span><b id="stCut">{}</b></div>
+        <div class="kv"><span>割集大小 c</span><b id="stC">0</b></div>
+        <div class="kv"><span>去掉割集后是树/森林？</span><b id="stTree">—</b></div>
+        <div class="kv"><span>剩余边数（树应 = 节点数−森林数）</span><b id="stE">—</b></div>
+        <div id="stVerdict" class="verdict"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <span class="faint">域大小 d</span>
+      <input type="range" id="stD" min="2" max="10" step="1" value="3"><b class="mono" id="stDv">3</b>
+      <span class="faint">变量数 n</span>
+      <input type="range" id="stN" min="5" max="60" step="1" value="20"><b class="mono" id="stNv">20</b>
+    </div>
+    <div class="bars" id="stBars"></div>
+    <div class="note"><b>割集调整的代价：</b>时间复杂度 <span class="mono">O(d^c · (n−c) d²)</span>，
+    c 是割集大小。整个思路是<b>先枚举割集变量的所有 d^c 种赋值</b>，每种情况下剩下的图是无环的（树），
+    于是可以用 <span class="mono">O((n−c) d²)</span> 的树算法一次解完。
+    <b>所以关键就是让 c 尽量小</b>——找最小割集本身是 NP-hard，但实践中贪心（每次删掉度最大的节点）就够好。</div>
+  </div>
+</section>
+
+<!-- ================= ㉘ 第 6 章速查 ================= -->
+<section class="panel" id="p28">
+  <div class="card">
+    <h2>第 6 章 · 逐节</h2>
+    <table>
+      <tr><th class="m">节</th><th>一句话</th><th>关键概念</th></tr>
+      <tr><td class="m">6.1</td><td>CSP 把状态拆成变量 + 域 + 约束。</td><td>可交换性；约束图/超图；绝对 vs 偏好约束</td></tr>
+      <tr><td class="m">6.2</td><td>约束传播：赋值前先删不可能的值。</td><td>节点/弧/路径/k-相容；AC-3；全局约束 AllDiff.atmost</td></tr>
+      <tr><td class="m">6.3</td><td>回溯搜索 + 三个启发式。</td><td>MRV、度启发式、LCV；向前检查；MAC；冲突集；回跳</td></tr>
+      <tr><td class="m">6.4</td><td>局部搜索也能解 CSP（最小冲突）。</td><td>最小冲突启发式；约束加权；禁忌搜索</td></tr>
+      <tr><td class="m">6.5</td><td>问题的<b>结构</b>决定难度。</td><td>树状 CSP O(nd²)；割集调整；树分解</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>五个最易混的地方</h2>
+    <div class="grid2">
+      <div class="mini"><b>弧一致 ≠ 可满足</b><span>2 色的三角形弧一致但<b>无解</b>。弧一致只是"每条边单独看还过得去"。</span></div>
+      <div class="mini"><b>度启发式只是 MRV 的平局裁判</b><span>不要在 MRV 不同时用它。它只在"剩余值数量相同"时才决定先给谁赋值。</span></div>
+      <div class="mini"><b>LCV 和 MRV 方向相反</b><span>MRV 主动找最紧的变量（早日失败）；LCV 尽量保持宽松（避免失败）。两者配合最强。</span></div>
+      <div class="mini"><b>REVISE 后只有域变了才重新入队</b><span>这是 AC-3 效率的关键。域没变就不必通知邻居。</span></div>
+      <div class="mini"><b>把 AllDiff 拆成 ≠ 会丢推理能力</b><span>两两约束看不出"k 个格子占 k 个值"。真正的 AllDiff 用<b>二分图匹配</b>传播。</span></div>
+      <div class="mini"><b>"树宽"是问题固有的，不是算法的</b><span>约束图是树 → 多项式；树宽小 → 仍可多项式。<b>结构决定难度</b>，换算法救不了高树宽。</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>第 3–6 章 · 一条主线</h2>
+    <div class="flow">
+      <div class="fbox"><b>第 3 章</b><span>状态是黑箱原子<br>系统性搜索：BFS / UCS / A*</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>第 4 章</b><span>放宽假设：非确定性<br>部分可观测、连续、在线</span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>第 5 章</b><span>对抗：minimax / α-β<br>不完美信息：MCTS</span></div>
+      <div class="arw">→</div>
+      <div class="fbox kb"><b>第 6 章</b><span>关键一跃：状态不再<br>是原子，而是<b>有内部结构的变量集合</b></span></div>
+      <div class="arw">→</div>
+      <div class="fbox"><b>第 7 章起</b><span>用逻辑句子描述<br>这个有结构的世界</span></div>
+    </div>
+    <div class="note"><b>第 6 章为什么放在这里：</b>它是第 3 章的"搜索"和第 7 章的"逻辑"之间的桥。
+    一旦你能说"世界由若干个变量组成、变量之间有约束"，
+    下一步就是问"能不能用一种<b>通用的语言</b>把这些约束写出来，并让机器自动做推断"——那就是第 7–9 章的一阶逻辑。</div>
+  </div>
+</section>
+
+<p class="faint" style="margin-top:26px">来源：《人工智能：现代方法（第 4 版）》第 3–6 章学习笔记 · 交互图解版 · 所有搜索均在浏览器内实时计算，不联网。</p>
+
+</div>
+<script>
+/* 浮动「章节」按钮（JS 动态创建，不写死在 HTML 里）：滚到任何位置都能一键回到标签栏切换面板 */
+(function(){
+  function ini(){
+    if(!document.createElement||!document.body)return;
+    var tt=document.createElement('button');
+    tt.className='btn'; tt.type='button';
+    tt.textContent='↑ 章节'; tt.title='回到章节标签栏';
+    tt.style.cssText='position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:0 4px 16px rgba(0,0,0,.45)';
+    tt.onclick=function(){
+      var n=(document.querySelector&&document.querySelector('.tabs'));
+      if(n&&n.scrollIntoView)n.scrollIntoView({behavior:'smooth',block:'start'});
+      else if(window.scrollTo)window.scrollTo(0,0);
+    };
+    document.body.appendChild(tt);
+    if(window.addEventListener)window.addEventListener('scroll',function(){
+      tt.style.display=(window.scrollY>320)?'block':'none';},{passive:true});
+  }
+  if(document.readyState==='loading'&&document.addEventListener)document.addEventListener('DOMContentLoaded',ini);
+  else ini();
+})();
+
+
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+
+/* ---------- tabs ---------- */
+function goPanel(id,push){
+  var tab=$$('.tab').filter(function(x){return x.dataset.panel===id;})[0];
+  if(!tab)return;
+  $$('.tab').forEach(function(x){x.classList.remove('on');});
+  $$('.panel').forEach(function(p){p.classList.remove('on');});
+  tab.classList.add('on');
+  $('#'+id).classList.add('on');
+  if(push){try{history.replaceState(null,'','#'+id);}catch(e){}}
+  var pn=$('#'+id);
+  if(pn&&pn.getBoundingClientRect){var pr=pn.getBoundingClientRect();
+    if(pr.top<0||pr.top>innerHeight-80)window.scrollTo({top:Math.max(0,scrollY+pr.top-70),behavior:'smooth'});}
+}
+$$('.tab').forEach(function(b){b.onclick=function(){goPanel(b.dataset.panel,true);};});
+if(/^#p\d+$/.test(location.hash))goPanel(location.hash.slice(1),false);
+
+/* =========================================================
+   通用：图 + 最佳优先搜索引擎
+   ========================================================= */
+function mkGraph(nodes,edges){
+  var adj={};
+  Object.keys(nodes).forEach(function(k){adj[k]=[];});
+  edges.forEach(function(e){
+    adj[e[0]].push({to:e[1],c:e[2]});
+    adj[e[1]].push({to:e[0],c:e[2]});
+  });
+  return {nodes:nodes,adj:adj};
+}
+function Search(G,start,goal,opt){
+  this.G=G;this.start=start;this.goal=goal;this.opt=opt||{};
+  this.mode=this.opt.mode||'astar';
+  this.W=(this.opt.W===undefined?1:this.opt.W);
+  this.lim=(this.opt.limit===undefined?99:this.opt.limit);
+  this.graphSearch=this.opt.graphSearch!==false;
+  this.early=!!this.opt.early;
+  this.frontier=[{id:start,g:0,d:0,p:null}];
+  this.reached={};this.reached[start]={g:0,d:0,p:null};
+  this.expanded=[];this.expSet={};this.gen=1;this.maxF=1;
+  this.done=false;this.path=null;this.cost=null;this.cur=null;this.msg='';this.iters=0;
+}
+Search.prototype.h=function(id){var n=this.G.nodes[id];return n&&n.h!==undefined?n.h:0;};
+Search.prototype.f=function(n){
+  var m=this.mode;
+  if(m==='bfs')return n.d;
+  if(m==='dfs')return -n.d;
+  if(m==='ucs')return n.g;
+  if(m==='greedy')return this.h(n.id);
+  if(m==='astar')return n.g+this.h(n.id);
+  if(m==='wastar')return n.g+this.W*this.h(n.id);
+  return n.d;
+};
+Search.prototype.pop=function(){
+  var m=this.mode;
+  if(m==='bfs')return this.frontier.shift();
+  if(m==='dfs')return this.frontier.pop();
+  var bi=0,bv=Infinity;
+  for(var i=0;i<this.frontier.length;i++){
+    var v=this.f(this.frontier[i]);
+    if(v<bv){bv=v;bi=i;}
+  }
+  return this.frontier.splice(bi,1)[0];
+};
+Search.prototype.step=function(){
+  if(this.done)return false;
+  if(!this.frontier.length){
+    if(this.mode==='ids'){
+      this.lim++;
+      if(this.lim>40){this.done=true;this.msg='超出深度上限 40';return false;}
+      this.frontier=[{id:this.start,g:0,d:0,p:null}];
+      this.reached={};this.reached[this.start]={g:0,d:0,p:null};
+      this.expanded=[];this.expSet={};this.iters++;
+      return true;
+    }
+    this.done=true;this.msg='搜索失败：边缘已空，无解';return false;
+  }
+  var n=this.pop();
+  this.cur=n;
+  if(!this.early&&n.id===this.goal){this.finish(n);return false;}
+  if(this.expSet[n.id])return true;
+  this.expSet[n.id]=1;this.expanded.push(n.id);
+  if((this.mode==='dls'||this.mode==='ids')&&n.d>=this.lim)return true;
+  var kids=this.G.adj[n.id]||[];
+  for(var i=0;i<kids.length;i++){
+    var k=kids[i],nd=n.d+1,ng=n.g+k.c;
+    if((this.mode==='dls'||this.mode==='ids')&&nd>this.lim)continue;
+    this.gen++;
+    if(this.early&&k.to===this.goal){
+      this.reached[k.to]={g:ng,d:nd,p:n.id};
+      this.finish({id:k.to,g:ng,d:nd,p:n.id});return false;
+    }
+    var old=this.reached[k.to];
+    if(this.graphSearch&&old!==undefined){
+      var costy=(this.mode==='ucs'||this.mode==='astar'||this.mode==='wastar');
+      if(!(costy&&ng<old.g))continue;
+    }
+    this.reached[k.to]={g:ng,d:nd,p:n.id};
+    this.frontier.push({id:k.to,g:ng,d:nd,p:n.id});
+  }
+  if(this.frontier.length>this.maxF)this.maxF=this.frontier.length;
+  return true;
+};
+Search.prototype.finish=function(n){
+  this.done=true;
+  var path=[n.id],cur=n.p;
+  while(cur!==null&&cur!==undefined){
+    path.unshift(cur);
+    var r=this.reached[cur];
+    cur=r?r.p:null;
+  }
+  this.path=path;this.cost=n.g;
+  this.msg='找到路径：代价 '+n.g+'，共 '+path.length+' 个城市';
+};
+
+/* ---------- 最小堆 ---------- */
+function Heap(){this.a=[];}
+Heap.prototype.push=function(x){
+  var a=this.a;a.push(x);var i=a.length-1;
+  while(i>0){var p=(i-1)>>1;if(a[p].f<=a[i].f)break;var t=a[p];a[p]=a[i];a[i]=t;i=p;}
+};
+Heap.prototype.pop=function(){
+  var a=this.a,top=a[0],last=a.pop();
+  if(a.length){
+    a[0]=last;var i=0;
+    while(true){
+      var l=2*i+1,r=l+1,m=i;
+      if(l<a.length&&a[l].f<a[m].f)m=l;
+      if(r<a.length&&a[r].f<a[m].f)m=r;
+      if(m===i)break;
+      var t=a[m];a[m]=a[i];a[i]=t;i=m;
+    }
+  }
+  return top;
+};
+Heap.prototype.size=function(){return this.a.length;};
+
+/* =========================================================
+   ① 问题形式化
+   ========================================================= */
+var FPS=[
+  {id:'vac',name:'吸尘器世界（8 态）',s:'初始状态：由「智能体在 A 还是 B」「A 脏不脏」「B 脏不脏」三个布尔量决定，共 2³ = 8 个状态',
+   a:'ACTIONS = {Left, Right, Suck}',r:'RESULT：Left/Right 改变位置；Suck 把当前格变干净（若已干净则不变）',
+   g:'IS-GOAL：A 与 B 都干净',c:'ACTION-COST：每步均为 1（若改为「移动代价 1、吸代价 0.5」就不再是单位代价，BFS 不再保证最优）'},
+  {id:'grid',name:'网格世界 n×n',s:'初始状态：智能体所在格坐标 [1,1]',
+   a:'ACTIONS = {Up, Down, Left, Right}；撞墙时该动作无后继',
+   r:'RESULT：坐标按方向平移一格',
+   g:'IS-GOAL：坐标 == 目标格',c:'ACTION-COST：每步 1'},
+  {id:'puz',name:'八数码',s:'初始状态：9 个格子上 8 个滑块 + 1 个空格的任意排列',
+   a:'ACTIONS：把空格与上下左右相邻的滑块交换（边界处更少）',
+   r:'RESULT：交换后的新排列',
+   g:'IS-GOAL：排列 == [1,2,3,4,5,6,7,8,空]',c:'ACTION-COST：每步 1'},
+  {id:'tsp',name:'旅行商（n 个城市）',s:'初始状态：在城市 1，已访问集合 = {1}',
+   a:'ACTIONS：前往任一未访问过的城市',
+   r:'RESULT：位置更新，已访问集合 +1',
+   g:'IS-GOAL：已访问全部 n 个城市且回到城市 1',c:'ACTION-COST：两城之间的距离'},
+  {id:'rom',name:'罗马尼亚寻路',s:'初始状态：In(Arad)',
+   a:'ACTIONS：从当前城市出发的每一条路',
+   r:'RESULT：到达路的另一端',
+   g:'IS-GOAL：In(Bucharest)',c:'ACTION-COST：路程里数（本页下一屏就是它）'}
+];
+$('#fpSel').innerHTML=FPS.map(function(p,i){return '<option value="'+i+'">'+p.name+'</option>';}).join('');
+function fpRender(){
+  var p=FPS[parseInt($('#fpSel').value,10)||0];
+  var n=parseInt($('#fpN').value,10);
+  $('#fpNv').textContent=n;
+  var extra='';
+  if(p.id==='grid')extra='　状态数 = <b>n² = '+n+'² = '+(n*n)+'</b>';
+  if(p.id==='tsp')extra='　状态数 = <b>(n−1)! = '+fact(n-1).toLocaleString()+'</b>　（n 每 +1，状态数乘以 n）';
+  if(p.id==='vac')extra='　状态数 = <b>2³ = 8</b>（与 n 无关）';
+  if(p.id==='puz')extra='　状态数 = <b>9!/2 = 181 440</b>（奇偶性使一半排列不可达）';
+  if(p.id==='rom')extra='　状态数 = <b>20</b>';
+  var h='<div class="faint">'+p.name+extra+'</div><div class="grid2" style="margin-top:10px">'+
+    '<div class="mini"><b>初始状态</b><span>'+p.s+'</span></div>'+
+    '<div class="mini"><b>ACTIONS(s)</b><span>'+p.a+'</span></div>'+
+    '<div class="mini"><b>RESULT(s,a)</b><span>'+p.r+'</span></div>'+
+    '<div class="mini"><b>IS-GOAL(s)</b><span>'+p.g+'</span></div>'+
+    '<div class="mini" style="grid-column:1/-1"><b>ACTION-COST c(s,a,s′)</b><span>'+p.c+'</span></div>'+
+    '</div>';
+  $('#fpOut').innerHTML=h;
+}
+function fact(n){var r=1;for(var i=2;i<=n;i++)r*=i;return r;}
+$('#fpSel').onchange=fpRender;$('#fpN').oninput=fpRender;fpRender();
+
+/* =========================================================
+   ② 罗马尼亚地图（数据 + 渲染）
+   ========================================================= */
+var ROM={
+  nodes:{
+    Oradea:{x:100,y:70,h:380,s:'Oradea'}, Zerind:{x:60,y:132,h:374,s:'Zerind'},
+    Arad:{x:132,y:176,h:366,s:'Arad'}, Timisoara:{x:58,y:242,h:329,s:'Timisoara'},
+    Lugoj:{x:110,y:288,h:244,s:'Lugoj'}, Mehadia:{x:150,y:342,h:241,s:'Mehadia'},
+    Drobeta:{x:176,y:386,h:242,s:'Drobeta'}, Craiova:{x:292,y:376,h:160,s:'Craiova'},
+    RimnicuVilcea:{x:300,y:282,h:193,s:'Rimnicu'}, Sibiu:{x:266,y:206,h:253,s:'Sibiu'},
+    Fagaras:{x:402,y:212,h:176,s:'Fagaras'}, Pitesti:{x:392,y:312,h:100,s:'Pitesti'},
+    Bucharest:{x:506,y:346,h:0,s:'Bucharest'}, Giurgiu:{x:500,y:412,h:77,s:'Giurgiu'},
+    Urziceni:{x:600,y:322,h:80,s:'Urziceni'}, Hirsova:{x:666,y:296,h:151,s:'Hirsova'},
+    Eforie:{x:690,y:356,h:161,s:'Eforie'}, Vaslui:{x:600,y:216,h:199,s:'Vaslui'},
+    Iasi:{x:622,y:146,h:226,s:'Iasi'}, Neamt:{x:656,y:92,h:234,s:'Neamt'}
+  },
+  edges:[['Oradea','Zerind',71],['Oradea','Sibiu',151],['Zerind','Arad',75],['Arad','Sibiu',140],
+    ['Arad','Timisoara',118],['Timisoara','Lugoj',111],['Lugoj','Mehadia',70],['Mehadia','Drobeta',75],
+    ['Drobeta','Craiova',120],['Craiova','RimnicuVilcea',146],['Craiova','Pitesti',138],
+    ['Sibiu','RimnicuVilcea',80],['Sibiu','Fagaras',99],['RimnicuVilcea','Pitesti',97],
+    ['Fagaras','Bucharest',211],['Pitesti','Bucharest',101],['Bucharest','Giurgiu',90],
+    ['Bucharest','Urziceni',85],['Urziceni','Hirsova',98],['Hirsova','Eforie',86],
+    ['Urziceni','Vaslui',142],['Vaslui','Iasi',92],['Iasi','Neamt',87]]
+};
+var GROM=mkGraph(ROM.nodes,ROM.edges);
+var ROMIDS=Object.keys(ROM.nodes);
+$('#rmA').innerHTML=ROMIDS.map(function(k){return '<option value="'+k+'"'+(k==='Arad'?' selected':'')+'>'+ROM.nodes[k].s+'</option>';}).join('');
+$('#rmB').innerHTML=ROMIDS.map(function(k){return '<option value="'+k+'"'+(k==='Bucharest'?' selected':'')+'>'+ROM.nodes[k].s+'</option>';}).join('');
+var RM=null;
+function rmInit(){
+  RM=new Search(GROM,$('#rmA').value,$('#rmB').value,{
+    mode:$('#rmMode').value,
+    W:parseFloat($('#rmW').value),
+    limit:parseInt($('#rmL').value,10),
+    early:$('#rmEarly').checked,
+    graphSearch:!$('#rmTree').checked
+  });
+  rmRender();
+}
+function rmRender(){
+  var s='';
+  var pathSet={};
+  if(RM.path)RM.path.forEach(function(k){pathSet[k]=1;});
+  ROM.edges.forEach(function(e){
+    var a=ROM.nodes[e[0]],b=ROM.nodes[e[1]];
+    var used=RM.path&&RM.path.indexOf(e[0])>=0&&RM.path.indexOf(e[1])>=0&&
+      Math.abs(RM.path.indexOf(e[0])-RM.path.indexOf(e[1]))===1;
+    s+='<line class="ed'+(used?' use':'')+'" x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'"/>';
+  });
+  var frSet={};RM.frontier.forEach(function(n){frSet[n.id]=1;});
+  ROMIDS.forEach(function(id){
+    var n=ROM.nodes[id],cls='nd',on='';
+    if(id===RM.goal){cls+=' goal';on=' on';}
+    else if(id===RM.start){cls+=' start';on=' on';}
+    if(RM.cur&&RM.cur.id===id){cls+=' cur';on=' on';}
+    else if(pathSet[id]){cls+=' path';on=' on';}
+    else if(RM.expSet[id]){cls+=' exp';}
+    else if(frSet[id]){cls+=' fr';on=' on';}
+    s+='<circle class="'+cls+'" cx="'+n.x+'" cy="'+n.y+'" r="7"/>'+
+       '<text class="lb'+on+'" x="'+n.x+'" y="'+(n.y-12)+'" text-anchor="middle">'+n.s+'</text>';
+  });
+  $('#rmMap').innerHTML=s;
+
+  $('#rmFrontier').innerHTML=RM.frontier.length
+    ? RM.frontier.slice(0,28).map(function(n){
+        return '<span class="qchip">'+ROM.nodes[n.id].s+'  g='+n.g+'  h='+RM.h(n.id)+'</span>';}).join('')
+    : '<span class="faint">（空）</span>';
+  $('#rmExp').innerHTML=RM.expanded.length
+    ? RM.expanded.map(function(k){return '<span class="pill">'+ROM.nodes[k].s+'</span>';}).join('')
+    : '<span class="faint">（尚未展开）</span>';
+
+  $('#rmK1').textContent=RM.expanded.length;
+  $('#rmK2').textContent=RM.gen;
+  $('#rmK3').textContent=RM.maxF;
+  $('#rmK4').textContent=RM.cur?RM.f(RM.cur).toFixed(0):'—';
+  $('#rmK5').textContent=RM.cost===null?'—':RM.cost;
+
+  var v=$('#rmVerdict');
+  if(RM.done){
+    if(RM.path){
+      v.className='verdict yes';
+      v.innerHTML='<b>'+RM.msg+'</b><br><span class="mono" style="font-size:12.5px">'+
+        RM.path.map(function(k){return ROM.nodes[k].s;}).join(' → ')+'</span>';
+    }else{v.className='verdict no';v.innerHTML='<b>'+RM.msg+'</b>';}
+  }else{
+    v.className='verdict mid';
+    v.innerHTML='点「下一步」继续。'+(RM.mode==='ids'?'当前深度界限 ℓ = '+RM.lim:'');
+  }
+}
+$('#rmStep').onclick=function(){if(RM&&!RM.done){RM.step();rmRender();}};
+$('#rmRun').onclick=function(){var n=0;while(RM&&!RM.done&&n<4000){RM.step();n++;}rmRender();};
+$('#rmReset').onclick=rmInit;
+['#rmMode','#rmA','#rmB','#rmEarly','#rmTree','#rmW','#rmL'].forEach(function(s){
+  $(s).onchange=function(){if(s==='#rmW')$('#rmWv').textContent=this.value;if(s==='#rmL')$('#rmLv').textContent=this.value;rmInit();};
+});
+$('#rmW').oninput=function(){$('#rmWv').textContent=this.value;rmInit();};
+$('#rmL').oninput=function(){$('#rmLv').textContent=this.value;rmInit();};
+$('#rmPreset').onclick=function(){
+  $('#rmMode').value='ucs';$('#rmA').value='Sibiu';$('#rmB').value='Bucharest';
+  $('#rmEarly').checked=false;$('#rmTree').checked=false;
+  rmInit();
+  $('#rmPreset').textContent='已设为 UCS · Sibiu → Bucharest · 晚期目标测试（再点一次=早期）';
+  $('#rmPreset').onclick=function(){
+    $('#rmEarly').checked=true;rmInit();
+    $('#rmPreset').textContent='现在是早期目标测试 —— 跑到底看代价变成 310';
+  };
+};
+rmInit();
+
+/* =========================================================
+   ③ 等值线沙盘
+   ========================================================= */
+var CT={n:16,p:25,W:1,seed:11};
+function ctBuild(){
+  var n=CT.n,seed=CT.seed;
+  function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+  var nodes={},edges=[],wall={};
+  for(var y=0;y<n;y++)for(var x=0;x<n;x++){
+    var id=x+','+y;
+    nodes[id]={x:x,y:y,h:Math.abs(x-(n-1))+Math.abs(y-(n-1))};
+    if((x>0||y>0)&&rnd()*100<CT.p)wall[id]=1;
+  }
+  for(var y2=0;y2<n;y2++)for(var x2=0;x2<n;x2++){
+    var a=x2+','+y2;
+    if(wall[a])continue;
+    if(x2+1<n&&!wall[(x2+1)+','+y2])edges.push([a,(x2+1)+','+y2,1]);
+    if(y2+1<n&&!wall[x2+','+(y2+1)])edges.push([a,x2+','+(y2+1),1]);
+  }
+  return {G:mkGraph(nodes,edges),wall:wall,n:n};
+}
+function ctRender(){
+  var M=ctBuild(),n=M.n;
+  var start='0,0',goal=(n-1)+','+(n-1);
+  if(M.wall[start])delete M.wall[start];
+  if(M.wall[goal])delete M.wall[goal];
+  var S=new Search(M.G,start,goal,{
+    mode:$('#ctGreedy').checked?'greedy':(CT.W===0?'ucs':(CT.W===1?'astar':'wastar')),
+    W:CT.W,graphSearch:true,early:false
+  });
+  var k=0;
+  while(!S.done&&k<200000){S.step();k++;}
+  var order={};
+  S.expanded.forEach(function(id,i){order[id]=i;});
+  var pathSet={};if(S.path)S.path.forEach(function(k2){pathSet[k2]=1;});
+  var maxO=Math.max(1,S.expanded.length);
+  var grid=$('#ctGrid');
+  grid.style.gridTemplateColumns='repeat('+n+',1fr)';
+  var h='';
+  for(var y=0;y<n;y++)for(var x=0;x<n;x++){
+    var id=x+','+y,cls='hc',sty='';
+    if(M.wall[id])cls+=' wall';
+    else if(order[id]!==undefined){
+      var t=order[id]/maxO;
+      var a=(0.10+0.55*t).toFixed(3);
+      sty='background:color-mix(in srgb,var(--accent) '+Math.round(a*100)+'%,var(--panel2))';
+    }
+    if(id===start)cls+=' start';
+    if(id===goal)cls+=' goal';
+    if(pathSet[id])cls+=' path';
+    h+='<div class="'+cls+'" style="'+sty+'">'+((pathSet[id]&&!M.wall[id])?'•':'')+'</div>';
+  }
+  grid.innerHTML=h;
+  $('#ctF').textContent=$('#ctGreedy').checked?'h（纯贪心）':(CT.W===0?'g（UCS）':('g + '+CT.W+'·h'));
+  $('#ctK').textContent=S.expanded.length;
+  $('#ctL').textContent=S.path?S.path.length:'—';
+  $('#ctC').textContent=S.cost===null?'—':S.cost;
+  var v=$('#ctVerdict');
+  if(S.path){
+    v.className='verdict yes';
+    v.innerHTML='找到路径：长度 <b>'+S.path.length+'</b> 格，代价 <b>'+S.cost+'</b>，展开 <b>'+S.expanded.length+'</b> 个节点。';
+  }else{v.className='verdict no';v.innerHTML='无解：障碍把起点和终点隔开了。点「换个地形」。';}
+}
+['#ctN','#ctP','#ctW'].forEach(function(s){
+  $(s).oninput=function(){
+    if(s==='#ctN'){CT.n=parseInt(this.value,10);$('#ctNv').textContent=this.value;}
+    if(s==='#ctP'){CT.p=parseInt(this.value,10);$('#ctPv').textContent=this.value+'%';}
+    if(s==='#ctW'){CT.W=parseFloat(this.value);$('#ctWv').textContent=this.value;}
+    ctRender();
+  };
+});
+$('#ctGreedy').onchange=ctRender;
+$('#ctGo').onclick=ctRender;
+$('#ctSeed').onclick=function(){CT.seed=(CT.seed*7919+104729)&0x7fffffff;ctRender();};
+ctRender();
+
+/* =========================================================
+   ④ 可采纳 vs 一致
+   ========================================================= */
+var HC={nodes:{A:{x:70,y:110,s:'A'},B:{x:190,y:60,s:'B'},C:{x:190,y:170,s:'C'},G:{x:320,y:110,s:'G'}},
+        edges:[['A','B',1],['A','C',4],['A','G',8],['B','G',5],['B','C',2],['C','G',1]]};
+var GHC=mkGraph(HC.nodes,HC.edges);
+function hstar(from){ // Dijkstra 到 G
+  var dist={},vis={};
+  Object.keys(HC.nodes).forEach(function(k){dist[k]=Infinity;});
+  dist.G=0;
+  while(true){
+    var best=null,bv=Infinity;
+    Object.keys(dist).forEach(function(k){if(!vis[k]&&dist[k]<bv){bv=dist[k];best=k;}});
+    if(best===null)break;
+    vis[best]=1;
+    GHC.adj[best].forEach(function(e){if(dist[best]+e.c<dist[e.to])dist[e.to]=dist[best]+e.c;});
+  }
+  return dist[from];
+}
+var HSTAR={};Object.keys(HC.nodes).forEach(function(k){HSTAR[k]=hstar(k);});
+function hcRender(){
+  var hA=parseInt($('#hcA').value,10),hB=parseInt($('#hcB').value,10),hC=parseInt($('#hcC').value,10);
+  $('#hcAv').textContent=hA;$('#hcBv').textContent=hB;$('#hcCv').textContent=hC;
+  var h={A:hA,B:hB,C:hC,G:parseInt($('#hcC').value,10)>=0?0:0};
+  h.G=0;
+  // 图
+  var s='';
+  HC.edges.forEach(function(e){
+    var a=HC.nodes[e[0]],b=HC.nodes[e[1]];
+    var ok=h[e[0]]<=e[2]+h[e[1]];
+    s+='<line class="ed'+(ok?'':' use')+'" x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'"'+
+       (ok?'':' style="stroke:var(--bad)"')+'/>';
+    var mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    s+='<text class="lb" x="'+mx+'" y="'+(my-4)+'" text-anchor="middle" style="fill:var(--faint)">'+e[2]+'</text>';
+  });
+  Object.keys(HC.nodes).forEach(function(id){
+    var n=HC.nodes[id];
+    var adm=h[id]<=HSTAR[id];
+    s+='<circle class="nd'+(id==='G'?' goal':(adm?'':' fr'))+'" cx="'+n.x+'" cy="'+n.y+'" r="20"'+
+       (adm?'':' style="stroke:var(--bad)"')+'/>';
+    s+='<text class="lb on" x="'+n.x+'" y="'+(n.y+4)+'" text-anchor="middle">'+n.s+'</text>';
+    s+='<text class="lb" x="'+n.x+'" y="'+(n.y+36)+'" text-anchor="middle">h='+h[id]+' h*='+HSTAR[id]+'</text>';
+  });
+  $('#hcMap').innerHTML=s;
+  // 表
+  var rows='<tr><th>节点</th><th class="m">h</th><th class="m">h*</th><th class="m">可采纳 h ≤ h*</th></tr>';
+  ['A','B','C'].forEach(function(k){
+    var adm=h[k]<=HSTAR[k];
+    rows+='<tr'+(adm?'':' class="cex"')+'><td class="mono">'+k+'</td><td class="m">'+h[k]+'</td><td class="m">'+HSTAR[k]+
+      '</td><td class="m '+(adm?'t':'f')+'">'+(adm?'✓':'✗ 高估')+'</td></tr>';
+  });
+  rows+='<tr><th>边</th><th class="m">c</th><th class="m">h(n)</th><th class="m">一致 h(n) ≤ c + h(n′)</th></tr>';
+  var allCons=true;
+  HC.edges.forEach(function(e){
+    var ok=h[e[0]]<=e[2]+h[e[1]];
+    if(!ok)allCons=false;
+    rows+='<tr'+(ok?'':' class="cex"')+'><td class="mono">'+e[0]+'→'+e[1]+'</td><td class="m">'+e[2]+
+      '</td><td class="m">'+h[e[0]]+'</td><td class="m '+(ok?'t':'f')+'">'+(ok?'✓':'✗ '+h[e[0]]+' &gt; '+(e[2]+h[e[1]]))+'</td></tr>';
+  });
+  $('#hcTable').innerHTML=rows;
+  // 跑 A*
+  var S=new Search(GHC,'A','G',{mode:'astar',graphSearch:true,early:false});
+  S.h=function(id){return h[id];};
+  var k2=0;while(!S.done&&k2<5000){S.step();k2++;}
+  var opt=HSTAR.A;
+  var v=$('#hcVerdict');
+  var allAdm=h.A<=HSTAR.A&&h.B<=HSTAR.B&&h.C<=HSTAR.C;
+  var got=S.cost;
+  var stats='<div class="kv"><span>A* 展开节点数</span><b>'+S.expanded.length+'</b></div>'+
+            '<div class="kv"><span>A* 边缘最大规模</span><b>'+S.maxF+'</b></div>';
+  if(got===null){v.className='verdict no';v.innerHTML='搜索失败。';}
+  else if(got>opt){
+    v.className='verdict no';
+    v.innerHTML='<b>A* 返回次优解：'+got+' &gt; 最优 '+opt+'</b><br>'+
+      '<b>h 高估了</b>（不可采纳），最优性保证直接失效。';
+  }else{
+    v.className='verdict yes';
+    v.innerHTML='<b>A* 返回最优解 '+got+'</b>　（真实最优 '+opt+'）<br>'+
+      (allCons
+        ? '且 h <b>一致</b>：每个节点第一次被弹出就已经在最优路径上，<b>每个节点只展开一次</b>。'
+        : (allAdm
+          ? '注意：h <b>可采纳但不一致</b>。最优性仍然成立（可采纳就够了），但一致性带来的效率保证没了——'+
+            '同一状态可能被<b>多次加入边缘、多次展开</b>。'
+          : 'h 不一致，但这次仍返回最优。'));
+  }
+  $('#hcStats').innerHTML=stats;
+}
+['#hcA','#hcB','#hcC'].forEach(function(s){$(s).oninput=hcRender;});
+$('#hcReset').onclick=function(){$('#hcA').value=3;$('#hcB').value=2;$('#hcC').value=1;hcRender();};
+hcRender();
+
+/* =========================================================
+   ⑤ 八数码
+   ========================================================= */
+function pzGoal(){return [1,2,3,4,5,6,7,8,0];}
+function pzH1(b){var c=0;for(var i=0;i<9;i++)if(b[i]!==0&&b[i]!==i+1)c++;return c;}
+function pzH2(b){var s=0;for(var i=0;i<9;i++){if(b[i]===0)continue;var t=b[i]-1;s+=Math.abs((i%3)-(t%3))+Math.abs(Math.floor(i/3)-Math.floor(t/3));}return s;}
+function pzMoves(b){
+  var i=b.indexOf(0),x=i%3,y=Math.floor(i/3),out=[];
+  if(x>0)out.push(swap(b,i,i-1));
+  if(x<2)out.push(swap(b,i,i+1));
+  if(y>0)out.push(swap(b,i,i-3));
+  if(y<2)out.push(swap(b,i,i+3));
+  return out;
+}
+function swap(b,i,j){var c=b.slice();var t=c[i];c[i]=c[j];c[j]=t;return c;}
+function pzRand(k,seed){
+  var s=seed||1;
+  function rnd(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;}
+  var b=pzGoal(),prev=-1;
+  for(var n=0;n<k;n++){
+    var ms=pzMoves(b).filter(function(m){var i=m.indexOf(0);return i!==prev;});
+    var m=ms[Math.floor(rnd()*ms.length)];
+    prev=b.indexOf(0);b=m;
+  }
+  return b;
+}
+function pzSolve(start,mode){
+  var goal=pzGoal(),gs=goal.join(',');
+  var hf=mode==='bfs'?null:(mode==='h1'?pzH1:pzH2);
+  var seen={},expanded=0,maxF=1,gen=0;
+  if(mode==='bfs'){
+    var q=[{b:start,g:0}],head=0;seen[start.join(',')]=0;
+    while(head<q.length){
+      var cur=q[head++];
+      if(cur.b.join(',')===gs)return {expanded:expanded,cost:cur.g,maxF:maxF,gen:gen};
+      expanded++;
+      var ms=pzMoves(cur.b);
+      for(var i=0;i<ms.length;i++){
+        var kk=ms[i].join(',');gen++;
+        if(seen[kk]!==undefined)continue;
+        seen[kk]=cur.g+1;q.push({b:ms[i],g:cur.g+1});
+      }
+      if(q.length>maxF)maxF=q.length;
+    }
+    return {expanded:expanded,cost:null,maxF:maxF,gen:gen};
+  }
+  var hp=new Heap();
+  hp.push({b:start,g:0,f:hf(start)});
+  seen[start.join(',')]=0;
+  while(hp.size()){
+    var c2=hp.pop();
+    if(c2.b.join(',')===gs)return {expanded:expanded,cost:c2.g,maxF:maxF,gen:gen};
+    if(seen[c2.b.join(',')]<c2.g)continue;
+    expanded++;
+    var ms2=pzMoves(c2.b);
+    for(var j=0;j<ms2.length;j++){
+      var key=ms2[j].join(','),ng=c2.g+1;gen++;
+      if(seen[key]!==undefined&&seen[key]<=ng)continue;
+      seen[key]=ng;hp.push({b:ms2[j],g:ng,f:ng+hf(ms2[j])});
+    }
+    if(hp.size()>maxF)maxF=hp.size();
+  }
+  return {expanded:expanded,cost:null,maxF:maxF,gen:gen};
+}
+function bstar(N,d){
+  if(d<=0)return 1;
+  var lo=1,hi=20;
+  function sum(b){var s=1,t=1;for(var i=0;i<d;i++){t*=b;s+=t;}return s;}
+  for(var it=0;it<60;it++){
+    var mid=(lo+hi)/2;
+    if(sum(mid)<N)lo=mid;else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+function pzRender(){
+  var k=parseInt($('#pzK').value,10),seed=parseInt($('#pzS').value,10);
+  $('#pzKv').textContent=k;$('#pzSv').textContent=seed;
+  var b=pzRand(k,seed*7919+13);
+  var g=pzGoal();
+  var h='';
+  for(var i=0;i<9;i++){
+    var cls='pzc';
+    if(b[i]===0)cls+=' blank';
+    else if(b[i]===g[i])cls+=' good';
+    else cls+=' bad';
+    h+='<div class="'+cls+'">'+(b[i]===0?'':b[i])+'</div>';
+  }
+  $('#pzBoard').innerHTML=h;
+  $('#pzH1').textContent=pzH1(b);
+  $('#pzH2').textContent=pzH2(b);
+  var r1=pzSolve(b,'bfs'),r2=pzSolve(b,'h1'),r3=pzSolve(b,'h2');
+  var d=r3.cost;
+  $('#pzD').textContent=d;
+  var mx=Math.max(r1.expanded,r2.expanded,r3.expanded,1);
+  var rows=[['BFS（无信息）',r1.expanded,'bad'],['A* · h₁ 错位滑块',r2.expanded,''],['A* · h₂ 曼哈顿',r3.expanded,'ok']];
+  $('#pzBars').innerHTML=rows.map(function(r){
+    return '<div class="bar"><span class="nm">'+r[0]+'</span>'+
+      '<span class="tr"><span class="fl '+(r[2]||'')+'" style="width:'+Math.max(2,r[1]/mx*100)+'%"></span></span>'+
+      '<span class="vv">'+r[1].toLocaleString()+'</span></div>';
+  }).join('');
+  var v=$('#pzVerdict');
+  v.className='verdict yes';
+  v.innerHTML='最优步数 <b>'+d+'</b>　·　有效分支因子 b*：BFS <b>'+bstar(r1.expanded,d).toFixed(2)+
+    '</b>　h₁ <b>'+bstar(r2.expanded,d).toFixed(2)+'</b>　h₂ <b>'+bstar(r3.expanded,d).toFixed(2)+'</b>'+
+    '<br><span class="dim">h₂ 扩展的节点是 BFS 的 <b>'+(r1.expanded/Math.max(1,r3.expanded)).toFixed(1)+
+    '</b> 分之一。把 k 拉到 20 以上，差距会拉到几百倍。</span>';
+}
+$('#pzGo').onclick=pzRender;
+['#pzK','#pzS'].forEach(function(s){$(s).oninput=function(){
+  if(s==='#pzK')$('#pzKv').textContent=this.value;
+  if(s==='#pzS')$('#pzSv').textContent=this.value;
+};});
+pzRender();
+
+/* =========================================================
+   ⑥ IDA*
+   ========================================================= */
+function idaStar(start){
+  var goal=pzGoal(),gs=goal.join(',');
+  var bound=pzH2(start),rounds=[],totalGen=0;
+  for(var it=0;it<40;it++){
+    var next=Infinity,gen=0,depthMax=0;
+    // 显式栈的深度受限 DFS；prev 记录上一格空白位置，禁止立刻走回头路
+    var stack=[{b:start,g:0,d:0,prev:-1}],found=false;
+    while(stack.length){
+      var cur=stack.pop();
+      var f=cur.g+pzH2(cur.b);
+      if(f>bound){if(f<next)next=f;continue;}
+      if(cur.b.join(',')===gs){found=true;break;}
+      gen++;totalGen++;
+      if(cur.d>depthMax)depthMax=cur.d;
+      if(totalGen>2000000)return {rounds:rounds,cost:null,totalGen:totalGen,maxDepth:depthMax,solved:false,abort:true};
+      var ms2=pzMoves(cur.b),blank=cur.b.indexOf(0);
+      for(var j=ms2.length-1;j>=0;j--){
+        if(ms2[j][cur.prev]===0&&cur.prev>=0)continue;
+        stack.push({b:ms2[j],g:cur.g+1,d:cur.d+1,prev:blank});
+      }
+    }
+    rounds.push({t:bound,gen:gen,depth:depthMax,next:next});
+    if(found)return {rounds:rounds,cost:bound,totalGen:totalGen,maxDepth:depthMax,solved:true};
+    if(next===Infinity)return {rounds:rounds,cost:null,totalGen:totalGen,maxDepth:depthMax,solved:false};
+    bound=next;
+  }
+  return {rounds:rounds,cost:null,totalGen:totalGen,maxDepth:0,solved:false};
+}
+function idRender(){
+  var k=parseInt($('#idK').value,10),seed=parseInt($('#idS').value,10);
+  $('#idKv').textContent=k;$('#idSv').textContent=seed;
+  var b=pzRand(k,seed*7919+13);
+  var R=idaStar(b);
+  var ra=pzSolve(b,'h2');
+  var rows='<tr><th class="m">轮次</th><th class="m">阈值 f-limit</th><th class="m">本轮生成</th><th class="m">下一轮阈值</th></tr>';
+  R.rounds.forEach(function(r,i){
+    rows+='<tr'+(i===R.rounds.length-1?' class="kbtrue"':'')+'><td class="m">'+(i+1)+'</td><td class="m mono">'+r.t+
+      '</td><td class="m">'+r.gen.toLocaleString()+'</td><td class="m mono">'+
+      (r.next===Infinity?'∞':r.next)+'</td></tr>';
+  });
+  $('#idTable').innerHTML=rows;
+  $('#idA').textContent=ra.maxF.toLocaleString();
+  $('#idA2').textContent=ra.expanded.toLocaleString();
+  $('#idB').textContent=R.maxDepth+' 层路径';
+  $('#idB2').textContent=R.totalGen.toLocaleString();
+  var v=$('#idVerdict');
+  v.className='verdict '+(R.solved?'yes':'no');
+  v.innerHTML=R.solved
+    ? '<b>IDA* 求得最优解 '+R.cost+' 步</b><br>'+
+      'A* 需要把 <b>'+ra.maxF.toLocaleString()+'</b> 个节点同时留在内存里；'+
+      'IDA* 全程只存 <b>'+R.maxDepth+'</b> 层的一条路径，代价是累计生成了 <b>'+R.totalGen.toLocaleString()+'</b> 个节点（A* 只生成 '+ra.gen.toLocaleString()+'）。'
+    : '未能在 40 轮内求解。';
+}
+$('#idGo').onclick=idRender;
+['#idK','#idS'].forEach(function(s){$(s).oninput=function(){
+  if(s==='#idK')$('#idKv').textContent=this.value;
+  if(s==='#idS')$('#idSv').textContent=this.value;
+};});
+idRender();
+
+/* =========================================================
+   通用小工具（第 4–6 章）
+   ========================================================= */
+function rndGen(seed){var s=(seed||1)&0x7fffffff;return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
+function svgPoly(pts,cls,style){
+  return '<polyline class="'+cls+'" points="'+pts.map(function(p){return p[0]+','+p[1];}).join(' ')+'"'+(style?' style="'+style+'"':'')+'/>';
+}
+
+/* =========================================================
+   ⑧ 8 皇后爬山
+   ========================================================= */
+function qAttacks(q,n){
+  var c=0;
+  for(var i=0;i<n;i++)for(var j=i+1;j<n;j++){
+    if(q[i]===q[j])c++;
+    else if(Math.abs(q[i]-q[j])===Math.abs(i-j))c++;
+  }
+  return c;
+}
+function qRand(n,rnd){var q=[];for(var i=0;i<n;i++)q.push(Math.floor(rnd()*n));return q;}
+var QS={n:8,q:null,h:0,steps:0,side:0,stuck:false,seed:5};
+function qInit(){
+  QS.n=parseInt($('#qN').value,10);
+  QS.seed=parseInt($('#qS').value,10);
+  QS.q=qRand(QS.n,rndGen(QS.seed*7919+3));
+  QS.h=qAttacks(QS.q,QS.n);QS.steps=0;QS.side=0;QS.stuck=false;
+  qRender();
+}
+function qSuccList(){
+  var out=[];
+  for(var c=0;c<QS.n;c++)for(var r=0;r<QS.n;r++){
+    if(r===QS.q[c])continue;
+    var q2=QS.q.slice();q2[c]=r;
+    out.push({c:c,r:r,h:qAttacks(q2,QS.n)});
+  }
+  return out;
+}
+function qDoStep(){
+  if(QS.stuck||QS.h===0)return;
+  var rnd=rndGen(QS.seed*131+QS.steps*977+1);
+  var variant=$('#qVar').value, allowSide=$('#qSide').checked, lim=parseInt($('#qSideL').value,10);
+  if(variant==='first'){
+    var tries=0;
+    while(tries<200){
+      tries++;
+      var c=Math.floor(rnd()*QS.n),r=Math.floor(rnd()*(QS.n-1));
+      if(r>=QS.q[c])r++;
+      var q2=QS.q.slice();q2[c]=r;
+      var h2=qAttacks(q2,QS.n);
+      if(h2<QS.h){QS.q=q2;QS.h=h2;QS.steps++;return;}
+      if(allowSide&&h2===QS.h&&QS.side<lim){QS.q=q2;QS.side++;QS.steps++;return;}
+    }
+    QS.stuck=true;return;
+  }
+  var succ=qSuccList();
+  var best=Infinity;
+  succ.forEach(function(s){if(s.h<best)best=s.h;});
+  if(best>QS.h){QS.stuck=true;return;}
+  var pool=succ.filter(function(s){return s.h===best;});
+  if(variant==='rand'){
+    var w=pool.map(function(s){return Math.pow(QS.h-s.h+1,2);});
+    var tot=w.reduce(function(a,b){return a+b;},0),t=rnd()*tot,acc=0,pick=pool[0];
+    for(var i=0;i<pool.length;i++){acc+=w[i];if(t<=acc){pick=pool[i];break;}}
+    pool=[pick];
+  }
+  var mv=pool[Math.floor(rnd()*pool.length)];
+  QS.q[mv.c]=mv.r;
+  if(mv.h===QS.h){QS.side++;}else{QS.side=0;}
+  QS.h=mv.h;QS.steps++;
+  if(QS.h===0)QS.stuck=false;
+}
+function qRender(){
+  var n=QS.n,h='';
+  for(var r=0;r<n;r++)for(var c=0;c<n;c++){
+    var cls='qc'+((r+c)%2?' light':'');
+    if(QS.q[c]===r){
+      cls+=' q cur';
+      for(var i=0;i<n;i++)if(i!==c){
+        var oq=QS.q[i];
+        if(oq===r||Math.abs(oq-r)===Math.abs(i-c)){cls+=' atk';break;}
+      }
+      h+='<div class="'+cls+'">♛</div>';
+    }else{h+='<div class="'+cls+'"></div>';}
+  }
+  var b=$('#qBoard');b.style.gridTemplateColumns='repeat('+n+',1fr)';b.innerHTML=h;
+
+  var succ=qSuccList(),best=Infinity;
+  succ.forEach(function(s){if(s.h<best)best=s.h;});
+  var g='';
+  for(var r2=0;r2<n;r2++){
+    for(var c2=0;c2<n;c2++){
+      if(QS.q[c2]===r2){
+        g+='<div class="sgc cur">'+QS.h+'</div>';
+      }else{
+        var hh=qAttacks((function(){var x=QS.q.slice();x[c2]=r2;return x;})(),n);
+        g+='<div class="sgc'+(hh===best?' best':'')+'" data-c="'+c2+'" data-r="'+r2+'">'+hh+'</div>';
+      }
+    }
+  }
+  var sg=$('#qSuccGrid');sg.style.gridTemplateColumns='repeat('+n+',1fr)';sg.innerHTML=g;
+  $$('#qSuccGrid .sgc[data-c]').forEach(function(el){
+    el.onclick=function(){QS.q[parseInt(el.dataset.c,10)]=parseInt(el.dataset.r,10);QS.h=qAttacks(QS.q,QS.n);QS.steps++;qRender();};
+  });
+
+  $('#qH').textContent=QS.h;
+  $('#qStepN').textContent=QS.steps;
+  $('#qSideN').textContent=QS.side;
+  $('#qSucc').textContent=n*(n-1);
+  var v=$('#qVerdict');
+  if(QS.h===0){v.className='verdict yes';v.innerHTML='<b>解出来了！</b>共 '+QS.steps+' 步，h = 0。';}
+  else if(QS.stuck){
+    v.className='verdict no';
+    v.innerHTML='<b>卡住了，h = '+QS.h+'</b>　没有比当前更好的后继'+
+      ($('#qSide').checked?'（侧向次数已达上限 '+parseInt($('#qSideL').value,10)+'）':'')+
+      '。这就是局部极小值——点「换局面」再试，或勾选「允许侧向移动」。';
+  }else{v.className='verdict mid';v.innerHTML='点「单步」继续，或「跑到卡住」。';}
+}
+$('#qStep').onclick=function(){qDoStep();qRender();};
+$('#qRun').onclick=function(){var k=0;while(!QS.stuck&&QS.h!==0&&k<3000){qDoStep();k++;}qRender();};
+$('#qReset').onclick=qInit;
+['#qN','#qS'].forEach(function(s){$(s).oninput=function(){if(s==='#qN')$('#qNv').textContent=this.value;else $('#qSv').textContent=this.value;qInit();};});
+$('#qVar').onchange=qInit;
+$('#qSide').onchange=qInit;
+$('#qSideL').oninput=function(){$('#qSideLv').textContent=this.value;};
+$('#qBatch').onclick=function(){
+  var n=QS.n,side=$('#qSide').checked,lim=parseInt($('#qSideL').value,10);
+  var rnd=rndGen(20240117),ok=0,sumOK=0,sumFail=0,fail=0;
+  for(var t=0;t<200;t++){
+    var q=qRand(n,rnd),h=qAttacks(q,n),steps=0,sd=0,done=false;
+    while(steps<400){
+      if(h===0){done=true;break;}
+      var best=Infinity;
+      for(var c=0;c<n;c++)for(var r=0;r<n;r++){
+        if(r===q[c])continue;
+        var q2=q.slice();q2[c]=r;var h2=qAttacks(q2,n);
+        if(h2<best)best=h2;
+      }
+      if(best>h)break;
+      if(best===h&&(!side||sd>=lim))break;
+      var pool=[];
+      for(var c2=0;c2<n;c2++)for(var r2=0;r2<n;r2++){
+        if(r2===q[c2])continue;
+        var q3=q.slice();q3[c2]=r2;if(qAttacks(q3,n)===best)pool.push([c2,r2]);
+      }
+      var mv=pool[Math.floor(rnd()*pool.length)];
+      q[mv[0]]=mv[1];var nh=qAttacks(q,n);
+      if(nh===h)sd++;else sd=0;
+      h=nh;steps++;
+    }
+    if(done){ok++;sumOK+=steps;}else{fail++;sumFail+=steps;}
+  }
+  $('#qBatchOut').innerHTML=
+    '<div class="bars">'+
+    '<div class="bar"><span class="nm">成功（h=0）</span><span class="tr"><span class="fl ok" style="width:'+(ok/2)+'%"></span></span><span class="vv">'+(ok/2).toFixed(0)+'%</span></div>'+
+    '<div class="bar"><span class="nm">卡住</span><span class="tr"><span class="fl bad" style="width:'+(fail/2)+'%"></span></span><span class="vv">'+(fail/2).toFixed(0)+'%</span></div>'+
+    '</div>'+
+    '<div class="faint">200 次随机重启（n = '+n+'，'+(side?'允许侧向移动（上限 '+lim+'）':'不允许侧向移动')+
+    '）：成功平均 <b>'+(ok?sumOK/ok:0).toFixed(1)+'</b> 步，卡住平均 <b>'+(fail?sumFail/fail:0).toFixed(1)+'</b> 步。'+
+    '原书 n=8 的实测是 14% / 4 步 / 3 步，加侧向移动后 94% / 21 步 / 64 步。</div>';
+};
+qInit();
+
+/* =========================================================
+   ⑨ 模拟退火
+   ========================================================= */
+var SA={seed:11};
+function saRun(){
+  var n=parseInt($('#saN').value,10);
+  var T0=parseInt($('#saT').value,10),itI=parseInt($('#saI').value,10),rate=parseInt($('#saR').value,10)/100;
+  var rnd=rndGen(SA.seed*3571+7);
+  var start=qRand(n,rnd);
+  // 爬山基线
+  var hc=start.slice(),hcH=qAttacks(hc,n),hcTraj=[hcH],hcSteps=0;
+  while(hcSteps<2000&&hcH>0){
+    var best=Infinity,pool=[];
+    for(var c=0;c<n;c++)for(var r=0;r<n;r++){
+      if(r===hc[c])continue;
+      var q2=hc.slice();q2[c]=r;var h2=qAttacks(q2,n);
+      if(h2<best){best=h2;pool=[[c,r]];}else if(h2===best)pool.push([c,r]);
+    }
+    if(best>=hcH)break;
+    var mv=pool[Math.floor(rnd()*pool.length)];
+    hc[mv[0]]=mv[1];hcH=best;hcSteps++;hcTraj.push(hcH);
+  }
+  while(hcTraj.length<200)hcTraj.push(hcH);
+  // 退火
+  var cur=start.slice(),curH=qAttacks(cur,n),T=T0,traj=[],down=0,solved=false;
+  while(T>0.05){
+    for(var it=0;it<itI;it++){
+      if(curH===0){solved=true;break;}
+      var c3=Math.floor(rnd()*n),r3=Math.floor(rnd()*(n-1));
+      if(r3>=cur[c3])r3++;
+      var q4=cur.slice();q4[c3]=r3;var h4=qAttacks(q4,n);
+      var dE=curH-h4;                       // >0 表示变好
+      if(dE>0){cur=q4;curH=h4;}
+      else if(rnd()<Math.exp(dE/T)){cur=q4;curH=h4;down++;}
+      traj.push(curH);
+    }
+    if(curH===0){solved=true;break;}
+    T*=rate;
+  }
+  // 画轨迹
+  var W=640,H=260,pad=34,maxY=Math.max.apply(null,hcTraj.concat(traj).concat([1]));
+  var stepX=(W-pad*2)/Math.max(1,Math.max(hcTraj.length,traj.length)-1);
+  function yOf(v){return H-pad-(v/maxY)*(H-pad*2);}
+  var s='<line class="ax" x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>'+
+        '<line class="ax" x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>'+
+        '<text class="lb" x="6" y="'+(pad+4)+'" style="fill:var(--faint)">h</text>'+
+        '<text class="lb" x="'+(W-pad-30)+'" y="'+(H-pad+16)+'" style="fill:var(--faint)">迭代</text>';
+  s+=svgPoly(hcTraj.map(function(v,i){return [pad+i*stepX,yOf(v)];}),'traj','stroke:var(--bad)');
+  s+=svgPoly(traj.map(function(v,i){return [pad+i*stepX,yOf(v)];}),'traj','stroke:var(--accent)');
+  s+='<circle class="pt" cx="'+(W-pad-4)+'" cy="'+yOf(0)+'" r="3" style="fill:var(--ok)"/>'+
+     '<text class="lb" x="'+(W-pad-8)+'" y="'+(yOf(0)-6)+'" text-anchor="end" style="fill:var(--ok)">h=0 解</text>'+
+     '<text class="lb" x="'+(W-pad-8)+'" y="'+(pad+12)+'" text-anchor="end" style="fill:var(--bad)">爬山</text>'+
+     '<text class="lb" x="'+(W-pad-8)+'" y="'+(pad+26)+'" text-anchor="end" style="fill:var(--accent)">退火</text>';
+  $('#saPlot').innerHTML=s;
+
+  var Tnow=Math.max(0.05,T0);
+  var bars='';
+  [1,2,3,5,8].forEach(function(d){
+    var p=Math.exp(-d/Tnow);
+    bars+='<div class="bar"><span class="nm">ΔE = −'+d+'（变差 '+d+'）</span>'+
+      '<span class="tr"><span class="fl" style="width:'+(p*100).toFixed(1)+'%"></span></span>'+
+      '<span class="vv">'+(p*100).toFixed(1)+'%</span></div>';
+  });
+  $('#saBars').innerHTML=bars;
+
+  $('#saH1').textContent=hcH;
+  $('#saH2').textContent=curH;
+  $('#saD').textContent=down;
+  $('#saOK').textContent=solved?'是':'否';
+  var v=$('#saVerdict');
+  if(solved){
+    v.className='verdict yes';
+    v.innerHTML='<b>退火找到了解</b>　（爬山停在同一起点的 h = '+hcH+'）。'+
+      '注意曲线：退火前期 h <b>忽上忽下</b>（接受了 '+down+' 次变坏的移动），后期才稳定下降。';
+  }else if(curH<hcH){
+    v.className='verdict mid';
+    v.innerHTML='退火没解出，但 h = '+curH+' 已优于爬山的 '+hcH+'。'+
+      '把 T₀ 调大或降温调慢（系数更接近 1）再试。';
+  }else{
+    v.className='verdict no';
+    v.innerHTML='退火也停在 h = '+curH+'。降温太快了——把「降温系数」拉到 0.98 以上，或把每温度迭代数加大。';
+  }
+}
+$('#saGo').onclick=saRun;
+$('#saSeed').onclick=function(){SA.seed=(SA.seed*31+17)&0x7fffffff;saRun();};
+['#saT','#saI','#saR','#saN'].forEach(function(s){
+  $(s).oninput=function(){
+    if(s==='#saT')$('#saTv').textContent=this.value;
+    if(s==='#saI')$('#saIv').textContent=this.value;
+    if(s==='#saR')$('#saRv').textContent=(this.value/100).toFixed(2);
+    if(s==='#saN')$('#saNv').textContent=this.value;
+  };
+});
+saRun();
+
+/* =========================================================
+   ⑩ 遗传算法
+   ========================================================= */
+var GA={pop:null,gen:0,hist:[],n:8,seed:3};
+function gaFit(ind,n){ // 互不攻击对数
+  var tot=n*(n-1)/2;
+  return tot-qAttacks(ind,n);
+}
+function gaInit(){
+  GA.n=parseInt($('#gaN').value,10);
+  var p=parseInt($('#gaP').value,10),rnd=rndGen(GA.seed*8171+5);
+  GA.pop=[];
+  for(var i=0;i<p;i++)GA.pop.push(qRand(GA.n,rnd));
+  GA.gen=0;GA.hist=[];
+  gaRender();
+}
+function gaStep(){
+  var n=GA.n,p=GA.pop.length,mr=parseInt($('#gaM').value,10)/100,xover=$('#gaX').checked;
+  var rnd=rndGen(GA.seed*104729+GA.gen*7919+11);
+  var fits=GA.pop.map(function(ind){return gaFit(ind,n);});
+  var tot=fits.reduce(function(a,b){return a+b;},0)||1;
+  var probs=fits.map(function(f){return f/tot;});
+  var next=[];
+  while(next.length<p){
+    function pick(){
+      var t=rnd(),acc=0;
+      for(var i=0;i<p;i++){acc+=probs[i];if(t<=acc)return GA.pop[i].slice();}
+      return GA.pop[p-1].slice();
+    }
+    var a=pick(),b=pick();
+    if(xover&&n>1){
+      var cut=1+Math.floor(rnd()*(n-1));
+      var c1=a.slice(0,cut).concat(b.slice(cut));
+      var c2=b.slice(0,cut).concat(a.slice(cut));
+      next.push(c1);if(next.length<p)next.push(c2);
+    }else{
+      next.push(a.slice());if(next.length<p)next.push(b.slice());
+    }
+  }
+  next=next.slice(0,p).map(function(ind){
+    for(var i=0;i<n;i++)if(rnd()<mr)ind[i]=Math.floor(rnd()*n);
+    return ind;
+  });
+  var bestOld=Math.max.apply(null,fits);
+  var bestNew=Math.max.apply(null,next.map(function(ind){return gaFit(ind,n);}));
+  if(bestNew>bestOld)next[0]=GA.pop[fits.indexOf(bestOld)].slice(); // 精英保留
+  GA.pop=next;GA.gen++;
+  GA.hist.push(bestNew);
+  gaRender();
+}
+function gaRender(){
+  var n=GA.n,maxFit=n*(n-1)/2;
+  var fits=GA.pop.map(function(ind){return gaFit(ind,n);});
+  var tot=fits.reduce(function(a,b){return a+b;},0)||1;
+  var rows='<tr><th class="m">#</th><th>个体（数字串）</th><th class="m">适应度</th><th class="m">选择概率</th></tr>';
+  GA.pop.forEach(function(ind,i){
+    rows+='<tr><td class="m">'+(i+1)+'</td><td class="mono">'+ind.join('')+'</td>'+
+      '<td class="m">'+fits[i]+'</td><td class="m">'+(fits[i]/tot*100).toFixed(0)+'%</td></tr>';
+  });
+  $('#gaPop').innerHTML=rows;
+  $('#gaGen').textContent=GA.gen;
+  $('#gaBest').textContent=Math.max.apply(null,fits);
+  $('#gaAvg').textContent=(tot/GA.pop.length).toFixed(1);
+  $('#gaMax').textContent=maxFit;
+  // 曲线
+  var W=640,H=180,pad=30;
+  var mx=Math.max(maxFit,Math.max.apply(null,GA.hist.concat([1])));
+  var sx=(W-pad*2)/Math.max(1,GA.hist.length-1);
+  var s='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>'+
+    '<line x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>'+
+    '<text class="lb" x="'+(W-pad-4)+'" y="'+(pad+10)+'" text-anchor="end" style="fill:var(--ok)">最优 '+maxFit+'</text>';
+  if(GA.hist.length>1){
+    s+=svgPoly(GA.hist.map(function(v,i){return [pad+i*sx,H-pad-(v/mx)*(H-pad*2)];}),'traj','stroke:var(--accent)');
+  }
+  $('#gaPlot').innerHTML=s;
+  var v=$('#gaVerdict');
+  var best=Math.max.apply(null,fits);
+  if(best===maxFit){v.className='verdict yes';v.innerHTML='<b>找到解</b>　适应度达到最大值 '+maxFit+'（第 '+GA.gen+' 代）。';}
+  else{v.className='verdict mid';v.innerHTML='当前最优适应度 <b>'+best+' / '+maxFit+'</b>。继续「下一代」。';}
+}
+$('#gaStep').onclick=gaStep;
+$('#gaAuto').onclick=function(){for(var i=0;i<30;i++)gaStep();};
+$('#gaReset').onclick=gaInit;
+['#gaP','#gaM','#gaN'].forEach(function(s){
+  $(s).oninput=function(){
+    if(s==='#gaP')$('#gaPv').textContent=this.value;
+    if(s==='#gaM')$('#gaMv').textContent=this.value;
+    if(s==='#gaN')$('#gaNv').textContent=this.value;
+  };
+});
+['#gaP','#gaM','#gaN'].forEach(function(s){$(s).onchange=gaInit;});
+$('#gaX').onchange=gaInit;                       /* 「是否交叉」是这个面板的主题，改了必须重跑 */
+gaInit();
+
+/* =========================================================
+   ⑪ 地形困境 + 连续空间
+   ========================================================= */
+var TF={x:10,path:null,done:false};
+function tfFn(kind,x){
+  if(kind==='peak')return 100*Math.exp(-Math.pow((x-50)/18,2))+10;
+  if(kind==='local')return 62*Math.exp(-Math.pow((x-24)/12,2))+100*Math.exp(-Math.pow((x-78)/18,2))+8;
+  if(kind==='ridge')return 95*Math.exp(-Math.pow((x-50)/4.5,2))+8;
+  if(kind==='plateau'){
+    if(x<30)return 20+30*(x/30);
+    if(x>70)return 50-30*((x-70)/30);
+    return 50;
+  }
+  if(kind==='shoulder'){
+    if(x<35)return 20+30*(x/35);
+    if(x<58)return 50;
+    return 50+40*((x-58)/42);
+  }
+  return 0;
+}
+function tfPlot(){
+  var kind=$('#tfSel').value,W=640,H=220,pad=34;
+  var pts=[];
+  for(var x=0;x<=100;x+=0.5){
+    pts.push([pad+(x/100)*(W-pad*2),H-pad-(tfFn(kind,x)/110)*(H-pad*2)]);
+  }
+  var s=svgPoly(pts,'traj','stroke:var(--accent)');
+  s+='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>';
+  if(TF.path){
+    TF.path.forEach(function(p,i){
+      var px=pad+(p/100)*(W-pad*2),py=H-pad-(tfFn(kind,p)/110)*(H-pad*2);
+      s+='<circle class="pt" cx="'+px+'" cy="'+py+'" r="'+(i===TF.path.length-1?5:3)+'"'+
+         (i===TF.path.length-1?' style="fill:var(--gold)"':'')+'/>';
+    });
+  }
+  $('#tfPlot').innerHTML=s;
+}
+function tfGo(){
+  var kind=$('#tfSel').value,st=parseInt($('#tfStep').value,10);
+  var x=10,path=[x];
+  for(var i=0;i<200;i++){
+    var a=x-st,b=x+st;
+    var fa=(a>=0&&a<=100)?tfFn(kind,a):-Infinity;
+    var fb=(b>=0&&b<=100)?tfFn(kind,b):-Infinity;
+    var fc=tfFn(kind,x);
+    if(fa<=fc&&fb<=fc)break;
+    if(fb>=fa){x=b;}else{x=a;}
+    path.push(x);
+  }
+  TF.path=path;
+  tfPlot();
+  var v=$('#tfVerdict');
+  var msg={
+    peak:'单峰：一步不卡，直接爬到顶。这是爬山唯一能正常工作的地形。',
+    local:'<b>局部极大值：</b>小球停在了左边那个矮峰（x ≈ 24），右边的真峰（x ≈ 78）它<b>根本没看见</b>。这就是 86% 的失败来源。',
+    ridge:'<b>山脊：</b>峰值在 x = 50、宽度只有 4.5。步长 '+st+' 决定你能不能<b>正好踩上去</b>——把步长改成 5 或 10 试试，你会看到它一会儿成功、一会儿卡死。真实问题有几百维，根本没有"正好踩上去"这回事。',
+    plateau:'<b>平坦局部极大值：</b>小球走到平台上就停了——两边的高度<b>完全相等</b>，算法判定"没有更好的后继"。这是真正的死路。',
+    shoulder:'<b>山肩：</b>小球在 x ≈ 35–58 的平坦段停住。但这里<b>其实还有出路</b>（再往右会继续上升）。允许侧向移动就能走出去——这正是成功率 14% → 94% 的来源。'
+  };
+  v.className=(kind==='peak')?'verdict yes':'verdict no';
+  v.innerHTML='停在 x = '+x+'（走了 '+(path.length-1)+' 步）<br>'+msg[kind];
+}
+$('#tfGo').onclick=tfGo;
+$('#tfSel').onchange=function(){TF.path=null;tfPlot();$('#tfVerdict').className='verdict mid';$('#tfVerdict').innerHTML='点「让小球爬」。';};
+$('#tfStep').oninput=function(){$('#tfStepv').textContent=this.value;};
+tfPlot();tfGo();
+
+function cvFn(x){return x*x*x*x/4-x*x/2;}
+function cvD1(x){return x*x*x-x;}
+function cvD2(x){return 3*x*x-1;}
+function cvGo(){
+  var a=parseInt($('#cvA').value,10)/100,it=parseInt($('#cvI').value,10);
+  var x0=parseInt($('#cvX').value,10)/100;
+  var gx=x0,gp=[gx];
+  for(var i=0;i<it;i++){gx=gx-a*cvD1(gx);gp.push(gx);}
+  var nx=x0,np=[nx];
+  for(var j=0;j<6;j++){
+    var d2=cvD2(nx);
+    if(Math.abs(d2)<1e-6)break;
+    nx=nx-cvD1(nx)/d2;np.push(nx);
+  }
+  var W=640,H=220,pad=34,xmin=-1.6,xmax=1.6,ymin=-0.35,ymax=0.6;
+  function px(x){return pad+((x-xmin)/(xmax-xmin))*(W-pad*2);}
+  function py(y){return H-pad-((y-ymin)/(ymax-ymin))*(H-pad*2);}
+  var pts=[];
+  for(var x=xmin;x<=xmax;x+=0.01)pts.push([px(x),py(cvFn(x))]);
+  var s=svgPoly(pts,'traj','stroke:var(--dim)');
+  s+='<line x1="'+pad+'" y1="'+py(0)+'" x2="'+(W-pad)+'" y2="'+py(0)+'" style="stroke:var(--line)"/>';
+  s+='<circle cx="'+px(1)+'" cy="'+py(cvFn(1))+'" r="4" style="fill:var(--ok)"/>';
+  s+='<text class="lb" x="'+px(1)+'" y="'+(py(cvFn(1))+18)+'" text-anchor="middle" style="fill:var(--ok)">极小值 x=1</text>';
+  s+=svgPoly(gp.map(function(x){return [px(x),py(cvFn(x))];}),'traj','stroke:var(--bad)');
+  s+=svgPoly(np.map(function(x){return [px(x),py(cvFn(x))];}),'traj','stroke:var(--accent)');
+  gp.forEach(function(x,i){s+='<circle class="pt" cx="'+px(x)+'" cy="'+py(cvFn(x))+'" r="2.5" style="fill:var(--bad)"/>';});
+  np.forEach(function(x,i){s+='<circle class="pt" cx="'+px(x)+'" cy="'+py(cvFn(x))+'" r="2.5" style="fill:var(--accent)"/>';});
+  $('#cvPlot').innerHTML=s+
+    '<text class="lb" x="'+(W-pad-4)+'" y="'+(pad+10)+'" text-anchor="end" style="fill:var(--bad)">梯度下降 α='+a.toFixed(2)+'（'+it+' 次后 x='+gx.toFixed(4)+'）</text>'+
+    '<text class="lb" x="'+(W-pad-4)+'" y="'+(pad+24)+'" text-anchor="end" style="fill:var(--accent)">牛顿（'+np.length+' 步后 x='+nx.toFixed(4)+'）</text>';
+}
+$('#cvGo').onclick=cvGo;
+$('#cvA').oninput=function(){$('#cvAv').textContent=(this.value/100).toFixed(2);};
+$('#cvI').oninput=function(){$('#cvIv').textContent=this.value;};
+$('#cvX').oninput=function(){$('#cvXv').textContent=(this.value/100).toFixed(2);};
+cvGo();
+
+/* =========================================================
+   ⑫ AND–OR（打滑吸尘器）
+   ========================================================= */
+function vDec(s){var rem=s%4;return {pos:s>=4?1:0,dA:rem<2,dB:(rem%2)===0};}
+function vEnc(pos,dA,dB){return pos*4+(dA?0:2)+(dB?0:1);}
+function vLabel(s){
+  var d=vDec(s);
+  var nm=['脏','净'];
+  return (s+1)+': '+(d.pos?'B':'A')+' '+nm[d.dA?0:1]+nm[d.dB?0:1];
+}
+function vGoal(s){var d=vDec(s);return !d.dA&&!d.dB;}
+function vAct(s,act,slick){
+  var d=vDec(s),out=[];
+  if(act==='Left'){out.push(vEnc(0,d.dA,d.dB));return out;}
+  if(act==='Right'){out.push(vEnc(1,d.dA,d.dB));return out;}
+  // Suck
+  if(d.pos===0){ // 在 A
+    if(d.dA){
+      out.push(vEnc(0,false,d.dB));
+      if(slick)out.push(vEnc(0,false,false));
+    }else{
+      out.push(s);
+      if(slick)out.push(vEnc(0,true,d.dB));
+    }
+  }else{
+    if(d.dB){
+      out.push(vEnc(1,d.dA,false));
+      if(slick)out.push(vEnc(1,false,false));
+    }else{
+      out.push(s);
+      if(slick)out.push(vEnc(1,d.dA,true));
+    }
+  }
+  return out;
+}
+function andOr(s,path,depth,slick){
+  if(vGoal(s))return {type:'done'};
+  if(depth<=0)return null;
+  if(path.indexOf(s)>=0)return null;
+  var acts=['Suck','Left','Right'];
+  for(var i=0;i<acts.length;i++){
+    var outs=vAct(s,acts[i],slick),branches=[],ok=true;
+    for(var j=0;j<outs.length;j++){
+      var sub=andOr(outs[j],path.concat([s]),depth-1,slick);
+      if(sub===null){ok=false;break;}
+      branches.push({state:outs[j],plan:sub});
+    }
+    if(ok)return {type:'act',action:acts[i],state:s,branches:branches};
+  }
+  return null;
+}
+function aoPlanText(p){
+  if(!p)return '无解';
+  if(p.type==='done')return '（已达目标）';
+  if(p.branches.length===1){
+    return p.action+(p.branches[0].plan.type==='done'?'':', '+aoPlanText(p.branches[0].plan));
+  }
+  return p.action+', if '+p.branches.map(function(b){
+    return vLabel(b.state)+' then ['+aoPlanText(b.plan)+']';
+  }).join(' else ');
+}
+function aoRender(p){
+  function node(x){
+    if(!x)return '<div class="orN"><div class="node fail">失败</div></div>';
+    if(x.type==='done')return '<div class="orN"><div class="node fact">'+vLabel(x.state||0)+' ✓</div></div>';
+    var h='<div class="orN"><div class="node">'+x.action+'<span class="th">'+vLabel(x.state)+'</span></div>';
+    if(x.branches.length){
+      h+='<div class="andG"><div class="andRow">'+
+        x.branches.map(function(b){
+          return '<div class="orN"><div class="node" style="border-style:dashed">'+vLabel(b.state)+
+            '<span class="th">'+(x.branches.length>1?'环境的某个结果':'结果')+'</span></div>'+
+            '<div class="andG"><div class="andRow">'+node(b.plan)+'</div></div></div>';
+        }).join('')+'</div></div>';
+    }
+    return h+'</div>';
+  }
+  $('#aoPlan').innerHTML=p?node(p):'<div class="faint">未找到解</div>';
+}
+$('#aoS').innerHTML=[0,1,2,3,4,5,6,7].map(function(s){
+  return '<option value="'+s+'"'+(s===0?' selected':'')+'>'+vLabel(s)+'</option>';}).join('');
+$('#aoStates').innerHTML=[0,1,2,3,4,5,6,7].map(function(s){
+  return '<span class="pill'+(vGoal(s)?' g':'')+'">'+vLabel(s)+(vGoal(s)?' ✓目标':'')+'</span>';}).join('');
+function aoGo(){
+  var slick=$('#aoSlick').checked,d=parseInt($('#aoD').value,10);
+  var start=parseInt($('#aoS').value,10);
+  var p=andOr(start,[],d,slick);
+  aoRender(p);
+  var v=$('#aoVerdict');
+  if(p){
+    v.className='verdict yes';
+    v.innerHTML='<b>找到'+(slick?'条件规划':'线性规划')+'</b><br><span class="mono" style="font-size:12.5px">['+aoPlanText(p)+']</span>'+
+      (slick?'<br><span class="dim">注意分支：Suck 的结果由<b>环境</b>决定，两条都必须处理成功。</span>'
+            :'<br><span class="dim">不打滑时每个动作只有一个结果，规划退化成普通动作序列。</span>');
+  }else{
+    v.className='verdict no';
+    v.innerHTML='深度上限 '+d+' 内<b>没找到无环解</b>。'+
+      (slick?'这可能正是需要<b>循环解</b>的情形——把深度上限调大，或勾选「允许含循环的解」。'
+            :'把深度上限调大再试。');
+  }
+}
+$('#aoD').oninput=function(){$('#aoDv').textContent=this.value;};
+$('#aoGo').onclick=aoGo;
+$('#aoS').onchange=aoGo;
+$('#aoSlick').onchange=aoGo;$('#aoCycle').onchange=aoGo;
+aoGo();
+
+/* =========================================================
+   ⑬ 信念状态（无传感）+ LRTA*
+   ========================================================= */
+var BS={b:[0,1,2,3,4,5,6,7],acts:[]};
+function bsApply(set,act){
+  var out={};
+  set.forEach(function(s){
+    vAct(s,act,false).forEach(function(o){out[o]=1;});
+  });
+  return Object.keys(out).map(Number).sort(function(a,b){return a-b;});
+}
+function bsGoal(set){return set.every(vGoal);}
+function bsRender(){
+  $('#bsCur').innerHTML=BS.b.map(function(s){
+    return '<span class="pill'+(vGoal(s)?' g':'')+'">'+vLabel(s)+'</span>';}).join('');
+  $('#bsActs').textContent=BS.acts.length?BS.acts.join(' → '):'（尚未执行）';
+  $('#bsSize').textContent=BS.b.length;
+  var v=$('#bsVerdict');
+  if(bsGoal(BS.b)){
+    v.className='verdict yes';
+    v.innerHTML='<b>信念状态里每个状态都干净 —— 必然达成目标</b>　用了 '+BS.acts.length+' 个动作，全程<b>没有任何感知</b>。';
+  }else{v.className='verdict mid';v.innerHTML='继续点动作，看信念状态怎么被"挤"小。';}
+}
+['Right','Left','Suck'].forEach(function(a){
+  $('#bs'+a).onclick=function(){BS.b=bsApply(BS.b,a);BS.acts.push(a);bsRender();};
+});
+$('#bsReset').onclick=function(){BS.b=[0,1,2,3,4,5,6,7];BS.acts=[];bsRender();};
+$('#bsAuto').onclick=function(){
+  BS.b=[0,1,2,3,4,5,6,7];BS.acts=[];bsRender();
+  var seq=['Right','Suck','Left','Suck'];
+  var i=0;
+  var timer=setInterval(function(){
+    if(i>=seq.length||bsGoal(BS.b)){clearInterval(timer);return;}
+    BS.b=bsApply(BS.b,seq[i]);BS.acts.push(seq[i]);bsRender();i++;
+  },420);
+};
+$('#bsReach').onclick=function(){
+  var start=[0,1,2,3,4,5,6,7],seen={},q=[start],key=function(s){return s.join(',');};
+  seen[key(start)]=1;
+  var acts=['Right','Left','Suck'];
+  while(q.length){
+    var cur=q.shift();
+    if(cur.length>12)continue;
+    for(var i=0;i<acts.length;i++){
+      var nx=bsApply(cur,acts[i]);
+      if(!seen[key(nx)]){seen[key(nx)]=1;q.push(nx);}
+    }
+  }
+  var ks=Object.keys(seen);
+  $('#bsReachOut').innerHTML='<div class="kv"><span>物理状态数</span><b>8</b></div>'+
+    '<div class="kv"><span>可能的信念状态数 2⁸</span><b>256</b></div>'+
+    '<div class="kv"><span><b>实际可达</b>（含超集剪枝前）</span><b>'+ks.length+'</b></div>'+
+    '<div class="faint" style="margin-top:6px">256 个里只有 '+ks.length+
+    ' 个能从完全无知的状态到达。这就是为什么无传感问题虽然状态数是指数的，实际往往可解。</div>';
+};
+bsRender();
+
+/* ---- LRTA* ---- */
+var MAZES=[
+  {w:7,h:5,walls:['2,1','2,2','4,2','4,3','1,3'],start:'0,0',goal:'6,4'},
+  {w:7,h:5,walls:['1,0','1,1','1,2','3,2','3,3','3,4','5,1','5,2'],start:'0,4',goal:'6,0'},
+  {w:7,h:5,walls:['3,1'],start:'0,2',goal:'6,2'}
+];
+var LT={m:null,H:{},res:{},pos:null,n:0,upd:{},goal:null};
+function ltInit(){
+  var mi=parseInt($('#ltMaze').value,10);
+  LT.m=MAZES[mi];LT.walls={};
+  LT.m.walls.forEach(function(w){LT.walls[w]=1;});
+  LT.H={};LT.res={};LT.upd={};LT.n=0;
+  LT.pos=LT.m.start;LT.goal=LT.m.goal;
+  LT.H[LT.pos]=0;
+  ltRender();
+}
+function ltNeighbors(s){
+  var p=s.split(',').map(Number),out=[];
+  var dirs={Up:[0,-1],Down:[0,1],Left:[-1,0],Right:[1,0]};
+  Object.keys(dirs).forEach(function(a){
+    var nx=p[0]+dirs[a][0],ny=p[1]+dirs[a][1];
+    if(nx<0||ny<0||nx>=LT.m.w||ny>=LT.m.h)return;
+    var k=nx+','+ny;
+    if(LT.walls[k])return;
+    out.push({a:a,to:k});
+  });
+  return out;
+}
+function ltStepFn(){
+  if(LT.pos===LT.goal)return false;
+  var s=LT.pos,ns=ltNeighbors(s);
+  if(!ns.length)return false;
+  var best=null,bestC=Infinity;
+  ns.forEach(function(x){
+    var c;
+    if(LT.res[s+'|'+x.a]!==undefined){
+      var to=LT.res[s+'|'+x.a];
+      c=1+(LT.H[to]!==undefined?LT.H[to]:0);
+    }else{
+      c=0; // 乐观：没试过的动作一律当作代价 0
+    }
+    if(c<bestC){bestC=c;best=x;}
+  });
+  LT.res[s+'|'+best.a]=best.to;
+  if(LT.H[s]!==bestC){LT.H[s]=bestC;LT.upd[s]=1;}
+  LT.pos=best.to;
+  if(LT.H[LT.pos]===undefined)LT.H[LT.pos]=0;
+  LT.n++;
+  ltRender();
+  return true;
+}
+function ltRender(){
+  var m=LT.m,g=$('#ltGrid');
+  g.style.gridTemplateColumns='repeat('+m.w+',1fr)';
+  var h='';
+  for(var y=0;y<m.h;y++)for(var x=0;x<m.w;x++){
+    var k=x+','+y,cls='hc';
+    if(LT.walls[k])cls+=' wall';
+    if(k===LT.pos)cls+=' start';
+    if(k===LT.goal)cls+=' goal';
+    var txt=LT.walls[k]?'':(LT.H[k]!==undefined?LT.H[k]:'·');
+    var sty='';
+    if(LT.upd[k]&&!LT.walls[k])sty='color:var(--accent);font-weight:700';
+    h+='<div class="'+cls+'" style="'+sty+'">'+txt+'</div>';
+  }
+  g.innerHTML=h;
+  $('#ltN').textContent=LT.n;
+  $('#ltU').textContent=Object.keys(LT.upd).length;
+  $('#ltH').textContent=LT.H[LT.pos]!==undefined?LT.H[LT.pos]:0;
+  var v=$('#ltVerdict');
+  if(LT.pos===LT.goal){
+    v.className='verdict yes';
+    v.innerHTML='<b>到达目标</b>　共走了 '+LT.n+' 步，更新了 '+Object.keys(LT.upd).length+' 个状态的 H。'+
+      '<br><span class="dim">注意它<b>走过回头路</b>——每撞一次南墙，H 就被抬高一次，下次就不会再往那边去了。</span>';
+  }else{v.className='verdict mid';v.innerHTML='点「走一步」。初始 H 全为 0：智能体对距离一无所知，只靠乐观去探索。';}
+}
+$('#ltStep').onclick=ltStepFn;
+$('#ltAuto').onclick=function(){var k=0;while(LT.pos!==LT.goal&&k<600){if(!ltStepFn())break;k++;}};
+$('#ltReset').onclick=ltInit;
+$('#ltMaze').onchange=ltInit;
+ltInit();
+
+/* =========================================================
+   ⑮ minimax
+   ========================================================= */
+var MMX={leaves:{B:[3,12,8],C:[2,4,6],D:[14,5,2]},vals:{},step:0};
+function mmGroups(){
+  var x=parseInt($('#mmX').value,10),y=parseInt($('#mmY').value,10);
+  $('#mmXv').textContent=x;$('#mmYv').textContent=y;
+  return {B:[3,12,8],C:[2,x,y],D:[14,5,2]};
+}
+function mmRender(){
+  var g=MMX.leaves,L=[['B',175],['C',350],['D',525]],s='';
+  function line(x1,y1,x2,y2,c){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="stroke:'+(c||'var(--line)')+'"/>';}
+  function circ(x,y,r,cls){return '<circle class="'+cls+'" cx="'+x+'" cy="'+y+'" r="'+r+'"/>';}
+  function txt(x,y,t,cls){return '<text class="lb'+(cls?' on':'')+'" x="'+x+'" y="'+y+'" text-anchor="middle">'+t+'</text>';}
+  // 边
+  L.forEach(function(nd){
+    var gx=nd[1];
+    s+=line(350,44,gx,96);
+    for(var i=0;i<3;i++)s+=line(gx,118,gx+(i-1)*62,158);
+  });
+  // 根
+  var rv=MMX.vals.ROOT;
+  s+=circ(350,34,20,rv!==undefined?'nd path':'nd')+txt(350,38,rv!==undefined?rv:'?',true);
+  s+=txt(350,14,'MAX',true);
+  // MIN 节点
+  var anyMin=false;
+  L.forEach(function(nd){
+    var v=MMX.vals[nd[0]],gx=nd[1];
+    if(v!==undefined)anyMin=true;
+    s+=circ(gx,108,18,v!==undefined?'nd path':'nd')+txt(gx,112,v!==undefined?v:'?',true);
+    s+=txt(gx,88,nd[0]+' (MIN)',v!==undefined?true:false);
+  });
+  // 叶子
+  var shown=MMX.step>=3;
+  L.forEach(function(nd){
+    var gx=nd[1];
+    for(var i=0;i<3;i++){
+      var lx=gx+(i-1)*62;
+      var lab=(nd[0]==='C'?(i===1?'x':(i===2?'y':String(g[nd[0]][i]))):String(g[nd[0]][i]));
+      s+=circ(lx,178,16,shown?'nd exp':'nd')+txt(lx,182,lab,shown);
+    }
+  });
+  $('#mmTree').innerHTML=s;
+  var done=Object.keys(MMX.vals).length;
+  $('#mmDone').textContent=done+' / 13';
+  $('#mmVal').textContent=MMX.vals.ROOT!==undefined?MMX.vals.ROOT:'—';
+  var v=$('#mmVerdict');
+  if(MMX.vals.ROOT!==undefined){
+    var nm=['B','C','D'],best=nm[0],bv=-Infinity;
+    nm.forEach(function(k){if(MMX.vals[k]>bv){bv=MMX.vals[k];best=k;}});
+    $('#mmAct').textContent='a'+(nm.indexOf(best)+1);
+    v.className='verdict yes';
+    v.innerHTML='<b>minimax = '+MMX.vals.ROOT+'，最优动作 a'+(nm.indexOf(best)+1)+'</b><br>'+
+      '<span class="dim">B = min(3,12,8) = 3　C = min(2,x,y) = 2　D = min(14,5,2) = 2　→ max = 3</span>';
+  }else{$('#mmAct').textContent='—';v.className='verdict mid';v.innerHTML='点「下一步」：先算三个 MIN 节点，再取 max。';}
+}
+function mmStep(){
+  var g=MMX.leaves,nm=['B','C','D'];
+  if(MMX.step<3){
+    var k=nm[MMX.step];
+    MMX.vals[k]=Math.min.apply(null,g[k]);
+    MMX.step++;
+  }else if(MMX.step===3){
+    MMX.vals.ROOT=Math.max(MMX.vals.B,MMX.vals.C,MMX.vals.D);
+    MMX.step++;
+  }
+  mmRender();
+}
+$('#mmStep').onclick=mmStep;
+$('#mmAll').onclick=function(){var k=0;while(MMX.step<4&&k<10){mmStep();k++;}};
+$('#mmReset').onclick=function(){MMX.vals={};MMX.step=0;mmRender();};
+$('#mmRand').onclick=function(){
+  var r=rndGen(Date.now()&0x7fffffff);
+  MMX.leaves={B:[1+Math.floor(r()*20),1+Math.floor(r()*20),1+Math.floor(r()*20)],
+    C:[2,1+Math.floor(r()*20),1+Math.floor(r()*20)],
+    D:[1+Math.floor(r()*20),1+Math.floor(r()*20),1+Math.floor(r()*20)]};
+  MMX.vals={};MMX.step=0;mmRender();
+};
+['#mmX','#mmY'].forEach(function(s2){
+  $(s2).oninput=function(){
+    MMX.leaves=mmGroups();MMX.vals={};MMX.step=0;mmRender();};
+});
+mmRender();
+
+/* =========================================================
+   ⑯ α-β 剪枝
+   ========================================================= */
+function abRun(){
+  var x=parseInt($('#mmX').value,10),y=parseInt($('#mmY').value,10);
+  var groups=[{n:'B',v:[3,12,8]},{n:'C',v:[2,x,y]},{n:'D',v:[14,5,2]}];
+  if($('#abNode').value==='rev')groups=[groups[2],groups[1],groups[0]];
+  var ord=$('#abLeaf').value,rnd=rndGen(4242);
+  groups.forEach(function(g){
+    var v=g.v.slice();
+    if(ord==='best')v.sort(function(a,b){return a-b;});
+    else if(ord==='worst')v.sort(function(a,b){return b-a;});
+    else v.sort(function(){return rnd()-0.5;});
+    g.ord=v;g.vis=[];g.val=null;
+  });
+  var alpha=-Infinity,visited=0,pruned=0;
+  groups.forEach(function(g){
+    var bv=Infinity;
+    for(var j=0;j<g.ord.length;j++){
+      visited++;g.vis.push(1);
+      bv=Math.min(bv,g.ord[j]);
+      if(bv<=alpha){pruned+=g.ord.length-j-1;for(var t=j+1;t<g.ord.length;t++)g.vis.push(0);break;}
+    }
+    g.val=bv;
+    if(bv>alpha)alpha=bv;
+  });
+  return {groups:groups,alpha:alpha,visited:visited,pruned:pruned};
+}
+function abRender(){
+  var R=abRun(),L=[175,350,525],s='';
+  R.groups.forEach(function(g,i){
+    var gx=L[i%3],nm=g.n;
+    s+='<line x1="350" y1="44" x2="'+gx+'" y2="96" style="stroke:var(--line)"/>';
+    s+='<circle class="nd path" cx="'+gx+'" cy="108" r="18"/>'+
+       '<text class="lb on" x="'+gx+'" y="112" text-anchor="middle">'+g.val+'</text>'+
+       '<text class="lb on" x="'+gx+'" y="88" text-anchor="middle">'+nm+' (MIN)</text>';
+    for(var j=0;j<g.ord.length;j++){
+      var lx=gx+(j-1)*62,seen=g.vis[j];
+      s+='<line x1="'+gx+'" y1="118" x2="'+lx+'" y2="158" style="stroke:'+(seen?'var(--line)':'var(--bad)')+';stroke-dasharray:'+(seen?'0':'3 3')+'"/>';
+      s+='<circle class="nd'+(seen?' path':' exp')+'" cx="'+lx+'" cy="178" r="16"/>'+
+         '<text class="lb'+(seen?' on':'')+'" x="'+lx+'" y="182" text-anchor="middle">'+g.ord[j]+'</text>'+
+         (seen?'':'<line x1="'+(lx-8)+'" y1="186" x2="'+(lx+8)+'" y2="170" style="stroke:var(--bad);stroke-width:2"/>');
+    }
+  });
+  s+='<circle class="nd path" cx="350" cy="34" r="20"/>'+
+     '<text class="lb on" x="350" y="38" text-anchor="middle">'+R.alpha+'</text>'+
+     '<text class="lb on" x="350" y="14" text-anchor="middle">MAX</text>';
+  $('#abTree').innerHTML=s;
+  $('#abTotal').textContent=9;
+  $('#abVisited').textContent=R.visited;
+  $('#abPruned').textContent=R.pruned;
+  $('#abVal').textContent=R.alpha;
+  var v=$('#abVerdict');
+  v.className='verdict yes';
+  v.innerHTML='<b>根节点值 = '+R.alpha+'（与完整 minimax 完全相同）</b><br>'+
+    '<span class="dim">访问 '+R.visited+' 个叶子，剪掉 '+R.pruned+' 个。虚线红叉 = 被剪掉、从未访问。</span>';
+}
+$('#abGo').onclick=abRender;
+$('#abStep').onclick=abRender;
+['#abLeaf','#abNode'].forEach(function(s2){$(s2).onchange=abRender;});
+abRender();
+
+/* =========================================================
+   ⑰ 复杂度
+   ========================================================= */
+function cxRender(){
+  var b=parseInt($('#cxB').value,10),m=parseInt($('#cxM').value,10);
+  $('#cxBv').textContent=b;$('#cxMv').textContent=m;
+  var mm=Math.pow(b,m);
+  var perf=Math.pow(b,Math.ceil(m/2))+Math.pow(b,Math.floor(m/2))-1;
+  var rand=Math.pow(b,0.75*m);
+  var mx=mm;
+  function bar(nm2,v,cls){
+    var w=Math.max(1.5,Math.log10(Math.max(1,v))/Math.log10(mx)*100);
+    return '<div class="bar"><span class="nm">'+nm2+'</span>'+
+      '<span class="tr"><span class="fl '+cls+'" style="width:'+w+'%"></span></span>'+
+      '<span class="vv">'+v.toExponential(2).replace('e+','×10^')+'</span></div>';
+  }
+  $('#cxBars').innerHTML=
+    '<div class="faint" style="margin-bottom:4px">横轴为<b>对数刻度</b>（否则三条根本画不下）</div>'+
+    bar('minimax  bᵐ',mm,'bad')+
+    bar('α-β 随机  b^(3m/4)',rand,'')+
+    bar('α-β 完美  b^(m/2)',perf,'ok')+
+    '<div class="kv" style="margin-top:8px"><span>√b（α-β 的有效分支因子）</span><b>'+Math.sqrt(b).toFixed(2)+'</b></div>'+
+    '<div class="kv"><span>节省倍数</span><b>'+(mm/perf).toExponential(2).replace('e+','×10^')+'×</b></div>';
+}
+['#cxB','#cxM'].forEach(function(s2){$(s2).oninput=cxRender;});
+cxRender();
+
+/* =========================================================
+   ⑱ expectiminimax
+   ========================================================= */
+var EM={A:[10,0,0],B:[4,4,4],P:[1/3,1/3,1/3]};
+function emRender(){
+  var die=$('#emDie').value;
+  if(die==='fair')EM.P=[1/3,1/3,1/3];
+  if(die==='loaded')EM.P=[0.5,0.3,0.2];
+  if(die==='evil')EM.P=[0.1,0.1,0.8];
+  function ev(vals){var s=0;for(var i=0;i<vals.length;i++)s+=EM.P[i]*vals[i];return s;}
+  var ea=ev(EM.A),eb=ev(EM.B),best=ea>=eb?'A':'B';
+  var s='';
+  [['A',175,ea,EM.A],['B',525,eb,EM.B]].forEach(function(g){
+    var gx=g[1];
+    s+='<line x1="350" y1="40" x2="'+gx+'" y2="88" style="stroke:var(--line)"/>';
+    s+='<circle class="nd path" cx="'+gx+'" cy="100" r="18"/>'+
+       '<text class="lb on" x="'+gx+'" y="104" text-anchor="middle">'+g[2].toFixed(2)+'</text>'+
+       '<text class="lb on" x="'+gx+'" y="80" text-anchor="middle">CHANCE</text>';
+    for(var i=0;i<3;i++){
+      var lx=gx+(i-1)*62;
+      s+='<line x1="'+gx+'" y1="110" x2="'+lx+'" y2="148" style="stroke:var(--line)"/>';
+      s+='<circle class="nd exp" cx="'+lx+'" cy="166" r="16"/>'+
+         '<text class="lb" x="'+lx+'" y="170" text-anchor="middle">'+g[3][i]+'</text>'+
+         '<text class="lb" x="'+lx+'" y="'+(i===0?196:196)+'" text-anchor="middle" style="fill:var(--faint)">p='+EM.P[i].toFixed(2)+'</text>';
+    }
+  });
+  s+='<circle class="nd path" cx="350" cy="30" r="20"/>'+
+     '<text class="lb on" x="350" y="34" text-anchor="middle">'+Math.max(ea,eb).toFixed(2)+'</text>'+
+     '<text class="lb on" x="350" y="12" text-anchor="middle">MAX</text>';
+  $('#emTree').innerHTML=s;
+  $('#emA').textContent=ea.toFixed(2);
+  $('#emB').textContent=eb.toFixed(2);
+  $('#emBest').textContent='动作 '+best;
+  var v=$('#emVerdict');
+  v.className='verdict yes';
+  v.innerHTML='<b>最优动作：'+best+'</b>（EV '+Math.max(ea,eb).toFixed(2)+'）<br>'+
+    '<span class="dim">A 的期望 = 10·'+EM.P[0].toFixed(2)+' + 0·'+EM.P[1].toFixed(2)+' + 0·'+EM.P[2].toFixed(2)+
+    ' = '+ea.toFixed(2)+'；B 恒为 '+eb.toFixed(2)+'。</span>'+
+    (best==='A'?'<br><b>骰子一变，最优动作就翻了</b>——这正是机会节点让 expectiminimax 变得困难的原因。':'');
+}
+$('#emGo').onclick=emRender;$('#emDie').onchange=emRender;emRender();
+
+/* =========================================================
+   ⑲ MCTS
+   ========================================================= */
+var LEAFP={a:[0.8,0.1],b:[0.5,0.5],c:[0.9,0.9]};
+var MC={root:null,C:1.4,iter:0,rnd:null};
+function mcInit(){
+  MC.root={name:'root',mover:'MAX',w:0,n:0,children:[],kids:['a','b','c']};
+  MC.iter=0;MC.rnd=rndGen(31337);
+  mcRender();
+}
+function ucbPick(node){
+  var best=null,bv=-Infinity;
+  node.children.forEach(function(c){
+    var v=(c.n===0)?Infinity:((c.n-c.w)/c.n+MC.C*Math.sqrt(Math.log(Math.max(1,node.n))/c.n));
+    if(v>bv){bv=v;best=c;}
+  });
+  return best;
+}
+function mcIter(){
+  var path=[MC.root],node=MC.root;
+  if(node.children.length<node.kids.length){
+    var idx=node.children.length;
+    node.children.push({name:node.kids[idx],mover:'MIN',w:0,n:0,children:[],leaves:LEAFP[node.kids[idx]]});
+    node=node.children[node.children.length-1];
+  }else{node=ucbPick(node);}
+  path.push(node);
+  if(node.children.length<node.leaves.length){
+    var li=node.children.length;
+    node.children.push({name:node.name+li,mover:'MAX',w:0,n:0,children:[],p:node.leaves[li]});
+    node=node.children[node.children.length-1];
+  }else{node=ucbPick(node);}
+  path.push(node);
+  var p=(node.p!==undefined?node.p:0.5);
+  var r=(MC.rnd()<p)?1:0;
+  path.forEach(function(nd){
+    nd.n++;
+    if(nd.mover==='MAX')nd.w+=r;else nd.w+=(1-r);
+  });
+  MC.iter++;
+}
+function mcRender(){
+  var s='';
+  var acts=MC.root.children;
+  var xs={a:120,b:350,c:580};
+  s+='<circle class="nd path" cx="350" cy="30" r="18"/>'+
+     '<text class="lb on" x="350" y="34" text-anchor="middle">R</text>'+
+     '<text class="lb on" x="350" y="12" text-anchor="middle">MAX</text>';
+  acts.forEach(function(a){
+    var gx=xs[a.name];
+    s+='<line x1="350" y1="40" x2="'+gx+'" y2="88" style="stroke:var(--line)"/>';
+    s+='<circle class="nd path" cx="'+gx+'" cy="100" r="18"/>'+
+       '<text class="lb on" x="'+gx+'" y="104" text-anchor="middle">'+(a.n-a.w)+'/'+a.n+'</text>'+
+       '<text class="lb on" x="'+gx+'" y="80" text-anchor="middle">'+a.name+' (MIN)</text>';
+    a.children.forEach(function(l,i){
+      var lx=gx+(i===0?-46:46);
+      s+='<line x1="'+gx+'" y1="110" x2="'+lx+'" y2="152" style="stroke:var(--line)"/>';
+      s+='<circle class="nd exp" cx="'+lx+'" cy="170" r="16"/>'+
+         '<text class="lb" x="'+lx+'" y="174" text-anchor="middle">'+l.w+'/'+l.n+'</text>'+
+         '<text class="lb" x="'+lx+'" y="196" text-anchor="middle" style="fill:var(--faint)">真 '+l.p+'</text>';
+    });
+  });
+  $('#mcTree').innerHTML=s;
+  $('#mcN').textContent=MC.iter;
+  var byN=null,bn=-1,byA=null,ba=-1;
+  acts.forEach(function(a){
+    if(a.n>bn){bn=a.n;byN=a;}
+    var rate=a.n?(a.n-a.w)/a.n:0;
+    if(rate>ba){ba=rate;byA=a;}
+  });
+  $('#mcBest').textContent=byN?byN.name+'（'+byN.n+' 次）':'—';
+  $('#mcAvgB').textContent=byA?byA.name+'（胜率 '+(ba*100).toFixed(0)+'%）':'—';
+  var tot=acts.reduce(function(s2,a){return s2+a.n;},0)||1;
+  $('#mcBars').innerHTML=acts.map(function(a){
+    return '<div class="bar"><span class="nm">'+a.name+'（真值 '+Math.min.apply(null,a.leaves)+'）</span>'+
+      '<span class="tr"><span class="fl" style="width:'+(a.n/tot*100)+'%"></span></span>'+
+      '<span class="vv">'+a.n+' 次</span></div>';
+  }).join('');
+  var v=$('#mcVerdict');
+  if(!acts.length){v.className='verdict mid';v.innerHTML='点「单步」开始第一次迭代。';}
+  else{
+    v.className='verdict '+(byN&&byN.name==='c'?'yes':'mid');
+    v.innerHTML='访问最多：<b>'+(byN?byN.name:'—')+'</b>　·　平均效用最高：<b>'+(byA?byA.name:'—')+'</b>'+
+      '<br><span class="dim">真实最优是 <b>c</b>（两条支路都是 0.9）。'+
+      (byN&&byN.name!=='c'?'目前还没收敛，继续加迭代或调大 C。':'已收敛。')+
+      '</span>';
+  }
+}
+$('#mcStep').onclick=function(){mcIter();mcRender();};
+$('#mcAuto').onclick=function(){for(var i=0;i<200;i++)mcIter();mcRender();};
+$('#mcReset').onclick=mcInit;
+$('#mcC').oninput=function(){MC.C=parseInt(this.value,10)/10;$('#mcCv').textContent=MC.C.toFixed(1);mcRender();};
+mcInit();
+
+/* =========================================================
+   ⑳ 截断搜索与地平线效应
+   ========================================================= */
+/* S = 弃子：静态评估 9（刚吃了子，子力领先），但两步之后要被反吃，真值 −20。
+   K = 稳着：静态评估 4，真值也是 4。
+   S 处局面「非静止」（有未完成的吃子），K 处是静止的。 */
+var TR={
+  S:{quiet:false,eval:9,kids:[{quiet:true,eval:9,leaf:[9,9]},{quiet:false,eval:9,leaf:[-20,-20]}]},
+  K:{quiet:true,eval:4,kids:[{quiet:true,eval:4,leaf:[4,4]},{quiet:true,eval:4,leaf:[4,4]}]}
+};
+function trSearch(node,depth,maxTurn,quiesce){
+  if(depth<=0){
+    if(quiesce&&!node.quiet)depth=1;   // 静止搜索：非静止局面不截断，继续延伸
+    else return node.eval!==undefined?node.eval:0;
+  }
+  if(node.leaf)return maxTurn?Math.max.apply(null,node.leaf):Math.min.apply(null,node.leaf);
+  var vs=node.kids.map(function(k){return trSearch(k,depth-1,!maxTurn,quiesce);});
+  return maxTurn?Math.max.apply(null,vs):Math.min.apply(null,vs);
+}
+function trRender(){
+  var d=parseInt($('#trD').value,10),q=$('#trQ').checked;
+  $('#trDv').textContent=d;
+  var sv=trSearch(TR.S,d-1,false,q),kv=trSearch(TR.K,d-1,false,q);
+  var best=sv>=kv?'S（弃子）':'K（稳着）';
+  var s='';
+  [['S',175,sv],['K',525,kv]].forEach(function(g){
+    var gx=g[1];
+    s+='<line x1="350" y1="40" x2="'+gx+'" y2="88" style="stroke:var(--line)"/>';
+    s+='<circle class="nd'+(g[0]==='S'?' fr':' path')+'" cx="'+gx+'" cy="100" r="18"/>'+
+       '<text class="lb on" x="'+gx+'" y="104" text-anchor="middle">'+g[2]+'</text>'+
+       '<text class="lb on" x="'+gx+'" y="80" text-anchor="middle">'+(g[0]==='S'?'弃子（非静止）':'稳着（静止）')+'</text>';
+    var kids=TR[g[0]].kids;
+    kids.forEach(function(k,i){
+      var mx=gx+(i===0?-70:70);
+      s+='<line x1="'+gx+'" y1="110" x2="'+mx+'" y2="146" style="stroke:var(--line)"/>';
+      s+='<circle class="nd exp" cx="'+mx+'" cy="164" r="15"/>'+
+         '<text class="lb" x="'+mx+'" y="168" text-anchor="middle">'+Math.max.apply(null,k.leaf)+'</text>';
+      k.leaf.forEach(function(v2,j){
+        var lx=mx+(j===0?-30:30);
+        s+='<line x1="'+mx+'" y1="172" x2="'+lx+'" y2="196" style="stroke:var(--line)"/>';
+        s+='<circle class="nd'+(v2<0?' fr':' exp')+'" cx="'+lx+'" cy="208" r="13"/>'+
+           '<text class="lb'+(v2<0?' on':'')+'" x="'+lx+'" y="212" text-anchor="middle">'+v2+'</text>';
+      });
+    });
+  });
+  s+='<circle class="nd path" cx="350" cy="30" r="20"/>'+
+     '<text class="lb on" x="350" y="34" text-anchor="middle">'+Math.max(sv,kv)+'</text>'+
+     '<text class="lb on" x="350" y="12" text-anchor="middle">MAX</text>';
+  $('#trTree').innerHTML=s;
+  $('#trAct').textContent=best;
+  $('#trVal').textContent=Math.max(sv,kv);
+  var v=$('#trVerdict');
+  if(best.indexOf('S')===0){
+    v.className='verdict no';
+    v.innerHTML='<b>地平线效应：</b>深度 '+d+' 时选中了「弃子」，评估值 '+sv+' —— 但它真正的 minimax 值是 <b>−20</b>。'+
+      '<br>那个 −20 就在<b>地平线之外</b>（第 '+(d+1)+' 步）。'+
+      (q?'<br><span class="dim">已开启静止搜索仍未纠正——把它关掉看差别，或把深度调大。</span>'
+         :'<br><b>勾选「静止搜索」</b>：因为 S 处局面非静止（有未完成的吃子），会继续延伸，从而发现 −20。');
+  }else{
+    v.className='verdict yes';
+    v.innerHTML='<b>正确选中「稳着」</b>（值 '+kv+'）。'+
+      (q?'静止搜索把非静止的 S 节点延伸了，看见了那个 −20。':'深度 '+d+' 已经足够看到全部后果。');
+  }
+}
+$('#trGo').onclick=trRender;
+$('#trD').oninput=function(){$('#trDv').textContent=this.value;trRender();};
+$('#trQ').onchange=trRender;
+trRender();
+
+/* =========================================================
+   通用 CSP 数据（澳大利亚）
+   ========================================================= */
+var AU={vars:['WA','NT','Q','NSW','V','SA','T'],
+  pos:{WA:[110,118],NT:[232,68],Q:[352,92],NSW:[388,198],V:[296,238],SA:[228,168],T:[330,272]},
+  edges:[['WA','NT'],['WA','SA'],['NT','SA'],['NT','Q'],['SA','Q'],['SA','NSW'],['SA','V'],['Q','NSW'],['NSW','V']]};
+var COLN={R:'var(--bad)',G:'var(--ok)',B:'var(--accent)',Y:'var(--gold)'};
+function auNbrs(v){
+  var o=[];AU.edges.forEach(function(e){
+    if(e[0]===v)o.push(e[1]);else if(e[1]===v)o.push(e[0]);});
+  return o;
+}
+function auDeg(v){return auNbrs(v).length;}
+function auBad(assign){
+  var bad=[];
+  AU.edges.forEach(function(e){
+    if(assign[e[0]]&&assign[e[1]]&&assign[e[0]]===assign[e[1]])bad.push(e);
+  });
+  return bad;
+}
+function auDraw(highlight,badSet,cut,sel){
+  var s='';
+  AU.edges.forEach(function(e){
+    var a=AU.pos[e[0]],b=AU.pos[e[1]];
+    var isBad=badSet&&badSet.some(function(x){return x[0]===e[0]&&x[1]===e[1];});
+    s+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" style="stroke:'+
+       (isBad?'var(--bad)':'var(--line)')+';stroke-width:'+(isBad?4:1.5)+'"/>';
+  });
+  AU.vars.forEach(function(v){
+    var p=AU.pos[v],c=highlight&&highlight[v];
+    var fill=c?COLN[c]:'var(--panel2)';
+    var stroke=(sel&&sel.indexOf(v)>=0)?'var(--warn)':'var(--line)';
+    var sw=(sel&&sel.indexOf(v)>=0)?3:1.5;
+    var dash=(v==='T')?'4 3':'0';
+    s+='<circle class="nd" cx="'+p[0]+'" cy="'+p[1]+'" r="26" style="fill:'+fill+';stroke:'+stroke+
+       ';stroke-width:'+sw+';stroke-dasharray:'+dash+'" data-v="'+v+'"/>'+
+       '<text class="lb on" x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle" data-v="'+v+'">'+v+'</text>';
+  });
+  return s;
+}
+
+/* =========================================================
+   ㉒ 澳大利亚着色
+   ========================================================= */
+var AUAS={};
+function auRender(){
+  var bad=auBad(AUAS);
+  $('#auMap').innerHTML=auDraw(AUAS,bad,null,null);
+  $$('#auMap [data-v]').forEach(function(el){
+    el.onclick=function(){
+      var v=el.dataset.v,order=['R','G','B',null];
+      var i=order.indexOf(AUAS[v]||null);
+      var nv=order[(i+1)%4];
+      if(nv)AUAS[v]=nv;else delete AUAS[v];
+      auRender();
+    };
+  });
+  $('#auBad').textContent=bad.length;
+  var n=Object.keys(AUAS).length;
+  var v=$('#auVerdict');
+  if(n<7){v.className='verdict mid';v.innerHTML='已着色 '+n+'/7 个地区。'+(bad.length?'<b style="color:var(--bad)">有 '+bad.length+' 条违规边</b>。':'当前无违规。');}
+  else if(bad.length){v.className='verdict no';v.innerHTML='<b>有 '+bad.length+' 条违规边</b>——不满足约束。';}
+  else{v.className='verdict yes';v.innerHTML='<b>合法解！</b>7 个地区全部着色且无冲突。';}
+}
+$('#auClear').onclick=function(){AUAS={};auRender();};
+$('#auSolve').onclick=function(){
+  var r=btSolve(AU.vars,AU.edges,['R','G','B'],{vo:'mrvdeg',lcv:true,inf:'mac'});
+  AUAS=r.sol||{};
+  auRender();
+};
+auRender();
+
+/* =========================================================
+   回溯求解器（供 ㉒㉕ 复用）
+   ========================================================= */
+function ac3Fix(doms,vars,edges,start){
+  var queue=[];
+  edges.forEach(function(e){
+    if(start){
+      if(e[0]===start)queue.push([e[1],e[0]]);
+      if(e[1]===start)queue.push([e[0],e[1]]);
+    }else{queue.push([e[0],e[1]]);queue.push([e[1],e[0]]);}
+  });
+  while(queue.length){
+    var a=queue.shift(),xi=a[0],xj=a[1];
+    var keep=doms[xi].filter(function(v){
+      return doms[xj].some(function(w){return w!==v;});
+    });
+    if(keep.length!==doms[xi].length){
+      doms[xi]=keep;
+      if(!keep.length)return false;
+      edges.forEach(function(e){
+        var k=(e[0]===xi)?e[1]:((e[1]===xi)?e[0]:null);
+        if(k&&k!==xj)queue.push([k,xi]);
+      });
+    }
+  }
+  return true;
+}
+function btSolve(vars,edges,cols,opt){
+  var doms={};vars.forEach(function(v){doms[v]=cols.slice();});
+  var stats={assigns:0,backtracks:0};
+  function deg(v){var c=0;edges.forEach(function(e){if(e[0]===v||e[1]===v)c++;});return c;}
+  function nb(v){var o=[];edges.forEach(function(e){if(e[0]===v)o.push(e[1]);else if(e[1]===v)o.push(e[0]);});return o;}
+  function rec(doms,assign){
+    var un=vars.filter(function(v){return assign[v]===undefined;});
+    if(!un.length)return assign;
+    var v;
+    if(opt.vo==='static'){v=un[0];}
+    else{
+      un.sort(function(a,b){
+        var da=doms[a].length,db=doms[b].length;
+        if(opt.vo==='mrvdeg'&&da===db)return deg(b)-deg(a);
+        return da-db;
+      });
+      v=un[0];
+    }
+    var vals=doms[v].slice();
+    if(opt.lcv){
+      vals.sort(function(x,y){
+        function kill(val){
+          var c=0;
+          nb(v).forEach(function(n){if(assign[n]===undefined&&doms[n].indexOf(val)>=0)c++;});
+          return c;
+        }
+        return kill(x)-kill(y);
+      });
+    }
+    for(var i=0;i<vals.length;i++){
+      var val=vals[i],ok=true;
+      nb(v).forEach(function(n){if(assign[n]===val)ok=false;});
+      if(!ok)continue;
+      var nd={};vars.forEach(function(vv){nd[vv]=doms[vv].slice();});
+      nd[v]=[val];
+      var na={};Object.keys(assign).forEach(function(k){na[k]=assign[k];});
+      na[v]=val;
+      stats.assigns++;
+      if(opt.inf==='fc'){
+        nb(v).forEach(function(n){
+          if(na[n]===undefined){
+            nd[n]=nd[n].filter(function(x){return x!==val;});
+            if(!nd[n].length)ok=false;
+          }
+        });
+      }else if(opt.inf==='mac'){
+        ok=ac3Fix(nd,vars,edges,v);
+      }
+      if(!ok){stats.backtracks++;continue;}
+      var r=rec(nd,na);
+      if(r)return r;
+      stats.backtracks++;
+    }
+    return null;
+  }
+  var sol=rec(doms,{});
+  return {sol:sol,stats:stats};
+}
+
+/* =========================================================
+   ㉓ AC-3 单步机
+   ========================================================= */
+var AC={queue:[],doms:{},n:0,last:null,done:false};
+function acInit(){
+  var d=parseInt($('#acDom').value,10);
+  var cols=['R','G','B','Y'].slice(0,d);
+  AC.doms={};AU.vars.forEach(function(v){AC.doms[v]=cols.slice();});
+  AC.queue=[];
+  AU.edges.forEach(function(e){AC.queue.push([e[0],e[1]]);AC.queue.push([e[1],e[0]]);});
+  AC.n=0;AC.last=null;AC.done=false;
+  acRender();
+}
+function acStep(){
+  if(AC.done)return;
+  if(!AC.queue.length){AC.done=true;acRender();return;}
+  var arc=AC.queue.shift(),xi=arc[0],xj=arc[1];
+  var keep=[],removed=[];
+  AC.doms[xi].forEach(function(v){
+    var ok=AC.doms[xj].some(function(w){return w!==v;});
+    if(ok)keep.push(v);else removed.push(v);
+  });
+  AC.doms[xi]=keep;AC.n++;
+  var added=0;
+  if(removed.length){
+    AU.edges.forEach(function(e){
+      var k=(e[0]===xi)?e[1]:((e[1]===xi)?e[0]:null);
+      if(k&&k!==xj){AC.queue.push([k,xi]);added++;}
+    });
+  }
+  AC.last={arc:arc,removed:removed,added:added};
+  acRender();
+}
+function acRender(){
+  var h='';
+  AU.vars.forEach(function(v){
+    h+='<div class="kv"><span class="mono">'+v+'（度 '+auDeg(v)+'）</span><b>'+
+      (AC.doms[v].length?AC.doms[v].map(function(c){
+        return '<span class="pill" style="color:'+COLN[c]+'">'+c+'</span>';}).join(''):'<span style="color:var(--bad)">空域 ✗</span>')+
+      '</b></div>';
+  });
+  $('#acDoms').innerHTML=h;
+  $('#acQueue').innerHTML=AC.queue.length
+    ? AC.queue.slice(0,24).map(function(a){
+        return '<span class="qchip">'+a[0]+'→'+a[1]+'</span>';}).join('')+
+      (AC.queue.length>24?'<span class="faint"> …还有 '+(AC.queue.length-24)+' 条</span>':'')
+    : '<span class="faint">（空 —— 到达不动点）</span>';
+  $('#acN').textContent=AC.n;
+  $('#acDel').textContent=AC.last?AC.last.removed.length:0;
+  var v=$('#acVerdict');
+  var empty=AU.vars.filter(function(x){return AC.doms[x].length===0;});
+  if(empty.length){
+    v.className='verdict no';
+    v.innerHTML='<b>出现空域：'+empty.join(', ')+'</b>　→　弧一致不成立，问题<b>无解</b>。这就是 AC-3 能直接判定无解的情形。';
+  }else if(AC.done){
+    v.className='verdict yes';
+    v.innerHTML='<b>到达不动点</b>：处理了 '+AC.n+' 条弧，没有空域 → <b>弧一致成立</b>。'+
+      '<br><span class="dim">'+(AC.n===18
+        ? '3 色下澳大利亚每条边本来就相容，一个值都删不掉 —— 切到 <b>1 色</b> 才能看到空域是怎么爆出来的。'
+        : '')+'</span>';
+  }else{
+    v.className='verdict mid';
+    v.innerHTML=AC.last
+      ? ('处理弧 '+AC.last.arc[0]+'→'+AC.last.arc[1]+'：删除 '+AC.last.removed.length+' 个值，'+
+         (AC.last.removed.length?'<b>因此 '+AC.last.added+' 条弧重新入队</b>':'<b>域没变 → 不入队</b>'))
+      : '点「下一步」开始。';
+  }
+}
+$('#acStep').onclick=acStep;
+$('#acRun').onclick=function(){var k=0;while(!AC.done&&k<3000){acStep();k++;}};
+$('#acReset').onclick=acInit;
+$('#acDom').onchange=acInit;
+acInit();
+
+/* =========================================================
+   ㉔ 弧一致 ≠ 可满足
+   ========================================================= */
+function satBrute(vars,edges,cols){
+  var idx=0,total=Math.pow(cols.length,vars.length);
+  if(total>200000)return null;
+  for(var n=0;n<total;n++){
+    var a={},x=n;
+    for(var i=0;i<vars.length;i++){a[vars[i]]=cols[x%cols.length];x=Math.floor(x/cols.length);}
+    var ok=true;
+    for(var j=0;j<edges.length;j++){
+      if(a[edges[j][0]]&&a[edges[j][1]]&&a[edges[j][0]]===a[edges[j][1]]){ok=false;break;}
+    }
+    if(ok)return a;
+  }
+  return null;
+}
+function pathConsistent(vars,edges,doms){
+  // 对每个 (Xi,Xj) 的每个相容赋值 (v,w)，检查是否存在 Xk 与 u 支撑它
+  for(var i=0;i<edges.length;i++){}
+  for(var a=0;a<vars.length;a++)for(var b=0;b<vars.length;b++){
+    if(a===b)continue;
+    var vi=vars[a],vj=vars[b];
+    for(var pi=0;pi<doms[vi].length;pi++)for(var pj=0;pj<doms[vj].length;pj++){
+      var x=doms[vi][pi],y=doms[vj][pj];
+      // (x,y) 需与 vi-vj 的约束相容
+      var constrained=edges.some(function(e){
+        return (e[0]===vi&&e[1]===vj)||(e[1]===vi&&e[0]===vj);});
+      if(constrained&&x===y)continue;
+      var supported=false;
+      for(var c=0;c<vars.length&&!supported;c++){
+        if(c===a||c===b)continue;
+        var vk=vars[c];
+        var ci=edges.some(function(e){return (e[0]===vi&&e[1]===vk)||(e[1]===vi&&e[0]===vk);});
+        var cj=edges.some(function(e){return (e[0]===vj&&e[1]===vk)||(e[1]===vj&&e[0]===vk);});
+        if(!ci&&!cj)continue;
+        for(var q=0;q<doms[vk].length;q++){
+          var z=doms[vk][q];
+          if(ci&&x===z)continue;
+          if(cj&&y===z)continue;
+          supported=true;break;
+        }
+      }
+      if(!supported)return false;
+    }
+  }
+  return true;
+}
+var TRI={vars:['A','B','C'],pos:{A:[190,60],B:[80,240],C:[300,240]},
+  edges:[['A','B'],['B','C'],['A','C']]};
+function pcRender(){
+  var sel=$('#pcSel').value;
+  var vars,edges,pos,cols;
+  if(sel.indexOf('au')===0){
+    vars=AU.vars;edges=AU.edges;pos=AU.pos;
+    cols=(sel==='au2')?['R','B']:['R','G','B'];
+  }else{
+    vars=TRI.vars;edges=TRI.edges;pos=TRI.pos;
+    cols=(sel==='tri')?['R','B']:['R','G','B'];
+  }
+  var doms={};vars.forEach(function(v){doms[v]=cols.slice();});
+  var ok=ac3Fix(doms,vars,edges,null);
+  var empty=vars.filter(function(v){return doms[v].length===0;});
+  var sat=satBrute(vars,edges,cols);
+  var pc=(empty.length||!sat)?false:pathConsistent(vars,edges,doms);
+  var s='';
+  edges.forEach(function(e){
+    var a=pos[e[0]],b=pos[e[1]];
+    s+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" style="stroke:var(--line);stroke-width:1.5"/>';
+  });
+  vars.forEach(function(v){
+    var p=pos[v];
+    s+='<circle class="nd" cx="'+p[0]+'" cy="'+p[1]+'" r="30"/>'+
+       '<text class="lb on" x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle">'+v+'</text>'+
+       '<text class="lb" x="'+p[0]+'" y="'+(p[1]+46)+'" text-anchor="middle">{'+
+       (doms[v].length?doms[v].join(','):'∅')+'}</text>';
+  });
+  $('#pcMap').innerHTML=s;
+  $('#pcEmpty').textContent=empty.length?('是（'+empty.join(', ')+'）'):'否';
+  $('#pcArc').textContent=(ok&&!empty.length)?'<span class="t">成立</span>':'<span class="f">不成立</span>';
+  $('#pcPath').textContent=pc?'<span class="t">成立</span>':'<span class="f">不成立</span>';
+  $('#pcSat').textContent=sat?'<span class="t">有解</span>':'<span class="f">无解</span>';
+  var v=$('#pcVerdict');
+  if(sel==='tri'){
+    v.className='verdict no';
+    v.innerHTML='<b>关键反例：弧一致成立、路径一致不成立、实际无解。</b><br>'+
+      '三条边两两看都没问题（每边两端总能选出不同颜色），但三个变量两两不同、只有 2 种颜色——鸽笼原理直接判死。';
+  }else if(sel==='tri3'){
+    v.className='verdict yes';
+    v.innerHTML='<b>3 色三角形：路径一致成立，也有解。</b>把颜色数从 2 加到 3，同样的图从无解变有解。';
+  }else if(sel==='au2'){
+    v.className='verdict no';
+    v.innerHTML='<b>2 色澳大利亚：弧一致照样成立，但实际无解。</b><br>'+
+      '每条边两端都还各自保留 {R,B}，AC-3 <b>一个值都删不掉</b>——因为弧一致只看单条边。'+
+      '真正的矛盾藏在<b>奇环</b>里：SA–NT–Q–NSW–V–SA 共 5 条边，2 色绕不回来。'+
+      '<br><span class="dim">想看弧一致"当场判死"的场面，请去上一屏把颜色数调成 1。</span>';
+  }else{
+    v.className='verdict yes';
+    v.innerHTML='<b>3 色澳大利亚：弧一致成立，且有解。</b>但注意——弧一致成立<b>并不</b>保证有解，切到「三角形 · 2 色」看反例。';
+  }
+}
+$('#pcGo').onclick=pcRender;$('#pcSel').onchange=pcRender;pcRender();
+
+/* =========================================================
+   ㉕ 回溯对照台
+   ========================================================= */
+function bkGraph(n,p,seed){
+  // 先随机种一个合法 3-着色，再只在"异色对"之间加边 —— 保证题目一定有解
+  var rnd=rndGen(seed),col=[],i,j;
+  for(i=0;i<n;i++)col.push(['R','G','B'][Math.floor(rnd()*3)]);
+  var vars=[],e=[];
+  for(i=0;i<n;i++)vars.push('v'+i);
+  for(i=0;i<n;i++)for(j=i+1;j<n;j++)if(col[i]!==col[j]&&rnd()<p)e.push([vars[i],vars[j]]);
+  return {vars:vars,edges:e};
+}
+function bkRender(){
+  var p=$('#bkProb').value;
+  var vars=AU.vars,edges=AU.edges,cols=['R','G','B'];
+  if(p==='r18'){var g=bkGraph(18,0.35,23);vars=g.vars;edges=g.edges;cols=['R','G','B'];}
+  else if(p==='r24'){var g2=bkGraph(24,0.3,11);vars=g2.vars;edges=g2.edges;cols=['R','G','B'];}
+  else if(p==='au4')cols=['R','G','B','Y'];
+  else if(p==='au2')cols=['R','B'];
+  var vos=[['static','静态顺序'],['mrv','MRV'],['mrvdeg','MRV + 度启发式']];
+  var infs=[['none','无推断'],['fc','向前检查'],['mac','MAC（完整 AC-3）']];
+  var rows='<tr><th>变量序</th><th>值序</th><th>推断</th><th class="m">赋值次数</th><th class="m">回溯次数</th><th class="m">结果</th></tr>';
+  var base=null,best=null;
+  vos.forEach(function(vo){
+    infs.forEach(function(inf){
+      [false,true].forEach(function(lcv){
+        var r=btSolve(vars,edges,cols,{vo:vo[0],lcv:lcv,inf:inf[0]});
+        if(vo[0]==='static'&&!lcv&&inf[0]==='none')base=r.stats.assigns;
+        if(!best||r.stats.assigns<best.n)best={n:r.stats.assigns,txt:vo[1]+' / '+(lcv?'LCV':'任意')+' / '+inf[1]};
+        rows+='<tr'+(vo[0]==='mrvdeg'&&lcv&&inf[0]==='mac'?' class="kbtrue"':'')+'><td>'+vo[1]+'</td><td>'+
+          (lcv?'LCV':'任意')+'</td><td>'+inf[1]+'</td><td class="m mono">'+r.stats.assigns+
+          '</td><td class="m mono">'+r.stats.backtracks+'</td><td class="m '+(r.sol?'t':'f')+'">'+
+          (r.sol?'有解':'无解')+'</td></tr>';
+      });
+    });
+  });
+  $('#bkTable').innerHTML=rows;
+  $('#bkSize').textContent=vars.length+' 个变量 / '+edges.length+' 条约束 / '+cols.length+' 种颜色';
+  var v=$('#bkVerdict');
+  var hd='<br><span class="dim">绿色高亮行 = 书上推荐的最强组合（MRV + 度 + LCV + MAC）。当前题目：'+
+    vars.length+' 个变量、'+edges.length+' 条约束、'+cols.length+' 色。</span>';
+  if(base===best.n){
+    v.className='verdict mid';
+    v.innerHTML='这道题<b>太容易了</b>：最朴素的配置也只要 <b>'+base+'</b> 次赋值、'+
+      '<b>零回溯</b>——一路顺下来就碰到解了，启发式<b>没有用武之地</b>。'+
+      '<br><span class="dim">启发式的价值在于"走错路时少走几步"。切到<b>随机图</b>这类真正需要回溯的题目再看。</span>';
+  }else{
+    v.className='verdict yes';
+    v.innerHTML='最朴素的配置（静态顺序 / 任意值序 / 无推断）需要 <b>'+base+'</b> 次赋值；'+
+      '最优组合（<b>'+best.txt+'</b>）只要 <b>'+best.n+'</b> 次 —— 相差 <b>'+(base/best.n).toFixed(1)+' 倍</b>。'+hd;
+  }
+}
+$('#bkGo').onclick=bkRender;$('#bkProb').onchange=bkRender;bkRender();
+
+/* =========================================================
+   ㉖ 数独
+   ========================================================= */
+var SDPUZ=[
+  '530070000600195000098000060800060003400803001700020006060000280000419005000080079',
+  '200080300060070084030500209000105408000000000402706000301007040720040060004010003'
+];
+var SD={doms:null,puz:0,queue:null,steps:0};
+function sdEdges(){
+  var e=[];
+  function add(unit){
+    for(var i=0;i<unit.length;i++)for(var j=i+1;j<unit.length;j++)e.push([unit[i],unit[j]]);
+  }
+  for(var r=0;r<9;r++){var u=[];for(var c=0;c<9;c++)u.push(r*9+c);add(u);}
+  for(var c2=0;c2<9;c2++){var u2=[];for(var r2=0;r2<9;r2++)u2.push(r2*9+c2);add(u2);}
+  for(var br=0;br<3;br++)for(var bc=0;bc<3;bc++){
+    var u3=[];
+    for(var i2=0;i2<3;i2++)for(var j2=0;j2<3;j2++)u3.push((br*3+i2)*9+(bc*3+j2));
+    add(u3);
+  }
+  return e;
+}
+var SDE=sdEdges();
+function sdInit(){
+  SD.puz=parseInt($('#sdPuz').value,10);
+  var p=SDPUZ[SD.puz];
+  SD.doms={};
+  for(var i=0;i<81;i++){
+    SD.doms[i]=(p[i]==='0')?[1,2,3,4,5,6,7,8,9]:[parseInt(p[i],10)];
+  }
+  SD.queue=[];
+  SDE.forEach(function(e){SD.queue.push([e[0],e[1]]);SD.queue.push([e[1],e[0]]);});
+  SD.steps=0;
+  sdRender();
+}
+function sdStep(){
+  var guard=0;
+  while(SD.queue.length&&guard<400){
+    guard++;
+    var a=SD.queue.shift(),xi=a[0],xj=a[1];
+    if(SD.doms[xi].length===1)continue;
+    var keep=SD.doms[xi].filter(function(v){
+      return SD.doms[xj].some(function(w){return w!==v;});
+    });
+    if(keep.length!==SD.doms[xi].length){
+      SD.doms[xi]=keep;
+      if(!keep.length)return;
+      for(var k=0;k<SDE.length;k++){
+        var e=SDE[k];
+        var o=(e[0]===xi)?e[1]:((e[1]===xi)?e[0]:null);
+        if(o)SD.queue.push([o,xi]);
+      }
+      SD.steps++;
+      return;
+    }
+  }
+}
+function sdRender(){
+  var p=SDPUZ[SD.puz];
+  var h='';
+  for(var i=0;i<81;i++){
+    var d=SD.doms[i];
+    var cls='sdc'+(p[i]!=='0'?' fixed':(d.length===1?' one':''));
+    h+='<div class="'+cls+'">'+(d.length===1?d[0]:d.length)+'</div>';
+  }
+  $('#sdGrid').innerHTML=h;
+  var done=0,init=0;
+  for(var j=0;j<81;j++){
+    if(SD.doms[j].length===1)done++;
+    if(p[j]!=='0')init++;
+  }
+  $('#sdDone').textContent=done+' / 81';
+  $('#sdInit').textContent=init+' / 81';
+  var v=$('#sdVerdict');
+  if(done===81){
+    v.className='verdict yes';
+    v.innerHTML='<b>纯靠约束传播就解完了</b>——完全没用回溯。初始给定 '+init+' 格，传播推出其余 '+(81-init)+' 格。';
+  }else{
+    v.className='verdict mid';
+    v.innerHTML='传播确定了 <b>'+done+'</b> / 81 格（初始给定 '+init+' 格，纯推断得到 <b>'+(done-init)+'</b> 格）。'+
+      '<br><span class="dim">剩下的格子要靠<b>回溯搜索</b>补上——传播只是把搜索空间大幅缩小。</span>';
+  }
+}
+$('#sdGo').onclick=function(){sdPropagate();sdRender();};
+function sdPropagate(){
+  var before=0;Object.keys(SD.doms).forEach(function(k){if(SD.doms[k].length===1)before++;});
+  var g=0;
+  while(SD.queue.length&&g<20000){
+    g++;
+    var a=SD.queue.shift(),xi=a[0],xj=a[1];
+    var keep=SD.doms[xi].filter(function(v){
+      return SD.doms[xj].some(function(w){return w!==v;});
+    });
+    if(keep.length!==SD.doms[xi].length){
+      SD.doms[xi]=keep;
+      for(var k=0;k<SDE.length;k++){
+        var e=SDE[k];
+        var o=(e[0]===xi)?e[1]:((e[1]===xi)?e[0]:null);
+        if(o)SD.queue.push([o,xi]);
+      }
+    }
+  }
+  return before;
+}
+$('#sdStep').onclick=function(){sdStep();sdRender();};
+$('#sdReset').onclick=sdInit;
+$('#sdPuz').onchange=sdInit;
+sdInit();
+
+/* =========================================================
+   ㉗ 结构分解
+   ========================================================= */
+var ST={cut:[]};
+function stIsForest(nodes){
+  var adj={};nodes.forEach(function(v){adj[v]=[];});
+  var ec=0;
+  AU.edges.forEach(function(e){
+    if(nodes.indexOf(e[0])>=0&&nodes.indexOf(e[1])>=0){
+      adj[e[0]].push(e[1]);adj[e[1]].push(e[0]);ec++;
+    }
+  });
+  var vis={},cyc=false;
+  function dfs(v,p){
+    vis[v]=1;
+    adj[v].forEach(function(u){
+      if(u===p)return;
+      if(vis[u]){cyc=true;return;}
+      dfs(u,v);
+    });
+  }
+  nodes.forEach(function(v){if(!vis[v])dfs(v,null);});
+  return {forest:!cyc,edges:ec};
+}
+function stRender(){
+  var rest=AU.vars.filter(function(v){return ST.cut.indexOf(v)<0;});
+  var F=stIsForest(rest);
+  $('#stMap').innerHTML=auDraw(null,null,null,ST.cut);
+  $$('#stMap [data-v]').forEach(function(el){
+    el.onclick=function(){
+      var v=el.dataset.v,i=ST.cut.indexOf(v);
+      if(i>=0)ST.cut.splice(i,1);else ST.cut.push(v);
+      stRender();
+    };
+  });
+  $('#stCut').textContent=ST.cut.length?'{'+ST.cut.join(', ')+'}':'{}';
+  $('#stC').textContent=ST.cut.length;
+  $('#stTree').textContent=F.forest?'<span class="t">是（无环）</span>':'<span class="f">否（有环）</span>';
+  $('#stE').textContent=F.edges+' 条边 / '+rest.length+' 个节点';
+  var v=$('#stVerdict');
+  if(F.forest){
+    v.className='verdict yes';
+    v.innerHTML='<b>可行！</b>枚举割集的 <span class="mono">d^'+ST.cut.length+'</span> 种赋值，'+
+      '每种情况下剩下的图是无环的，可以用 <span class="mono">O((n−c)·d²)</span> 的树算法一次解完。'+
+      '<br><span class="dim">总复杂度 <span class="mono">O(d^'+ST.cut.length+' · '+(7-ST.cut.length)+' · d²)</span>。</span>';
+  }else{
+    v.className='verdict mid';
+    v.innerHTML='去掉割集后<b>仍有环</b>，树算法不适用。继续点节点加入割集。'+
+      '<br><span class="dim">树的要求：n 个节点的森林边数应 = n − 森林个数。</span>';
+  }
+  // 复杂度条
+  var d=parseInt($('#stD').value,10),n=parseInt($('#stN').value,10);
+  $('#stDv').textContent=d;$('#stNv').textContent=n;
+  var c=Math.max(1,ST.cut.length);
+  var tree=Math.pow(d,c)*(n-c)*d*d;
+  var naive=Math.pow(d,n);
+  var mx=Math.max(tree,naive);
+  function bar(nm2,v2,cls){
+    var w=Math.max(1.5,Math.log10(Math.max(1,v2))/Math.log10(mx)*100);
+    return '<div class="bar"><span class="nm">'+nm2+'</span>'+
+      '<span class="tr"><span class="fl '+cls+'" style="width:'+w+'%"></span></span>'+
+      '<span class="vv">'+(v2>1e15?v2.toExponential(1).replace('e+','e'):v2.toLocaleString())+'</span></div>';
+  }
+  $('#stBars').innerHTML='<div class="faint" style="margin-bottom:4px">对数刻度 · c = '+c+'（割集大小）</div>'+
+    bar('割集调整  O(d^c (n−c) d²)',tree,'ok')+
+    bar('朴素回溯  O(dⁿ)',naive,'bad');
+}
+$('#stReset').onclick=function(){ST.cut=[];stRender();};
+$('#stBest').onclick=function(){
+  var best=null;
+  for(var m=0;m<128;m++){
+    var sub=[];
+    for(var i=0;i<7;i++)if(m&(1<<i))sub.push(AU.vars[i]);
+    var rest=AU.vars.filter(function(v){return sub.indexOf(v)<0;});
+    if(stIsForest(rest).forest){
+      if(!best||sub.length<best.length)best=sub;
+    }
+  }
+  ST.cut=best||[];
+  stRender();
+};
+['#stD','#stN'].forEach(function(s2){$(s2).oninput=stRender;});
+stRender();
+
+})();
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

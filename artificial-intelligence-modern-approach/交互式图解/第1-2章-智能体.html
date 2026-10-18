@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIMA 第 1–2 章 · 智能体（AI 的定义 · 智能体与环境 · 理性 · 任务环境 · agent 结构 · 学习） · 交互式图解</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1b2130; --line:#2b3444;
+  --fg:#e6edf3; --dim:#93a1b1; --faint:#6e7d8d;
+  --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --gold:#e3b341; --purple:#bc8cff; --cyan:#39c5cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#ffffff; --panel:#f6f8fa; --panel2:#eaeef2; --line:#d0d7de;
+    --fg:#1f2328; --dim:#57606a; --faint:#818b98;
+    --accent:#0969da; --ok:#1a7f37; --warn:#9a6700; --bad:#cf222e; --gold:#9a6700; --purple:#8250df; --cyan:#1b7c83;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:15px;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;line-height:1.3}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:18px 0 6px;color:var(--fg)}
+p{margin:8px 0}
+.lead{font-size:17px;color:var(--fg)}
+.dim{color:var(--dim)}
+.faint{color:var(--faint);font-size:13px}
+code,.mono{font-family:var(--mono)}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.hero .eq{font-family:var(--mono);font-size:15px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;margin-top:12px;display:block;color:var(--cyan)}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;
+  padding:6px 14px;font-size:13px;cursor:pointer;user-select:none}
+.tab:hover{color:var(--fg)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card>h2{margin-bottom:2px}
+.sub{color:var(--dim);font-size:13px;margin:0 0 10px}
+
+button.btn{border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;
+  padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+button.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.btn.pri:hover{filter:brightness(1.1);color:#fff}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+label.ck{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--dim);cursor:pointer}
+select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+input[type=range]{accent-color:var(--accent)}
+textarea{width:100%;min-height:150px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:8px;padding:10px;font-family:var(--mono);font-size:12.5px;line-height:1.7;resize:vertical}
+
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);font-weight:600;color:var(--dim);font-size:12.5px}
+td.m,th.m{text-align:center}
+tr.kbtrue td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+tr.cex td{background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.t{color:var(--ok);font-weight:700}
+.f{color:var(--bad);font-weight:700}
+.u{color:var(--faint)}
+
+/* ---- 闭环图 ---- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:12px 0}
+.fbox{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:10px 12px;min-width:120px;font-size:13px}
+.fbox b{display:block;font-size:13px}
+.fbox span{font-size:11.5px;color:var(--dim)}
+.fbox.kb{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);min-width:190px}
+.arw{display:flex;align-items:center;color:var(--faint);font-size:18px}
+.loopnote{border-left:3px solid var(--warn);padding:6px 12px;margin:10px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+
+/* ---- wumpus ---- */
+.wgrid{display:grid;grid-template-columns:repeat(4,72px);gap:6px;margin:12px 0}
+.wc{height:72px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:12px;position:relative;cursor:default}
+.wc.clickable{cursor:pointer}
+.wc.clickable:hover{border-color:var(--accent)}
+.wc .tag{font-family:var(--mono);font-size:12.5px;font-weight:700}
+.wc .pos{position:absolute;top:3px;left:5px;font-size:9.5px;color:var(--faint);font-family:var(--mono)}
+.wc .ic{font-size:15px;line-height:1}
+.wc.visited{background:color-mix(in srgb,var(--cyan) 10%,transparent);border-color:var(--cyan)}
+.wc.ok{color:var(--ok);border-color:var(--ok)}
+.wc.ok .tag{color:var(--ok)}
+.wc.maybe{color:var(--warn);border-color:var(--warn)}
+.wc.maybe .tag{color:var(--warn)}
+.wc.deadly{color:var(--bad);border-color:var(--bad)}
+.wc.deadly .tag{color:var(--bad)}
+.wc.agent{outline:2px solid var(--accent);outline-offset:1px}
+.wc.died{background:color-mix(in srgb,var(--bad) 22%,transparent)}
+.percept{font-family:var(--mono);font-size:13px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 11px;display:inline-block}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;
+  font-family:var(--mono);margin:2px 3px 2px 0;color:var(--dim)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+.pill.g{border-color:var(--ok);color:var(--ok)}
+.pill.r{border-color:var(--bad);color:var(--bad)}
+
+/* ---- 归结 / 链 ---- */
+.clist{font-family:var(--mono);font-size:12.5px;display:flex;flex-direction:column;gap:4px;margin-top:10px;
+  max-height:330px;overflow:auto}
+.cl{border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:var(--panel2);display:flex;gap:8px;align-items:baseline}
+.cl .idx{color:var(--faint);min-width:26px}
+.cl.new{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.cl.empty{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent);font-weight:700}
+.cl .from{color:var(--faint);font-size:11.5px}
+.lit.res{color:var(--bad);text-decoration:line-through}
+.lit.keep{color:var(--fg)}
+.lit.neg{color:var(--cyan)}
+
+.rules{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:var(--mono);font-size:13px}
+.rule{border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2);display:flex;
+  justify-content:space-between;gap:10px;align-items:center}
+.rule.fired{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.rule.active{border-color:var(--accent)}
+.badge{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--dim)}
+.badge.zero{border-color:var(--ok);color:var(--ok);font-weight:700}
+.queue{display:flex;flex-wrap:wrap;gap:4px;min-height:26px}
+.qchip{font-family:var(--mono);font-size:12px;border:1px solid var(--accent);color:var(--accent);
+  border-radius:6px;padding:1px 8px;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.qchip.done{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+
+.andor{font-family:var(--mono);font-size:13px;margin:12px 0}
+.orN{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{border:1px solid var(--line);border-radius:7px;padding:4px 11px;background:var(--panel2);display:inline-block}
+.node.fact{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.node.hl{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--fg)}
+.node.fail{border-color:var(--bad);color:var(--bad)}
+.andG{display:flex;flex-direction:column;align-items:center;margin-top:14px;position:relative;padding-top:14px}
+.andG::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:14px;background:var(--line)}
+.andRow{display:flex;gap:26px;align-items:flex-start;justify-content:center;position:relative;padding-top:14px}
+.andRow>.leg{position:absolute;top:0;height:2px;background:var(--line)}
+.stem{width:2px;height:14px;background:var(--line);margin:0 auto}
+.stackline{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:8px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}.wgrid{grid-template-columns:repeat(4,64px)}}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-size:13.5px}
+.kv b{font-family:var(--mono);color:var(--accent)}
+.verdict{border-radius:9px;padding:10px 13px;font-size:14px;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.yes{border-color:var(--ok);color:var(--ok)}
+.verdict.no{border-color:var(--bad);color:var(--bad)}
+.verdict.mid{border-color:var(--warn);color:var(--warn)}
+.note{border-left:3px solid var(--purple);padding:6px 12px;margin:12px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+.note b{color:var(--fg)}
+details{margin-top:10px}
+details>summary{cursor:pointer;color:var(--dim);font-size:13px}
+ul.tight{margin:6px 0;padding-left:20px}
+ul.tight li{margin:3px 0;font-size:13.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.mini{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--panel2)}
+.mini b{display:block;font-size:13px;margin-bottom:4px}
+.mini span{font-size:12.5px;color:var(--dim)}
+svg text{fill:var(--fg)}
+svg .ax{stroke:var(--line)}
+svg .gl{stroke:var(--line);stroke-dasharray:3 3}
+
+/* ---- 第 8-10 章新增 ---- */
+.mx{border-collapse:collapse;font-size:11px}
+.mx th,.mx td{border:1px solid var(--line);padding:2px 5px;text-align:center}
+.mx td{cursor:pointer;color:var(--faint);min-width:26px}
+.mx td:hover{border-color:var(--accent)}
+.mx td.on{background:color-mix(in srgb,var(--ok) 24%,transparent);color:var(--fg);font-weight:700}
+.mx th.rt{text-align:right;color:var(--dim);font-weight:600}
+.objtab td,.objtab th{padding:3px 6px;font-size:12px}
+.objtab td.m{text-align:center}
+.slist{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.sitem{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:8px 11px;font-size:13px;position:relative}
+.sitem .fl{font-family:var(--mono);font-size:12.5px}
+.sitem .vd{float:right;font-weight:700;font-size:12px;margin-left:10px}
+.vd.t{color:var(--ok)}.vd.f{color:var(--bad)}
+.exp{margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--dim);border-left:2px solid var(--line);padding-left:10px}
+.exp div{margin:1px 0}
+.exp .T{color:var(--ok)}.exp .F{color:var(--bad)}
+.steps{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.stp{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:8px 12px;font-size:13px;opacity:.32}
+.stp.on{opacity:1;border-color:var(--accent)}
+.stp .num{font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700}
+.stp .fml{font-family:var(--mono);font-size:12.5px;margin-top:4px;word-break:break-all}
+.stp .why{font-size:12px;color:var(--dim);margin-top:3px}
+.spine{display:flex;flex-direction:column;gap:4px;font-family:var(--mono);font-size:12px;margin-top:10px}
+.sp{border:1px solid var(--line);border-radius:7px;padding:5px 10px;background:var(--panel2);opacity:.4}
+.sp.on{opacity:1;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.sp .rr{color:var(--faint);font-size:11px;display:block}
+.node .th{font-size:10.5px;color:var(--faint);display:block;font-family:var(--mono)}
+.hier{font-family:var(--mono);font-size:12.5px}
+.hlvl{display:flex;gap:16px;justify-content:center;margin-bottom:6px}
+.obox{border:1px solid var(--line);border-radius:9px;padding:5px 13px;background:var(--panel2);text-align:center;font-size:13px}
+.obox.hit{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.obox.own{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 16%,transparent)}
+.obox .att{font-size:10.5px;color:var(--dim);display:block}
+.vsep{width:2px;height:20px;background:var(--line);margin:0 auto}
+.roundfacts{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.rf{border:1px solid var(--ok);border-radius:7px;padding:4px 10px;font-family:var(--mono);font-size:12.5px;
+  background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.rf .src{color:var(--dim);font-size:11px;display:block}
+
+/* ---- 第 11 章新增 ---- */
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.act{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 10px;
+  font-size:12.5px;font-family:var(--mono);cursor:pointer}
+.act:hover{border-color:var(--accent);color:var(--accent)}
+.act.off{opacity:.3;cursor:not-allowed}
+.act.off:hover{border-color:var(--line);color:inherit}
+.act.on{border-color:var(--ok);color:var(--ok)}
+.hist{display:flex;flex-direction:column;gap:4px;margin:10px 0;font-family:var(--mono);font-size:12.5px}
+.hrow{border:1px solid var(--line);border-radius:7px;padding:5px 10px;background:var(--panel2)}
+.hrow .add{color:var(--ok)}
+.hrow .del{color:var(--bad);text-decoration:line-through}
+.hrow .why{color:var(--dim);font-size:11.5px;display:block}
+.lits{font-family:var(--mono);font-size:12.5px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 11px;margin:8px 0;word-break:break-word}
+.bars{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.bar{display:grid;grid-template-columns:1fr 132px;font-size:12px;align-items:center;gap:10px}
+.bar .nm{font-size:12px;color:var(--dim)}
+.bar .tr{border:1px solid var(--line);border-radius:4px;background:var(--panel2);height:15px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent)}
+.bar .fl.bad{background:var(--bad)}
+.bar .vv{font-family:var(--mono);text-align:right;font-size:12px}
+.gantt{border:1px solid var(--line);border-radius:9px;background:var(--panel2);padding:12px;margin:10px 0}
+.grow{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:5px 0;font-size:12px}
+.gnm{font-family:var(--mono);font-size:11.5px;color:var(--dim);text-align:right}
+.gtrack{position:relative;height:20px;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.gblk{position:absolute;top:1px;height:16px;border-radius:3px;background:var(--accent);
+  font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.gblk.j2{background:var(--purple)}
+.gblk.slk{background:var(--faint)}
+.gaxis{display:grid;grid-template-columns:104px 1fr;gap:8px;font-size:10.5px;color:var(--faint);font-family:var(--mono)}
+.gaxis .tk{position:relative;height:14px}
+.gaxis .tk span{position:absolute;transform:translateX(-50%)}
+.sd9{display:grid;grid-template-columns:repeat(3,48px);gap:4px;margin:10px 0}
+.sd9 .c{height:48px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);display:flex;
+  align-items:center;justify-content:center;font-family:var(--mono);font-size:17px;font-weight:700}
+.sd9 .c.sub{color:var(--accent);border-color:var(--accent)}
+.sd9 .c.fit{color:var(--ok);border-color:var(--ok)}
+.sd9 .c.zero{color:var(--faint)}
+.pddl{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:9px 11px;margin:8px 0;white-space:pre-wrap;line-height:1.7}
+.pddl .kw{color:var(--purple);font-weight:700}
+.pddl .pn{color:var(--accent)}
+.pddl .neg{color:var(--bad)}
+.dec{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:var(--mono);font-size:12.5px}
+.drow{border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2);
+  display:flex;justify-content:space-between;gap:10px;align-items:center}
+.drow.prune{border-color:var(--bad);color:var(--bad)}
+.drow.commit{border-color:var(--ok);color:var(--ok)}
+.drow .rs{font-size:11.5px;color:var(--dim)}
+.mgrid{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.mcell{border:1px solid var(--line);border-radius:6px;padding:4px;background:var(--panel2);cursor:pointer}
+.mcell.hi{border-color:var(--accent)}
+.mcell.no{opacity:.35}
+.mrow{display:flex;gap:2px}
+.mbit{width:17px;height:17px;border:1px solid var(--line);border-radius:3px;background:var(--panel);
+  font-size:9.5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);color:var(--faint)}
+.mbit.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.trrow{cursor:pointer}
+.trrow:hover{background:var(--panel2)}
+.trbad{color:var(--bad)}
+.trgood{color:var(--ok)}
+.wire{fill:none;stroke-width:2}
+.sig1{stroke:var(--accent)}
+.sig0{stroke:var(--faint)}
+.gatebox{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}
+.gatebox.hot{stroke:var(--accent);stroke-width:2.5}
+.gatetxt{font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--fg);text-anchor:middle}
+.sigtxt{font-family:var(--mono);font-size:11px;text-anchor:middle;font-weight:700}
+.pick{cursor:pointer}
+</style>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">AIMA 第 1–2 章 · 什么是 AI → 智能体与环境 → 理性的定义 → 任务的性质 → agent 的内部结构 → 学习</div>
+  <h1>「智能体」不是一段程序，而是「用感知选动作」这件事本身</h1>
+  <p class="lead">后面 22 章讲的都是<b>方法</b>：搜索、逻辑、概率、学习。这一卷先回答更前面的问题：
+  <b>什么算「智能」</b>？<b>什么叫「做对了」</b>？答案落在一串很具体的定义上 ——
+  <b>智能体</b>（用感知序列选动作）、<b>性能度量</b>（谁说了算）、
+  <b>理性</b>（在已有信息下把<b>期望</b>性能做到最大）、<b>任务环境</b>（决定你该用哪种 agent），
+  最后才是<b>内部结构</b>：反射 → 有模型 → 有目标 → 有效用 → 会学习。</p>
+  <div class="eq">agent = 体系结构 + 程序　|　理性：a* = argmax<sub>a</sub> E[ 性能 | 感知序列, 已知 ]　|　PEAS：Performance / Environment / Actuators / Sensors</div>
+</header>
+
+<nav class="tabs">
+  <div class="tab on" data-panel="p1">① 理性 ≠ 像人</div>
+  <div class="tab" data-panel="p2">② 真空世界与 agent 函数</div>
+  <div class="tab" data-panel="p3">③ 真跑一个 agent</div>
+  <div class="tab" data-panel="p4">④ 理性、全知与信息</div>
+  <div class="tab" data-panel="p5">⑤ PEAS 与状态空间</div>
+  <div class="tab" data-panel="p6">⑥ 任务环境的 8 个维度</div>
+  <div class="tab" data-panel="p7">⑦ 四种 agent 程序</div>
+  <div class="tab" data-panel="p8">⑧ 学习型 agent</div>
+  <div class="tab" data-panel="p9">⑨ 全卷速查</div>
+</nav>
+
+<!-- ============ 1 ============ -->
+
+<section class="panel on" id="p1">
+  <div class="card">
+    <h2>理性 ≠ 像人：AI 的四种定义，以及本卷为什么选最后一种</h2>
+    <p class="sub">教材把 AI 的定义摆成一个 2×2：横轴是<b>像人 / 理性</b>，纵轴是<b>思考 / 行动</b>。
+    四条路线都合理，但只有<b>理性行动</b>这一条能写成可计算的目标 ——
+    因为它是唯一一个「做得好不好」能<b>量化</b>的标准。下面这个实验就是把这条标准拿去和「像人」正面比一次。</p>
+    <div class="two">
+      <div>
+        <h3>四种取向（教材 1.1.2）</h3>
+        <table>
+          <tr><th class="m"> </th><th class="m">像人</th><th class="m">理性</th></tr>
+          <tr><th class="m">思考</th><td class="m">与人类思维过程一致（认知科学）</td><td class="m">按逻辑规则推理（逻辑学）</td></tr>
+          <tr><th class="m">行动</th><td class="m">行为与人无法区分（图灵测试）</td><td class="m cex">把<b>期望性能</b>做到最大（理性 agent）</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="pddl" id="raFx"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <span class="faint">硬币偏置 P(正面) = p</span><input type="range" id="raP" min="50" max="95" step="1" value="60"><b class="mono" id="raPv">0.60</b>
+      <span class="faint">下注轮数 T</span><input type="range" id="raT" min="1" max="60" step="1" value="20"><b class="mono" id="raTv">20</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>三种策略的期望收益（精确 DP 递推，不是模拟）</h3>
+        <table id="raTab"></table>
+      </div>
+      <div>
+        <svg id="raSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="kv"><span>理性策略（永远押大概率面）T 轮期望</span><b id="raRat">—</b></div>
+    <div class="kv"><span>「像人」的赌徒谬误（押上一次的反面）T 轮期望</span><b id="raGam">—</b></div>
+    <div class="kv"><span>两者之差（模仿人类的代价）</span><b id="raGap">—</b></div>
+    <div id="raVerdict" class="verdict"></div>
+    <div class="note"><b>为什么「像人行动」不够：</b>图灵测试要求模仿人类，但人类在某些任务上<b>系统性地</b>做不好
+    （赌徒谬误、热手谬误、锚定效应都是被反复验证过的）。如果标准定成「像人」，
+    这些偏差就会被当成<b>目标</b>写进系统里。而标准定成「理性」，
+    偏差就只是<b>需要被修正的东西</b> —— 上面那个差值就是把标准换一下、真金白银的差距。</div>
+    <div class="note"><b>「理性地思考」为什么也被放下：</b>逻辑只能处理<b>能写出来的</b>知识，
+    而现实里大量任务是「证据不全、时间有限、还得立刻动」。
+    理性行动不问「你的推理形式对不对」，只问「你选的动作把期望性能做到最大了吗」——
+    这一问，就把概率、效用、学习全都请了进来（也就是后面 12–18 卷的内容）。</div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+
+<section class="panel" id="p2">
+  <div class="card">
+    <h2>智能体 = 感知 + 动作：真空吸尘器世界</h2>
+    <p class="sub">教材最小的例子：两个方格 A / B，一只只看得见<b>自己脚下</b>的吸尘器。
+    它每一步收到一个感知 <code>[位置, 这格脏不脏]</code>，然后选一个动作：<code>左 / 右 / 吸 / 不动</code>。
+    所谓 <b>agent 函数</b>，就是「感知序列 → 动作」这张表。问题是：这张表有多大？</p>
+    <div class="controls">
+      <span class="faint">感知序列长度 t</span><input type="range" id="vaT" min="1" max="8" step="1" value="4"><b class="mono" id="vaTv">4</b>
+      <span class="faint">世界的方格数 N</span><input type="range" id="vaN" min="2" max="8" step="1" value="2"><b class="mono" id="vaNv">2</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>把 agent 写成一张表要多少行</h3>
+        <table id="vaTab"></table>
+      </div>
+      <div>
+        <svg id="vaSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="kv"><span>t 步的感知序列数 4ᵗ</span><b id="vaSeq">—</b></div>
+    <div class="kv"><span>但世界的真实状态只有</span><b id="vaSt">—</b></div>
+    <div class="pddl" id="vaFx"></div>
+    <div id="vaVerdict" class="verdict"></div>
+    <div class="note"><b>这张表会炸，但世界不会：</b>4 种感知 → t 步就是 4<sup>t</sup> 条不同的历史；
+    可 N 格世界的实际状态只有 <code>N·2ᴺ</code> 种（位置 N × 每格脏/净 2ᴺ）。
+    两者的差就是「<b>用状态代替历史</b>」的全部价值 ——
+    一旦你发现当前状态已经<b>包含</b>了做决定所需的全部信息，历史就不用记了。
+    这正是第 7 章以后所有「状态空间搜索」能成立的前提。</div>
+    <div class="note"><b>感知 ≠ 状态：</b>这只吸尘器看得见<b>自己脚下</b>，看不见另一格。
+    所以它的感知（4 种）比状态（8 种）还<b>粗</b> —— 这正是「部分可观测」。
+    教材 2.4.2 的<b>基于模型的反射 agent</b>就是为这种情况准备的：自己记住另一格上次是什么样。</div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+
+<section class="panel" id="p3">
+  <div class="card">
+    <h2>真跑一个 agent：感知 → 动作 → 性能度量</h2>
+    <p class="sub">性能度量不是 agent 自己定的，是<b>设计者</b>定的，而且它<b>说了算</b>：
+    下面四个 agent 在同一个世界、同一条「变脏序列」上各跑一遍，
+    分数全部由教材那条度量算出来 —— <b>每个时间步每个干净的方格 +1 分</b>（可另加移动代价）。</p>
+    <div class="controls">
+      <span class="faint">方格数 N</span><input type="range" id="vsN" min="2" max="5" step="1" value="2"><b class="mono" id="vsNv">2</b>
+      <span class="faint">步数 T</span><input type="range" id="vsT" min="5" max="40" step="1" value="20"><b class="mono" id="vsTv">20</b>
+      <span class="faint">每步变脏概率</span><input type="range" id="vsD" min="0" max="40" step="5" value="20"><b class="mono" id="vsDv">0.20</b>
+    </div>
+    <div class="controls">
+      <span class="faint">移动一步的代价</span><input type="range" id="vsC" min="0" max="8" step="1" value="1"><b class="mono" id="vsCv">1</b>
+      <span class="faint">看谁的轨迹</span>
+      <select id="vsWho">
+        <option value="reflex">简单反射</option>
+        <option value="random">随机</option>
+        <option value="model">有状态（记得扫过哪）</option>
+        <option value="optimal">最优（有限期值迭代）</option>
+      </select>
+      <button id="vsNext">换一轮（新随机世界）</button>
+      <b class="mono faint" id="vsSeed">seed —</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>四个 agent 在同一条世界上的总分</h3>
+        <table id="vsTab"></table>
+      </div>
+      <div>
+        <div class="pddl" id="vsFx"></div>
+      </div>
+    </div>
+    <h3>逐步轨迹（<span id="vsTitle">简单反射</span>）</h3>
+    <table id="vsStep"></table>
+    <div class="kv"><span>当前 agent 的总分</span><b id="vsScore">—</b></div>
+    <div class="kv"><span>与最优的差距</span><b id="vsGap">—</b></div>
+    <div id="vsVerdict" class="verdict"></div>
+    <div class="note"><b>「最优」是怎么算出来的：</b>这里的最优不是拍脑袋的规则，
+    而是把世界当成<b>有限期 MDP</b>，从最后一步往前做<b>值迭代</b>倒推出来的（状态数 N·2ᴺ，最多 80 个）。
+    所以它是<b>在"只知道当前感知 + 已知变脏率"这个信息条件下</b>的真正上界 ——
+    不是「它知道未来」（那是下一个面板的<b>全知</b> agent）。</div>
+    <div class="note"><b>「最优」优化的是期望，不是这一条世界：</b>
+    所以偶尔会看到最优 agent 输给运气好的简单反射 —— 那不是它算错了，是这一轮的随机性站到了对手那边。
+    想看它真正赢，要比<b>很多条世界</b>的平均分（这正是「理性 = 最大化期望」的含义）。</div>
+    <div class="note"><b>移动代价一开，行为就变了：</b>把代价从 1 拉到 5 再看看 —— 
+    当「跑过去吸」的代价大于「多脏一步」的损失时，理性的选择是<b>原地不动</b>。
+    agent 没变、环境没变，只改性能度量，最优行为就换了 ——
+    这提醒我们：<b>性能度量写错，后面所有优化都在高效地做错事</b>。</div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+
+<section class="panel" id="p4">
+  <div class="card">
+    <h2>理性 ≠ 全知：事后看起来蠢的决定，当时可能就是最优的</h2>
+    <p class="sub">理性的定义里有一个容易被漏掉的词：<b>期望</b>。
+    理性不是「每次都选对」，而是「在用得上的信息下把期望性能做到最大」。
+    下面三个 agent 跑在<b>同一条</b>变脏序列上：<b>全知</b>（看得到未来）、<b>理性</b>（只知道模型和当前感知）、<b>短视</b>（脏了才吸）。</p>
+    <div class="controls">
+      <span class="faint">步数 T</span><input type="range" id="rqT" min="5" max="40" step="1" value="12"><b class="mono" id="rqTv">12</b>
+      <span class="faint">每步变脏概率</span><input type="range" id="rqD" min="0" max="40" step="5" value="20"><b class="mono" id="rqDv">0.20</b>
+      <span class="faint">移动代价</span><input type="range" id="rqC" min="0" max="8" step="1" value="1"><b class="mono" id="rqCv">1</b>
+      <button id="rqNext">换一轮</button>
+      <b class="mono faint" id="rqSeed">seed —</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>三个 agent 的得分</h3>
+        <table id="rqTab"></table>
+      </div>
+      <div>
+        <svg id="rqSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <h3>逐步对照：理性 vs 全知（标出「事后看是错的」那些步）</h3>
+    <table id="rqStep"></table>
+    <div class="pddl" id="rqFx"></div>
+    <div class="kv"><span>全知 − 理性（<b>完美信息的价值</b>）</span><b id="rqGap">—</b></div>
+    <div class="kv"><span>理性 − 短视（<b>用上环境模型的价值</b>）</span><b id="rqGap2">—</b></div>
+    <div id="rqVerdict" class="verdict"></div>
+    <div class="note"><b>「理性 ≠ 全知」是这一章最容易被学歪的一句：</b>
+    理性 agent 不知道未来，它只知道<b>分布</b>。所以它会做出一些事后看很蠢的决定
+    （刚扫完 A 就跑去 B，结果 A 下一秒又脏了）—— 但那一步在<b>当时</b>的期望下是对的。
+    评价一个 agent 要按<b>决策时的信息</b>打分，不能按结果打分。</div>
+    <div class="note"><b>全知 − 理性 = 信息的价值：</b>这个差值就是 16 章的 <b>VPI</b> 在这一章的雏形。
+    它同时也是「<b>预测</b>值多少钱」的定价公式：如果你能提前知道哪里会变脏，
+    你最多也就多拿这么多分 —— 超过这个价去买预测，就是亏的。</div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+
+<section class="panel" id="p5">
+  <div class="card">
+    <h2>先把任务说清楚：PEAS 与状态空间有多大</h2>
+    <p class="sub">设计一个 agent 之前，教材要求先写四件事：<b>P</b>erformance（性能度量）、
+    <b>E</b>nvironment（环境）、<b>A</b>ctuators（执行器）、<b>S</b>ensors（传感器）。
+    这四行写不出来，后面所有算法都无从谈起。写完再算一件事：<b>这个环境有多少个状态</b> —— 它决定了能不能「把答案背下来」。</p>
+    <div class="controls">
+      <span class="faint">任务</span>
+      <select id="peTask">
+        <option value="taxi">出租车驾驶</option>
+        <option value="medical">医疗诊断</option>
+        <option value="crossword">填字游戏</option>
+        <option value="vacuum">机器人吸尘（真空世界）</option>
+        <option value="chess">象棋（带棋钟）</option>
+        <option value="poker">扑克</option>
+        <option value="sat">卫星图像分析</option>
+        <option value="sort">零件分拣</option>
+        <option value="teach">英语教学</option>
+        <option value="chat">交互式英语对话</option>
+      </select>
+    </div>
+    <table id="peTab"></table>
+    <div class="controls">
+      <span class="faint">真空世界的方格数 N</span><input type="range" id="peN" min="2" max="24" step="1" value="2"><b class="mono" id="peNv">2</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>状态数 = N · 2ᴺ（位置 × 每格脏/净）</h3>
+        <table id="peTab2"></table>
+      </div>
+      <div>
+        <svg id="peSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="kv"><span>当前 N 的状态数</span><b id="peSize">—</b></div>
+    <div class="kv"><span>与「把每个状态的最优动作背下来」的可行性</span><b id="peOk">—</b></div>
+    <div class="pddl" id="peFx"></div>
+    <div id="peVerdict" class="verdict"></div>
+    <div class="note"><b>N·2ᴺ 是「组合爆炸」的最小样本：</b>N=2 时只有 8 个状态，你可以把最优动作全部背下来；
+    N=20 时是 2000 万个；N=30 时是 320 亿 —— 而真实任务（出租车、下棋）是<b>连续</b>的，状态根本数不完。
+    这就是为什么第 3 章开始要找<b>结构</b>（可分解的表示、启发式、近似），而不是穷举。</div>
+    <div class="note"><b>PEAS 里最容易被写错的是 P：</b>性能度量必须是<b>环境</b>里的客观量，不能是 agent 以为的量。
+    「让乘客满意」不是度量，「按时到达 + 不违章 + 油耗」才是。
+    出租车那个经典反例：如果只按「速度快」打分，最优策略会变成<b>疯狂超速</b> —— 度量写漏一项，agent 就会在漏掉的那项上无限作恶。</div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+
+<section class="panel" id="p6">
+  <div class="card">
+    <h2>任务环境的 7 个维度：它们直接决定该用哪种 agent</h2>
+    <p class="sub">教材用 7 个维度给任务环境分类。这不只是贴标签 ——
+    <b>每一维都在逼 agent 长出一种能力</b>：看不见就得记（内部状态）、有别人就得猜（对手模型）、
+    不确定就得算期望、会变就得边看边动、不认识就得学。</p>
+    <div class="controls">
+      <span class="faint">预设实例</span>
+      <select id="tePre">
+        <option value="chess">象棋（带棋钟）</option>
+        <option value="poker">扑克</option>
+        <option value="crossword">填字游戏</option>
+        <option value="taxi">出租车驾驶</option>
+        <option value="medical">医疗诊断</option>
+        <option value="vacuum">真空吸尘（本卷那个世界）</option>
+        <option value="sat">卫星图像分析</option>
+        <option value="sort">零件分拣</option>
+        <option value="teach">英语教学</option>
+        <option value="chat">交互式英语对话</option>
+        <option value="custom">自定义（自己拨 8 个维度）</option>
+      </select>
+    </div>
+    <div class="controls">
+      <span class="faint">可观测</span><select id="teD0"><option value="full">完全可观测</option><option value="partial">部分可观测</option></select>
+      <span class="faint">agent 数</span><select id="teD1"><option value="single">单 agent</option><option value="multi">多 agent</option></select>
+      <span class="faint">确定性</span><select id="teD2"><option value="det">确定性</option><option value="stoch">随机</option><option value="strategic">策略性</option></select>
+      <span class="faint">片段性</span><select id="teD3"><option value="epi">片段式</option><option value="seq">序贯</option></select>
+      <span class="faint">静态性</span><select id="teD4"><option value="static">静态</option><option value="semi">半动态</option><option value="dynamic">动态</option></select>
+      <span class="faint">离散性</span><select id="teD5"><option value="discrete">离散</option><option value="continuous">连续</option></select>
+      <span class="faint">已知性</span><select id="teD6"><option value="known">已知</option><option value="unknown">未知</option></select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>每一维逼出来的能力</h3>
+        <table id="teTab"></table>
+      </div>
+      <div>
+        <div class="pddl" id="teFx"></div>
+      </div>
+    </div>
+    <svg id="teSvg" viewBox="0 0 520 190" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="kv"><span>最简够用的 agent 结构</span><b id="teNeed">—</b></div>
+    <div class="kv"><span>离「最难组合」还差几维</span><b id="teHard">—</b></div>
+    <div id="teVerdict" class="verdict"></div>
+    <div class="note"><b>「最难」的那一组是什么：</b>部分可观测、多 agent、随机、序贯、动态、连续、未知 ——
+    七个维度全在难的一端。真实的自动驾驶就落在这一格：看不见全部（遮挡）、有别的车（多 agent）、
+    结果不确定、动作影响未来、环境一直在变、状态连续、而且规则永远学不全。
+    教材说<b>「大部分真实任务都在最难那一格」</b>，这就是为什么后面 22 章的方法各有各的适用边界。</div>
+    <div class="note"><b>注意「片段式」这一个反直觉的点：</b>片段式（每局独立，如零件分拣、图像分类）
+    反而<b>更简单</b> —— 因为上一个片段的经验不影响下一个，不需要跨片段记状态。
+    所以「能把任务切成独立片段」是一种<b>设计上的减负</b>：很多工程上做的第一件事，就是把序贯任务切成一个个片段。</div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+
+<section class="panel" id="p7">
+  <div class="card">
+    <h2>四种 agent 程序：内部表示越丰富，能处理的环境越多</h2>
+    <p class="sub">教材 2.4 的四种结构 —— <b>简单反射</b>、<b>基于模型的反射</b>、<b>基于目标</b>、<b>基于效用</b> ——
+    区别不在「聪明程度」，而在<b>看得见什么、记得什么、能想多远</b>。
+    下面让它们跑同一个随机变脏的世界，用同一条度量打分。</p>
+    <div class="controls">
+      <span class="faint">方格数 N</span><input type="range" id="apN" min="2" max="6" step="1" value="4"><b class="mono" id="apNv">4</b>
+      <span class="faint">步数 T</span><input type="range" id="apT" min="10" max="60" step="1" value="30"><b class="mono" id="apTv">30</b>
+      <span class="faint">每步变脏概率</span><input type="range" id="apD" min="0" max="40" step="5" value="20"><b class="mono" id="apDv">0.20</b>
+    </div>
+    <div class="controls">
+      <span class="faint">移动代价</span><input type="range" id="apC" min="0" max="8" step="1" value="1"><b class="mono" id="apCv">1</b>
+      <button id="apNext">换一轮</button>
+      <b class="mono faint" id="apSeed">seed —</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>四种结构的总分与「它多了什么」</h3>
+        <table id="apTab"></table>
+      </div>
+      <div>
+        <svg id="apSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="two">
+      <div>
+        <h3>逐步轨迹（<span id="apTitle">简单反射</span>）</h3>
+        <table id="apStep"></table>
+      </div>
+      <div>
+        <div class="pddl" id="apFx"></div>
+      </div>
+    </div>
+    <div class="kv"><span>第一名</span><b id="apBest">—</b></div>
+    <div class="kv"><span>简单反射丢了多少分</span><b id="apGap">—</b></div>
+    <div id="apVerdict" class="verdict"></div>
+    <div class="note"><b>为什么简单反射会「卡住」：</b>它只看脚下。两格都干净时，规则「不脏就往右移」
+    会让它左右横跳——永远等不到下一次脏。这不是运气不好，是<b>结构上不可能</b>：
+    没有内部状态，它连「我扫过哪里」都表达不出来。</div>
+    <div class="note"><b>基于目标 vs 基于效用 —— 差在有冲突的时候：</b>
+    只有一个目标（全部扫干净）时，搜索就够了。可一旦出现<b>权衡</b>（跑过去很贵，而那边脏的概率不高），
+    「目标」就说不清了：达到了 / 没达到，哪种更好？这时必须换成<b>效用</b>：把「概率 × 收益 − 代价」算成一个数再比大小。
+    把移动代价拉大，你就能看到基于效用的 agent 开始「懒得跑」—— 那不是它变笨了，是它算清楚了。</div>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+
+<section class="panel" id="p8">
+  <div class="card">
+    <h2>学习型 agent：把「不知道」变成「估计」</h2>
+    <p class="sub">前面所有 agent 都<b>预先知道</b>环境怎么变。若变脏率未知，就只有一条路：
+    先看、再估计、再按估计行动 —— 并在「<b>用当前估计去赚</b>」和「<b>再多看一眼</b>」之间取舍（探索 vs 利用）。
+    下面的曲线是<b>真跑</b>出来的：估计误差在下降，得分在上升。</p>
+    <div class="controls">
+      <span class="faint">方格 A 的真实变脏率</span><input type="range" id="lrA" min="5" max="60" step="5" value="30"><b class="mono" id="lrAv">0.30</b>
+      <span class="faint">方格 B 的真实变脏率</span><input type="range" id="lrB" min="5" max="60" step="5" value="10"><b class="mono" id="lrBv">0.10</b>
+      <span class="faint">探索率 ε</span><input type="range" id="lrE" min="0" max="40" step="5" value="10"><b class="mono" id="lrEv">0.10</b>
+    </div>
+    <div class="controls">
+      <span class="faint">轮数</span><input type="range" id="lrT" min="20" max="300" step="10" value="120"><b class="mono" id="lrTv">120</b>
+      <button id="lrNext">换一轮</button>
+      <b class="mono faint" id="lrSeed">seed —</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>学到的估计 vs 真实值</h3>
+        <table id="lrTab"></table>
+      </div>
+      <div>
+        <svg id="lrSvg" viewBox="0 0 520 220" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="two">
+      <div>
+        <h3>三种玩家的平均每步得分</h3>
+        <table id="lrCmp"></table>
+      </div>
+      <div>
+        <div class="pddl" id="lrFx"></div>
+      </div>
+    </div>
+    <div class="kv"><span>最终估计误差 |p̂ − p|（A / B）</span><b id="lrErr">—</b></div>
+    <div class="kv"><span>学习 agent 相当于「全知」的百分之多少</span><b id="lrPct">—</b></div>
+    <div id="lrVerdict" class="verdict"></div>
+    <div class="note"><b>探索有两种，别只盯着 ε：</b>这个 agent 即使把 ε 拉到 0 也会去看另一格 ——
+    因为它用模型算出「那边已经过了一会儿，可能又脏了」。这是<b>模型驱动的探索</b>，比瞎逛聪明得多。
+    ε 那种<b>随机探索</b>的价值在于兜底：模型没覆盖到的地方，它还能撞见。
+    代价也很直白 —— 把 ε 拉到 0.4，它 40% 的步数花在跑腿上，分数会明显掉下来：<b>探索是要付钱的</b>。</div>
+    <div class="note"><b>学习的代价是可以量化的：</b>「全知」那条线是知道真实变脏率时的最优；
+    学习 agent 与它之间的差，就是<b>「从零开始学」这件事本身的学费</b>。
+    学费随轮数下降（曲线在收敛），但永远不为零 —— 只要环境还在变，学习就不该停。</div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+
+<section class="panel" id="p9">
+  <div class="card">
+    <h2>全卷速查</h2>
+    <p class="sub">第 1–2 章八个面板，每条一句话 + 一个最容易踩的坑。可以关键词搜索，也可按章过滤。</p>
+    <div class="controls">
+      <span class="faint">关键词</span><input type="text" id="uqQ" placeholder="如 理性 / PEAS / 反射 / 全知 / 维度">
+      <span class="faint">章</span>
+      <select id="uqC"><option value="">全部</option><option value="1">第 1 章</option><option value="2">第 2 章</option></select>
+      <b class="mono" id="uqN">8</b>
+    </div>
+    <table id="uqTab">
+      <tr><th class="m">章</th><th class="m">主题</th><th class="m">一句话</th><th class="m">最容易踩的坑</th></tr>
+      <tr data-ch="1"><td class="m">1</td><td class="m">AI 的四种定义</td><td>像人思考 / 像人行动 / 理性思考 / 理性行动；本卷采用<b>理性行动</b>。</td><td>把「像人」当标准，会把人类的认知偏差（赌徒谬误等）当成目标写进系统。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">智能体与环境</td><td>agent = 用<b>感知序列</b>选动作的东西；agent 函数就是「感知序列 → 动作」那张表。</td><td>感知 ≠ 状态：真空世界只看得见脚下，这是<b>部分可观测</b>，得靠记忆补。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">感知序列会爆炸</td><td>t 步有 4ᵗ 条历史，但世界只有 N·2ᴺ 个状态 —— 用状态代替历史。</td><td>以为「记住所有历史」才安全；其实历史里大部分信息对决策无用。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">性能度量</td><td>度量由<b>设计者</b>定，不由 agent 定；教材真空世界用「每步每干净格 +1」。</td><td>度量写漏一项（如只奖速度），agent 就会在漏掉的那项上无限作恶。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">理性</td><td>理性 = 在<b>已有信息</b>下最大化<b>期望</b>性能，不是每次都选对、也不是全知。</td><td>按<b>结果</b>评价 agent；正确做法是按<b>决策时的信息</b>评价。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">PEAS</td><td>先写 Performance / Environment / Actuators / Sensors，再谈算法。</td><td>P 写成主观感受（「让乘客满意」）而不是环境里的客观量。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">任务环境 8 维</td><td>可观测 / 单多 / 确定 / 片段-序贯 / 静态-动态 / 离散-连续 / 已知-未知，每维逼出一种能力。</td><td>以为分类只是贴标签；其实它决定了「最简够用的 agent 结构」。</td></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">四种 agent 结构</td><td>反射 → 有模型 → 有目标 → 有效用 → 会学习，内部表示越丰富，能处理的环境越多。</td><td>以为「更聪明的结构一定更好」；没有冲突的目标时用搜索就够，不必上效用。</td></tr>
+    </table>
+    <div class="note"><b>这一卷和后面的关系：</b>第 2 章定下的「<b>理性 = 最大化期望性能</b>」是后面所有章的统一目标：
+    搜索（找动作序列）、逻辑（表示环境）、概率（处理不确定）、效用（处理冲突目标）、学习（处理未知），
+    都是在同一个定义下，针对<b>不同环境维度</b>给出的解法。</div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+
+<script>
+/* 浮动「章节」按钮（JS 动态创建，不写死在 HTML 里）：滚到任何位置都能一键回到标签栏切换面板 */
+(function(){
+  function ini(){
+    if(!document.createElement||!document.body)return;
+    var tt=document.createElement('button');
+    tt.className='btn'; tt.type='button';
+    tt.textContent='↑ 章节'; tt.title='回到章节标签栏';
+    tt.style.cssText='position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:0 4px 16px rgba(0,0,0,.45)';
+    tt.onclick=function(){
+      var n=(document.querySelector&&document.querySelector('.tabs'));
+      if(n&&n.scrollIntoView)n.scrollIntoView({behavior:'smooth',block:'start'});
+      else if(window.scrollTo)window.scrollTo(0,0);
+    };
+    document.body.appendChild(tt);
+    if(window.addEventListener)window.addEventListener('scroll',function(){
+      tt.style.display=(window.scrollY>320)?'block':'none';},{passive:true});
+  }
+  if(document.readyState==='loading'&&document.addEventListener)document.addEventListener('DOMContentLoaded',ini);
+  else ini();
+})();
+
+
+(function(){
+'use strict';
+var Q=function(s,r){return (r||document).querySelector(s);};
+var QQ=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var $=Q, $$=QQ;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n;}
+function fx(n,d){var s=(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);return s;}
+function sci(n){
+  if(n===0)return '0';
+  if(Math.abs(n)>=1e-4&&Math.abs(n)<1e5)return fx(n,4);
+  var e=Math.floor(Math.log10(Math.abs(n)));
+  return fx(n/Math.pow(10,e),3)+'×10<sup>'+e+'</sup>';
+}
+/* 可复现的伪随机（LCG） */
+function mkRnd(seed){var s=(seed>>>0)||1;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function popc(m){var c=0;while(m){c+=m&1;m>>=1;}return c;}
+
+/* ---------- tabs ---------- */
+function goPanel(id,push){
+  var tab=$$('.tab').filter(function(x){return x.dataset.panel===id;})[0];
+  if(!tab)return;
+  $$('.tab').forEach(function(x){x.classList.remove('on');});
+  tab.classList.add('on');
+  $$('.panel').forEach(function(x){x.classList.remove('on');});
+  var p=Q('#'+id); if(p)p.classList.add('on');
+  if(push!==false&&history.replaceState)history.replaceState(null,'','#'+id);
+  if(window.scrollTo)window.scrollTo(0,0);
+}
+$$('.tab').forEach(function(t){t.onclick=function(){goPanel(t.dataset.panel);};});
+if(location.hash){var hh=location.hash.slice(1); if(Q('#'+hh))goPanel(hh,false);}
+
+
+/* =========================================================
+   第 1 章 · 绪论（面板 ①）
+   ========================================================= */
+/* ---------- ① 理性 ≠ 像人 ---------- */
+function raPars(){return {p:+$('#raP').value/100, T:+$('#raT').value};}
+/* 理性：永远押大概率的那一面 */
+function raRational(P){return P.T*(2*P.p-1);}
+/* 赌徒谬误：押上一次的反面。状态 S0 = 这次押正，S1 = 这次押反（精确 DP） */
+function raGambler(P){
+  var v0=0,v1=0;
+  for(var t=1;t<=P.T;t++){
+    var n0=(2*P.p-1)+P.p*v1+(1-P.p)*v0;
+    var n1=(1-2*P.p)+P.p*v1+(1-P.p)*v0;
+    v0=n0;v1=n1;
+  }
+  return v0;
+}
+function raRender(){
+  var P=raPars();
+  $('#raPv').textContent=fx(P.p,2);$('#raTv').textContent=P.T;
+  var rat=raRational(P), gam=raGambler(P);
+  var b=P.p>=0.5?1:0;
+  var rows=[
+    {n:'理性（永远押'+(P.p>=0.5?'正':'反')+'）', per:2*P.p-1, tot:rat,
+     why:'每轮都把期望做到最大；E = T·(2p−1)'},
+    {n:'「像人」的赌徒谬误', per:(-(2*P.p-1)*(2*P.p-1)), tot:gam,
+     why:'首轮 '+(2*P.p-1>0?'+':'')+fx(2*P.p-1,2)+'，之后稳态 −(2p−1)² = '+fx(-Math.pow(2*P.p-1,2),4)},
+    {n:'随机（抛硬币决定）', per:0, tot:0, why:'押对押错各半，期望恒为 0'}
+  ];
+  var t='<tr><th class="m">策略</th><th class="m">每轮期望</th><th class="m">'+P.T+' 轮总期望</th><th class="m">为什么是这个数</th></tr>';
+  rows.forEach(function(r,i){
+    t+='<tr'+(i===0?' class="cex"':'')+'><td class="m mono">'+r.n+'</td><td class="m mono">'+
+      fx(r.per,4)+'</td><td class="m mono"><b>'+fx(r.tot,3)+'</b></td><td class="m">'+r.why+'</td></tr>';
+  });
+  $('#raTab').innerHTML=t;
+  $('#raFx').innerHTML='<span class="kw">理性 agent 的定义（教材 2.2.1）</span>\n'+
+    '对每一个可能的<b>感知序列</b>，理性 agent 选择\n'+
+    '<b>使其性能度量的期望值最大</b>的那个动作。\n\n'+
+    '<span class="kw">图灵测试判的是「像不像人」，理性判的是「好不好」</span>\n'+
+    '这是两条完全不同的标准 —— 下面用一次可计算的下注把它们摆在一起比。\n\n'+
+    '<span class="kw">赌徒谬误的期望（精确递推，不是蒙特卡洛）</span>\n'+
+    'V₀(t) = (2p−1) + p·V₁(t−1) + (1−p)·V₀(t−1)\n'+
+    'V₁(t) = (1−2p) + p·V₁(t−1) + (1−p)·V₀(t−1)\n'+
+    'V₀(0) = V₁(0) = 0　→　V₀('+P.T+') = <b>'+fx(gam,4)+'</b>';
+  /* SVG：横轴 p，纵轴 T 轮期望 */
+  var W=520,H=220,x0=52,x1=W-14,y0=20,y1=H-36;
+  var lo=0.5,hi=0.95;
+  var vmin=Math.min(-1,gam-1), vmax=Math.max(1,rat+1);
+  var px=function(p){return x0+(x1-x0)*(p-lo)/(hi-lo);};
+  var py=function(v){return y1-(y1-y0)*(v-vmin)/(vmax-vmin);};
+  var s='';
+  var steps=6;
+  for(var g=0;g<=steps;g++){
+    var vv=vmin+(vmax-vmin)*g/steps, yy=py(vv);
+    s+='<line x1="'+x0+'" y1="'+fx(yy,1)+'" x2="'+x1+'" y2="'+fx(yy,1)+'" stroke="var(--line)" stroke-width="1"/>';
+    s+='<text x="'+(x0-6)+'" y="'+fx(yy+4,1)+'" text-anchor="end" font-size="10" fill="var(--dim)">'+fx(vv,1)+'</text>';
+  }
+  s+='<line x1="'+x0+'" y1="'+py(0)+'" x2="'+x1+'" y2="'+py(0)+'" stroke="var(--dim)" stroke-dasharray="3 3"/>';
+  var pts1=[],pts2=[];
+  for(var k=0;k<=45;k++){
+    var p2=lo+(hi-lo)*k/45;
+    pts1.push(fx(px(p2),1)+','+fx(py(P.T*(2*p2-1)),1));
+    var q=raGambler({p:p2,T:P.T});
+    pts2.push(fx(px(p2),1)+','+fx(py(q),1));
+  }
+  s+='<polyline points="'+pts1.join(' ')+'" fill="none" stroke="var(--ok)" stroke-width="2.4"/>';
+  s+='<polyline points="'+pts2.join(' ')+'" fill="none" stroke="var(--bad)" stroke-width="2.4"/>';
+  s+='<line x1="'+x0+'" y1="'+py(0)+'" x2="'+x1+'" y2="'+py(0)+'" stroke="var(--dim)" stroke-width="1.6"/>';
+  var cp=px(P.p);
+  s+='<line x1="'+fx(cp,1)+'" y1="'+y0+'" x2="'+fx(cp,1)+'" y2="'+y1+'" stroke="var(--accent)" stroke-dasharray="4 3"/>';
+  s+='<circle cx="'+fx(cp,1)+'" cy="'+fx(py(rat),1)+'" r="4" fill="var(--ok)"/>';
+  s+='<circle cx="'+fx(cp,1)+'" cy="'+fx(py(gam),1)+'" r="4" fill="var(--bad)"/>';
+  s+='<text x="'+fx(cp+6,1)+'" y="'+(y0+12)+'" font-size="10" fill="var(--accent)">p = '+fx(P.p,2)+'</text>';
+  s+='<text x="'+x1+'" y="'+(y0+12)+'" text-anchor="end" font-size="10" fill="var(--ok)">理性</text>';
+  s+='<text x="'+x1+'" y="'+(y0+26)+'" text-anchor="end" font-size="10" fill="var(--bad)">赌徒谬误</text>';
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：硬币偏置 p　纵轴：'+P.T+' 轮的期望收益（虚线 = 随机策略的 0）</text>';
+  $('#raSvg').innerHTML=s;
+  $('#raRat').textContent='+'+fx(rat,3)+'　（每轮 '+fx(2*P.p-1,2)+' × '+P.T+' 轮）';
+  $('#raGam').textContent=fx(gam,3)+'　（前几轮还赚，之后每轮 '+fx(-Math.pow(2*P.p-1,2),4)+'）';
+  $('#raGap').textContent=fx(rat-gam,3)+'　（模仿人类的代价）';
+  var v=$('#raVerdict');
+  v.className='verdict '+(rat>gam?'yes':'mid');
+  v.innerHTML='<b>p = '+fx(P.p,2)+'、'+P.T+' 轮：理性 '+fx(rat,3)+' 分，赌徒谬误 '+fx(gam,3)+' 分，差 '+fx(rat-gam,3)+'。</b>'+
+    '<br><span class="dim">注意赌徒谬误不是「一直亏」——它前几轮还在赚，'+
+    '是<b>稳态每轮 −(2p−1)² = '+fx(-Math.pow(2*P.p-1,2),4)+'</b> 把它慢慢拖成负的。'+
+    '「像人」在这个任务上是一个<b>可以定价的</b>损失。</span>';
+}
+['#raP','#raT'].forEach(function(i){$(i).oninput=raRender;});
+raRender();
+
+
+/* =========================================================
+   第 2 章 · 智能体（面板 ②–⑧）
+   ========================================================= */
+/* ---------- ② 真空世界与 agent 函数 ---------- */
+var VALOC=['A','B','C','D','E','F','G','H'];
+function vaPars(){return {t:+$('#vaT').value, N:+$('#vaN').value};}
+function vaRender(){
+  var P=vaPars(),N=P.N,M=Math.pow(2,N),st=N*M;
+  $('#vaTv').textContent=P.t;$('#vaNv').textContent=N;
+  var t='<tr><th class="m">历史长度 t</th><th class="m">感知序列数 4ᵗ</th><th class="m">世界状态数 N·2ᴺ</th><th class="m">比值（浪费了多少倍）</th></tr>';
+  for(var k=1;k<=8;k++){
+    var seq=Math.pow(4,k);
+    t+='<tr'+(k===P.t?' class="cex"':'')+'><td class="m mono">'+k+'</td><td class="m mono">'+seq+
+      '</td><td class="m mono">'+st+'</td><td class="m mono">'+fx(seq/st,1)+'×</td></tr>';
+  }
+  $('#vaTab').innerHTML=t;
+  /* 简单反射的 agent 函数：只看最后一步感知（真生成） */
+  var perc=[];
+  for(var i=0;i<N;i++){perc.push([VALOC[i],0]);perc.push([VALOC[i],1]);}
+  var lines=[];
+  lines.push('<span class="kw">感知 = [位置, 这格脏不脏]　动作 = 左 / 右 / 吸 / 不动</span>');
+  lines.push('\n<span class="kw">简单反射 agent 的函数（只看最后一步）</span>');
+  perc.slice(0,4).forEach(function(q){
+    var act=q[1]?'吸':(q[0]===VALOC[0]?'右':'左');
+    lines.push('  ['+q[0]+', '+(q[1]?'Dirty':'Clean')+'] → '+act);
+  });
+  lines.push('\n<span class="kw">两步的感知序列有 4² = 16 条，但简单反射的答案和上面完全一样</span>');
+  var shown=0;
+  for(var a=0;a<4;a++)for(var b2=0;b2<4;b2++){
+    if(shown>=6)continue;shown++;
+    var q1=perc[a],q2=perc[b2];
+    var act=q2[1]?'吸':(q2[0]===VALOC[0]?'右':'左');
+    lines.push('  ['+q1[0]+','+(q1[1]?'D':'C')+'] ['+q2[0]+','+(q2[1]?'D':'C')+'] → '+act);
+  }
+  lines.push('  …… 共 16 条，每条的答案都只由最后一步决定');
+  lines.push('\n<span class="kw">这就是「用状态代替历史」的意思</span>');
+  lines.push('当前状态已经包含了做决定需要的全部信息 → 历史可以丢掉。');
+  $('#vaFx').innerHTML=lines.join('\n');
+  /* SVG：4ᵗ 对数增长 vs 状态数水平线 */
+  var W=520,H=220,x0=54,x1=W-14,y0=20,y1=H-38;
+  var lg=function(v){return Math.log(v)/Math.LN10;};
+  var top=lg(Math.pow(4,8));
+  var px=function(k){return x0+(x1-x0)*(k-1)/7;};
+  var py=function(v){return y1-(y1-y0)*lg(v)/top;};
+  var s='';
+  for(var g=0;g<=8;g+=2){
+    var vv=Math.pow(10,g), yy=py(vv);
+    if(yy<y0-2)continue;
+    s+='<line x1="'+x0+'" y1="'+fx(yy,1)+'" x2="'+x1+'" y2="'+fx(yy,1)+'" stroke="var(--line)" stroke-width="1"/>';
+    s+='<text x="'+(x0-6)+'" y="'+fx(yy+4,1)+'" text-anchor="end" font-size="10" fill="var(--dim)">10^'+g+'</text>';
+  }
+  s+='<polyline points="'+[1,2,3,4,5,6,7,8].map(function(k){return fx(px(k),1)+','+fx(py(Math.pow(4,k)),1);}).join(' ')+
+    '" fill="none" stroke="var(--bad)" stroke-width="2.4"/>';
+  s+='<line x1="'+x0+'" y1="'+fx(py(st),1)+'" x2="'+x1+'" y2="'+fx(py(st),1)+'" stroke="var(--ok)" stroke-width="2.4"/>';
+  s+='<text x="'+(x1-4)+'" y="'+fx(py(st)-6,1)+'" text-anchor="end" font-size="10" fill="var(--ok)">实际状态 '+st+' 个</text>';
+  s+='<circle cx="'+fx(px(P.t),1)+'" cy="'+fx(py(Math.pow(4,P.t)),1)+'" r="4.5" fill="var(--bad)"/>';
+  for(var k2=1;k2<=8;k2++)s+='<text x="'+fx(px(k2),1)+'" y="'+(y1+16)+'" text-anchor="middle" font-size="10" fill="var(--dim)">'+k2+'</text>';
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：历史长度 t（步）　纵轴：规模（对数刻度）</text>';
+  $('#vaSvg').innerHTML=s;
+  $('#vaSeq').textContent=Math.pow(4,P.t)+' 条'+(P.t>=6?'　（已经没法把表写出来了）':'');
+  $('#vaSt').textContent=st+' 个　（位置 '+N+' × 每格脏/净 '+M+'）';
+  var v=$('#vaVerdict');
+  v.className='verdict mid';
+  v.innerHTML='<b>t = '+P.t+' 时要枚举 4<sup>'+P.t+'</sup> = '+Math.pow(4,P.t)+' 条历史，而世界只有 '+st+' 个状态。</b>'+
+    '<br><span class="dim">查表这条路在 t 稍微大一点就断了 —— 这就是为什么 agent 程序必须是'+
+    '<b>有结构的计算</b>（状态 + 规则 / 模型），而不是一张穷举表。</span>';
+}
+['#vaT','#vaN'].forEach(function(i){$(i).oninput=vaRender;});
+vaRender();
+
+
+/* ---------- 世界模拟（③④⑦ 共用） ---------- */
+function mkWorld(o){
+  var rnd=mkRnd(o.seed),N=o.N,T=o.T,i,t;
+  var dirty0=[];
+  for(i=0;i<N;i++)dirty0.push(rnd()<0.5);
+  var add=[];
+  for(t=0;t<T;t++){
+    var m=0;
+    for(i=0;i<N;i++)if(rnd()<o.dp[i])m|=(1<<i);
+    add.push(m);
+  }
+  return {N:N,T:T,cost:o.cost,dp:o.dp,dirty0:dirty0,add:add,pos0:0,rnd:rnd};
+}
+function wInit(w){
+  var m=0;
+  for(var i=0;i<w.N;i++)if(w.dirty0[i])m|=(1<<i);
+  return {pos:w.pos0,mask:m};
+}
+function wClean(w,mask){
+  var c=0;
+  for(var i=0;i<w.N;i++)if(!(mask&(1<<i)))c++;
+  return c;
+}
+/* 执行一个动作：返回动作之后（变脏之前）的状态与本步得分 */
+function wStep(st,a,w){
+  var N=w.N,pos=st.pos,mask=st.mask,moved=0;
+  if(a==='S')mask=mask&~(1<<pos);
+  else if(a==='L'){if(pos>0){pos--;moved=1;}}
+  else if(a==='R'){if(pos<N-1){pos++;moved=1;}}
+  return {pos:pos,mask:mask,score:wClean(w,mask)-moved*w.cost,moved:moved};
+}
+/* 跑一个 agent 走完一整轮 */
+function wRun(w,ag){
+  var st=wInit(w),traj=[],total=0,mem=ag.init?ag.init(w):{};
+  for(var t=0;t<w.T;t++){
+    var a=ag.act(st,mem,w,t);
+    var r=wStep(st,a,w);
+    total+=r.score;
+    traj.push({t:t,pos:st.pos,mask:st.mask,act:a,score:r.score,total:total,dust:w.add[t]});
+    st={pos:r.pos,mask:r.mask|w.add[t]};
+    if(ag.see)ag.see(st,mem,w,t);
+  }
+  return {total:total,traj:traj};
+}
+var ANAME={L:'←左',R:'→右',S:'吸',N:'不动'};
+/* 有限期值迭代：只知道「每格变脏率」时的精确最优（有限期 MDP 倒推） */
+function viPolicy(w){
+  var N=w.N,M=Math.pow(2,N),S=N*M,A=['L','R','S','N'],i;
+  var dust=[];
+  for(var dsub=0;dsub<M;dsub++){
+    var pr=1;
+    for(i=0;i<N;i++)pr*=((dsub>>i)&1)?w.dp[i]:(1-w.dp[i]);
+    if(pr>0)dust.push({sub:dsub,p:pr});
+  }
+  var trans=[];
+  for(var s=0;s<S;s++){
+    var pos=Math.floor(s/M),mask=s%M,row=[];
+    for(var ai=0;ai<4;ai++){
+      var r=wStep({pos:pos,mask:mask},A[ai],w),list=[];
+      for(var k=0;k<dust.length;k++)list.push({s2:r.pos*M+(r.mask|dust[k].sub),p:dust[k].p,r:r.score});
+      row.push(list);
+    }
+    trans.push(row);
+  }
+  var V=[],PI=[];
+  for(i=0;i<S;i++)V.push(0);
+  for(var t=w.T-1;t>=0;t--){
+    var NV=[],NP=[];
+    for(var s2=0;s2<S;s2++){
+      var best=-Infinity,ba=0;
+      for(var aj=0;aj<4;aj++){
+        var q=0,lst=trans[s2][aj];
+        for(var k2=0;k2<lst.length;k2++)q+=lst[k2].p*(lst[k2].r+V[lst[k2].s2]);
+        if(q>best){best=q;ba=aj;}
+      }
+      NV.push(best);NP.push(A[ba]);
+    }
+    V=NV;PI.unshift(NP);
+  }
+  return {PI:PI,V:V,T:w.T,M:M};
+}
+/* 全知：预先知道这一轮每一步会脏在哪（确定性 DP 倒推） */
+function omniPolicy(w){
+  var N=w.N,M=Math.pow(2,N),S=N*M,A=['L','R','S','N'];
+  var V=[];for(var i=0;i<S;i++)V.push(0);
+  var PI=[];
+  for(var t=w.T-1;t>=0;t--){
+    var NV=[],NP=[];
+    for(var s=0;s<S;s++){
+      var pos=Math.floor(s/M),mask=s%M,best=-Infinity,ba=0;
+      for(var ai=0;ai<4;ai++){
+        var r=wStep({pos:pos,mask:mask},A[ai],w);
+        var s2=r.pos*M+(r.mask|w.add[t]);
+        var q=r.score+V[s2];
+        if(q>best){best=q;ba=ai;}
+      }
+      NV.push(best);NP.push(A[ba]);
+    }
+    V=NV;PI.unshift(NP);
+  }
+  return {PI:PI,V:V,M:M};
+}
+function polAgent(pol,w){
+  var M=Math.pow(2,w.N);
+  return {act:function(st,mem,ww,t){return pol.PI[t][st.pos*M+st.mask];}};
+}
+function trajTable(res,w,title){
+  var t='<tr><th class="m">t</th><th class="m">位置</th><th class="m">各格脏？</th><th class="m">感知</th>'+
+    '<th class="m">动作</th><th class="m">本步分</th><th class="m">累计</th><th class="m">这一步之后哪里脏了</th></tr>';
+  res.traj.forEach(function(r){
+    var cells='';
+    for(var i=0;i<w.N;i++){
+      var d=(r.mask>>i)&1;
+      cells+='<span style="color:'+(d?'var(--bad)':'var(--ok)')+'">'+VALOC[i]+(d?'●':'○')+'</span> ';
+    }
+    t+='<tr><td class="m mono">'+r.t+'</td><td class="m mono">'+VALOC[r.pos]+'</td><td class="m">'+cells+
+      '</td><td class="m mono">['+VALOC[r.pos]+', '+(((r.mask>>r.pos)&1)?'Dirty':'Clean')+']</td>'+
+      '<td class="m mono">'+ANAME[r.act]+'</td><td class="m mono">'+r.score+'</td>'+
+      '<td class="m mono">'+r.total+'</td><td class="m mono">'+(r.dust?dustStr(r.dust,w.N):'—')+'</td></tr>';
+  });
+  return t;
+}
+function dustStr(m,N){
+  var out=[];
+  for(var i=0;i<N;i++)if((m>>i)&1)out.push(VALOC[i]);
+  return out.length?out.join(','):'—';
+}
+
+/* ---------- ③ 真跑一个 agent ---------- */
+var vsSeed=20240101;
+var vsRes=null;
+function vsPars(){
+  var N=+$('#vsN').value;
+  var d=+$('#vsD').value/100;
+  var dp=[];for(var i=0;i<N;i++)dp.push(d);
+  return {N:N,T:+$('#vsT').value,dp:dp,cost:+$('#vsC').value,seed:vsSeed};
+}
+function vsAgents(w){
+  var N=w.N;
+  var reflex={act:function(st){
+    if((st.mask>>st.pos)&1)return 'S';
+    return st.pos<N-1?'R':'L';
+  }};
+  var random={init:function(){return {r:mkRnd(w.seed+777)};},
+    act:function(st,mem){
+      var x=mem.r();
+      return x<0.4?'S':(x<0.7?'R':'L');
+    }};
+  var model={init:function(){var k=[];for(var i=0;i<N;i++)k.push(0);return {k:k};},
+    see:function(st,mem){
+      mem.k[st.pos]=((st.mask>>st.pos)&1)?1:2;
+    },
+    act:function(st,mem){
+      mem.k[st.pos]=((st.mask>>st.pos)&1)?1:2;
+      if((st.mask>>st.pos)&1){mem.k[st.pos]=2;return 'S';}
+      var best=-1,bd=1e9;
+      for(var j=0;j<N;j++){
+        if(mem.k[j]===2)continue;
+        var dd=Math.abs(j-st.pos);
+        if(dd<bd){bd=dd;best=j;}
+      }
+      if(best<0)return 'N';
+      if(best===st.pos)return 'N';
+      return best<st.pos?'L':'R';
+    }};
+  var pol=viPolicy(w);
+  var opt=polAgent(pol,w);
+  return [{k:'reflex',n:'简单反射',d:'只看脚下：脏就吸，不脏就往右（到头往左）',a:reflex},
+    {k:'random',n:'随机',d:'每步随机选一个动作',a:random},
+    {k:'model',n:'有状态（记得扫过哪）',d:'记住每格上次看到的状态，只去没确认干净的格子',a:model},
+    {k:'optimal',n:'最优（有限期值迭代）',d:'倒推出的最优策略：把期望总分做到最大',a:opt,pol:pol}];
+}
+function vsRender(){
+  var P=vsPars(),w=mkWorld(P);
+  $('#vsNv').textContent=P.N;$('#vsTv').textContent=P.T;
+  $('#vsDv').textContent=fx(P.dp[0],2);$('#vsCv').textContent=P.cost;
+  $('#vsSeed').textContent='seed '+P.seed;
+  var ags=vsAgents(w);
+  var out=ags.map(function(g){var r=wRun(w,g.a);return {g:g,r:r};});
+  vsRes={w:w,out:out};
+  var best=Math.max.apply(null,out.map(function(o){return o.r.total;}));
+  var t='<tr><th class="m">agent</th><th class="m">它多了什么</th><th class="m">总分</th><th class="m">与最优的差</th></tr>';
+  out.forEach(function(o){
+    t+='<tr'+(o.r.total===best?' class="cex"':'')+'><td class="m mono">'+o.g.n+'</td><td class="m">'+o.g.d+
+      '</td><td class="m mono"><b>'+o.r.total+'</b></td><td class="m mono">'+(o.r.total-best)+'</td></tr>';
+  });
+  $('#vsTab').innerHTML=t;
+  var who=$('#vsWho').value;
+  var cur=out.filter(function(o){return o.g.k===who;})[0];
+  $('#vsTitle').textContent=cur.g.n;
+  $('#vsStep').innerHTML=trajTable(cur.r,w,cur.g.n);
+  $('#vsScore').textContent=cur.r.total+' 分';
+  $('#vsGap').textContent=(cur.r.total-best)+'　（最优 '+best+'）';
+  var optOut=out.filter(function(o){return o.g.k==='optimal';})[0];
+  var V0=optOut.g.pol.V[w.pos0*Math.pow(2,w.N)+ (function(){var m=0;for(var i=0;i<w.N;i++)if(w.dirty0[i])m|=(1<<i);return m;})()];
+  $('#vsFx').innerHTML='<span class="kw">性能度量（教材 2.2.1 的那一版）</span>\n'+
+    '每个时间步，<b>每个干净的方格 +1 分</b>'+(P.cost>0?'，移动一步 −'+P.cost+' 分':'')+'，共跑 '+P.T+' 步。\n\n'+
+    '<span class="kw">当前 agent：'+cur.g.n+'</span>\n'+cur.g.d+'\n\n'+
+    '<span class="kw">最优值迭代算出的初始状态价值</span>\n'+
+    'V₀(起点) = '+fx(V0,3)+'　→ 实际跑出来 '+optOut.r.total+' 分'+
+    '<span class="dim">（两者不完全相等是正常的：值迭代算的是<b>期望</b>，这一轮只是<b>一条</b>随机世界。</span>)\n\n'+
+    '<span class="kw">这一轮的变脏序列（四个 agent 用的是同一条）</span>\n'+
+    w.add.map(function(m,i){return 't='+i+'：'+dustStr(m,w.N);}).join('　');
+  var v=$('#vsVerdict');
+  var gap=best-cur.r.total;
+  v.className='verdict '+(gap===0?'yes':(gap<=best*0.15?'mid':'no'));
+  v.innerHTML=cur.g.k==='optimal'
+    ? '<b>这就是在「只知道当前感知 + 已知变脏率 '+fx(P.dp[0],2)+'」这个信息条件下的最优：'+cur.r.total+' 分。</b>'+
+      '<br><span class="dim">它并不比有状态的 agent 聪明多少 —— 因为这个世界太简单了。'+
+      '把方格数拉到 4、变脏率拉到 0.2 再看，「记得住」和「算得出」的差别才会显出来。</span>'
+    : '<b>'+cur.g.n+' 拿到 '+cur.r.total+' 分，比最优少 '+gap+' 分。</b>'+
+      '<br><span class="dim">少的这些分，就是它<b>结构上做不到</b>的那部分：'+
+      (cur.g.k==='reflex'?'没有记忆，它连「我扫过哪里」都表达不出来。':
+       cur.g.k==='random'?'它根本没有用到感知。':
+       '它记得住，但不会用变脏率去权衡「值不值得跑过去」。')+'</span>';
+}
+['#vsN','#vsT','#vsD','#vsC'].forEach(function(i){$(i).oninput=vsRender;});
+$('#vsWho').onchange=vsRender;
+$('#vsNext').onclick=function(){vsSeed++;vsRender();};
+vsRender();
+
+
+/* ---------- ④ 理性、全知与信息的价值 ---------- */
+var rqSeed=777003;
+function rqPars(){
+  var N=2,d=+$('#rqD').value/100;
+  return {N:N,T:+$('#rqT').value,dp:[d,d],cost:+$('#rqC').value,seed:rqSeed};
+}
+function rqRender(){
+  var P=rqPars(),w=mkWorld(P);
+  $('#rqTv').textContent=P.T;$('#rqDv').textContent=fx(P.dp[0],2);$('#rqCv').textContent=P.cost;
+  $('#rqSeed').textContent='seed '+P.seed;
+  var om=omniPolicy(w),vi=viPolicy(w);
+  var omn=polAgent(om,w),rat=polAgent(vi,w);
+  var myopic={act:function(st){return ((st.mask>>st.pos)&1)?'S':'N';}};
+  var rO=wRun(w,omn),rR=wRun(w,rat),rM=wRun(w,myopic);
+  var rows=[{n:'全知（看得到未来）',d:'知道这一轮每一步的变脏序列',v:rO.total},
+            {n:'理性（只知道分布）',d:'只知道每格变脏率 + 当前感知',v:rR.total},
+            {n:'短视（脏了才吸）',d:'连「别处也会脏」这件事都没用上',v:rM.total}];
+  var t='<tr><th class="m">agent</th><th class="m">它知道什么</th><th class="m">这一轮的得分</th><th class="m">与全知的差</th></tr>';
+  rows.forEach(function(x,i){
+    t+='<tr'+(i===0?' class="cex"':'')+'><td class="m mono">'+x.n+'</td><td class="m">'+x.d+
+      '</td><td class="m mono"><b>'+x.v+'</b></td><td class="m mono">'+(x.v-rO.total)+'</td></tr>';
+  });
+  $('#rqTab').innerHTML=t;
+  /* 逐步对照：理性 vs 全知，标出动作不同 / 事后看是错的 */
+  var t2='<tr><th class="m">t</th><th class="m">状态</th><th class="m">理性的动作</th><th class="m">全知的动作</th><th class="m">这一步之后哪里脏了</th><th class="m">说明</th></tr>';
+  var diff=0,regret=0;
+  rR.traj.forEach(function(rr,i){
+    var ro=rO.traj[i];
+    if(!ro)return;
+    var cells='';
+    for(var j=0;j<w.N;j++)cells+='<span style="color:'+(((rr.mask>>j)&1)?'var(--bad)':'var(--ok)')+'">'+VALOC[j]+(((rr.mask>>j)&1)?'●':'○')+'</span> ';
+    var same=rr.act===ro.act;
+    if(!same)diff++;
+    var note=same?'一致':('<b style="color:var(--warn)">不同</b>：理性按期望选 '+ANAME[rr.act]+'，全知按未来选 '+ANAME[ro.act]);
+    t2+='<tr'+(same?'':' class="cex"')+'><td class="m mono">'+rr.t+'</td><td class="m">'+cells+
+      '</td><td class="m mono">'+ANAME[rr.act]+'</td><td class="m mono">'+ANAME[ro.act]+
+      '</td><td class="m mono">'+dustStr(rr.dust,w.N)+'</td><td class="m">'+note+'</td></tr>';
+  });
+  $('#rqStep').innerHTML=t2;
+  /* SVG：三条累计得分曲线 */
+  var W=520,H=220,x0=50,x1=W-14,y0=20,y1=H-38;
+  var mx=Math.max(rO.total,rR.total,rM.total,1);
+  var mn=Math.min(0,rM.total);
+  var px=function(i){return x0+(x1-x0)*(P.T<=1?0:i/(P.T-1));};
+  var py=function(v){return y1-(y1-y0)*(v-mn)/(mx-mn||1);};
+  var s='';
+  s+='<line x1="'+x0+'" y1="'+py(0)+'" x2="'+x1+'" y2="'+py(0)+'" stroke="var(--line)"/>';
+  [[rO,'var(--ok)'],[rR,'var(--accent)'],[rM,'var(--bad)']].forEach(function(c){
+    s+='<polyline points="'+c[0].traj.map(function(r,i){return fx(px(i),1)+','+fx(py(r.total),1);}).join(' ')+
+      '" fill="none" stroke="'+c[1]+'" stroke-width="2.4"/>';
+  });
+  s+='<text x="'+(x1-2)+'" y="'+fx(py(rO.total)-6,1)+'" text-anchor="end" font-size="10" fill="var(--ok)">全知 '+rO.total+'</text>';
+  s+='<text x="'+(x1-2)+'" y="'+fx(py(rR.total)-6,1)+'" text-anchor="end" font-size="10" fill="var(--accent)">理性 '+rR.total+'</text>';
+  s+='<text x="'+(x1-2)+'" y="'+fx(py(rM.total)+14,1)+'" text-anchor="end" font-size="10" fill="var(--bad)">短视 '+rM.total+'</text>';
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：步数　纵轴：累计得分（同一条世界、同一个种子）</text>';
+  $('#rqSvg').innerHTML=s;
+  $('#rqFx').innerHTML='<span class="kw">理性的完整定义（教材 2.2.1）</span>\n'+
+    '对每一个可能的感知序列，理性 agent 选择使其<b>性能度量的期望值</b>最大的动作，'+
+    '<b>期望是对「给定该感知序列与 agent 已知知识后，环境可能处于的各个状态」取的</b>。\n\n'+
+    '<span class="kw">「全知」不是理性的前提，而是理性的上界</span>\n'+
+    '全知 agent = 预先知道这一轮 '+P.T+' 步的变脏序列（已用确定性 DP 倒推出最优：'+rO.total+' 分）。\n'+
+    '理性 agent = 只知道「每步以 '+fx(P.dp[0],2)+' 变脏」这个分布，用值迭代倒推（本轮实跑 '+rR.total+' 分）。\n\n'+
+    '<span class="kw">两条差距各自值多少</span>\n'+
+    '全知 − 理性 = '+(rO.total-rR.total)+'　← <b>完美信息的价值</b>（16 章的 VPI 就是它）\n'+
+    '理性 − 短视 = '+(rR.total-rM.total)+'　← <b>把环境模型用起来的价值</b>';
+  $('#rqGap').textContent=(rO.total-rR.total)+' 分';
+  $('#rqGap2').textContent=(rR.total-rM.total)+' 分';
+  var v=$('#rqVerdict');
+  v.className='verdict '+(rR.total>=rM.total?'yes':'no');
+  v.innerHTML='<b>理性 '+rR.total+' 分，全知 '+rO.total+' 分，短视 '+rM.total+' 分；'+diff+' 步上理性和全知选了不同的动作。</b>'+
+    '<br><span class="dim">理性 agent <b>不知道未来</b>，它只知道分布。'+
+    '所以它的某些决定事后看是错的 —— 但评价它要按<b>决策时的信息</b>，不能按结果。'+
+    '全知与理性之间的 '+(rO.total-rR.total)+' 分，就是「预知未来」在这条世界上最多能买到多少分。</span>';
+}
+['#rqT','#rqD','#rqC'].forEach(function(i){$(i).oninput=rqRender;});
+$('#rqNext').onclick=function(){rqSeed++;rqRender();};
+rqRender();
+
+
+/* ---------- ⑤ PEAS 与状态空间 ---------- */
+var PEPEAS={
+  taxi:{n:'出租车驾驶',
+    P:'安全到达、时间短、合法、舒适、利润最大（教材原文五项）',
+    E:'美国的道路；其他车辆、行人、天气；乘客会变',
+    A:'转向、油门、刹车、转向灯、喇叭、显示屏',
+    S:'摄像头、雷达/激光、GPS、速度表、里程表、加速度计、发动机传感器、乘客输入'},
+  medical:{n:'医疗诊断',
+    P:'确诊正确、漏诊少、检查成本与风险低、患者痛苦小',
+    E:'患者、医院、病原体；症状与检查结果带噪声',
+    A:'开检查单、给药、手术、转诊、给出诊断',
+    S:'问诊、体征测量、化验结果、影像、病史'},
+  crossword:{n:'填字游戏',
+    P:'填对的格子数、用时短（规则完全、可精确判定）',
+    E:'一张字谜格 + 一部词典；静态、完全可观测',
+    A:'在格子里写字、擦掉',
+    S:'键盘输入、屏幕上的字谜格与提示'},
+  vacuum:{n:'机器人吸尘（真空世界）',
+    P:'每个时间步每个干净的方格 +1 分（本卷用的就是这条）',
+    E:'N 个方格，会随机变脏；只有脚下看得见',
+    A:'左移、右移、吸尘、不动',
+    S:'位置传感器、当前格的脏污传感器'},
+  chess:{n:'象棋（带棋钟）',
+    P:'赢棋；快棋里还包括「在时限内」',
+    E:'棋盘（完全可观测）、对手（另一个 agent）、棋钟在走',
+    A:'走子、认输、提和',
+    S:'棋盘状态、棋钟读数（对手的心理不在传感器里）'},
+  poker:{n:'扑克',
+    P:'长期筹码收益（注意：不是「这一局赢没赢」）',
+    E:'牌堆、其他玩家的底牌看不见、下注行为',
+    A:'跟注、加注、弃牌、亮牌',
+    S:'自己的手牌、公共牌、桌面上的下注'},
+  sat:{n:'卫星图像分析',
+    P:'分类正确率（错分代价不对称：漏掉灾害很贵）',
+    E:'一帧帧卫星图像；大气、云层是噪声；图像是连续的像素',
+    A:'输出标注/分类结果、请求重拍',
+    S:'多光谱相机、历史图像、地理信息'},
+  sort:{n:'零件分拣（机械臂）',
+    P:'分拣正确的零件比例、节拍、不掉件',
+    E:'传送带上的零件（在动）、形状各异、有时重叠',
+    A:'抓取、移动、放下、分拣、请求停带',
+    S:'相机、力/触觉传感器、关节角度编码器'},
+  teach:{n:'英语教学',
+    P:'学生的测试成绩、学习速度、不放弃（长期指标）',
+    E:'学生（另一个 agent）、课堂；学生状态只能推测',
+    A:'讲解、出题、给反馈、调整难度',
+    S:'答题记录、语音/文本输入、表情与停顿'},
+  chat:{n:'交互式英语对话',
+    P:'对话目标达成、语法正确、响应快、用户满意度',
+    E:'用户（另一个 agent）、话题随时切换、口语带噪声',
+    A:'生成回复、追问、澄清、结束话题',
+    S:'文本/语音输入、时间戳、用户反馈'}
+};
+function peStates(N){return N*Math.pow(2,N);}
+function peRender(){
+  var task=$('#peTask').value,p=PEPEAS[task],N=+$('#peN').value;
+  var t='<tr><th class="m">项</th><th class="m">'+p.n+'</th></tr>';
+  [['P 性能度量',p.P],['E 环境',p.E],['A 执行器',p.A],['S 传感器',p.S]].forEach(function(r){
+    t+='<tr><th class="m">'+r[0]+'</th><td class="m">'+r[1]+'</td></tr>';
+  });
+  $('#peTab').innerHTML=t;
+  $('#peNv').textContent=N;
+  var t2='<tr><th class="m">方格数 N</th><th class="m">状态数 N·2ᴺ</th><th class="m">量级</th></tr>';
+  for(var k=2;k<=24;k+=2){
+    var v=peStates(k);
+    t2+='<tr'+(k===N?' class="cex"':'')+'><td class="m mono">'+k+'</td><td class="m mono">'+
+      (v<1e6?v.toLocaleString():sci(v))+'</td><td class="m mono">10^'+fx(Math.log10(v),1)+'</td></tr>';
+  }
+  $('#peTab2').innerHTML=t2;
+  var cur=peStates(N);
+  /* SVG：N·2ᴺ 的对数增长 + 象棋参考线 */
+  var W=520,H=220,x0=54,x1=W-14,y0=20,y1=H-38;
+  var top=45;
+  var px=function(k){return x0+(x1-x0)*(k-2)/22;};
+  var py=function(lg){return y1-(y1-y0)*lg/top;};
+  var s='';
+  for(var g=0;g<=40;g+=10){
+    var yy=py(g);
+    s+='<line x1="'+x0+'" y1="'+fx(yy,1)+'" x2="'+x1+'" y2="'+fx(yy,1)+'" stroke="var(--line)" stroke-width="1"/>';
+    s+='<text x="'+(x0-6)+'" y="'+fx(yy+4,1)+'" text-anchor="end" font-size="10" fill="var(--dim)">10^'+g+'</text>';
+  }
+  s+='<polyline points="'+[2,4,6,8,10,12,14,16,18,20,22,24].map(function(k){
+    return fx(px(k),1)+','+fx(py(Math.log10(peStates(k))),1);}).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="2.4"/>';
+  s+='<line x1="'+x0+'" y1="'+fx(py(40),1)+'" x2="'+x1+'" y2="'+fx(py(40),1)+'" stroke="var(--bad)" stroke-dasharray="6 4"/>';
+  s+='<text x="'+(x0+6)+'" y="'+fx(py(40)-6,1)+'" font-size="10" fill="var(--bad)">象棋的合法局面 ≈ 10^40</text>';
+  s+='<circle cx="'+fx(px(N),1)+'" cy="'+fx(py(Math.log10(cur)),1)+'" r="4.5" fill="var(--accent)"/>';
+  for(var k2=2;k2<=24;k2+=4)s+='<text x="'+fx(px(k2),1)+'" y="'+(y1+16)+'" text-anchor="middle" font-size="10" fill="var(--dim)">'+k2+'</text>';
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：真空世界的方格数 N　纵轴：状态数（对数刻度）</text>';
+  $('#peSvg').innerHTML=s;
+  $('#peSize').textContent=cur.toLocaleString()+' 个　（= '+N+' × 2^'+N+'）';
+  $('#peOk').textContent=cur<=1e5?'能全背下来（每个状态的最优动作都存成表）'
+    :(cur<=1e8?'能存下状态，但学不完 —— 必须靠结构（搜索 / 近似 / 学习）'
+      :'不可能穷举：必须靠结构，而不是记忆');
+  $('#peFx').innerHTML='<span class="kw">状态数 = 位置 × 每格脏/净 = N · 2ᴺ</span>\n'+
+    'N = '+N+' → '+N+' × '+Math.pow(2,N)+' = <b>'+cur.toLocaleString()+'</b>\n\n'+
+    '<span class="kw">为什么是「位置 × 每格脏/净」</span>\n'+
+    '这一卷的真空世界里，一个状态只需要两件事就能<b>完全确定未来</b>：'+
+    '吸尘器在哪（'+N+' 种）、每格脏不脏（2ᴺ 种）。\n'+
+    '至于「你是怎么走到这一步的」—— 无关。这正是第 2 章「用状态代替历史」的含义。\n\n'+
+    '<span class="kw">和真实任务比一比</span>\n'+
+    '真空世界 N = 2 → 8 个状态；N = 24 → '+sci(peStates(24))+'；\n'+
+    '象棋 ≈ 10^40（教材值）；出租车是<b>连续</b>的，状态根本数不完。\n'+
+    '<span class="dim">组合爆炸不是「格子多一点」的问题，是<b>指数</b>的问题。</span>';
+  var v=$('#peVerdict');
+  v.className='verdict mid';
+  v.innerHTML='<b>'+p.n+'：先把 PEAS 这四行写清楚，再谈用什么算法。</b>'+
+    '<br><span class="dim">当前的真空世界 N = '+N+' 有 '+cur.toLocaleString()+' 个状态 → '+
+    (cur<=1e5?'小到可以把最优动作全部背下来。':'已经不能靠"背答案"了。')+
+    '而 PEAS 里最容易被写坏的是 <b>P</b>：度量漏掉一项，agent 就会在漏掉的那项上无限作恶'+
+    '（只奖速度的出租车会疯狂超速）。</span>';
+}
+$('#peTask').onchange=peRender;$('#peN').oninput=peRender;
+peRender();
+
+
+/* ---------- ⑥ 任务环境的 7 个维度 ---------- */
+var TEDIM=[
+  {k:'可观测',o:[['full','完全可观测'],['partial','部分可观测']],
+   h:{full:'传感器每步都能看到完整的环境状态',partial:'传感器一次只能看到一部分 —— 必须自己记住看不见的那些'}},
+  {k:'agent 数',o:[['single','单 agent'],['multi','多 agent']],
+   h:{single:'环境里只有它自己在做决策',multi:'还有别的决策者 —— 它们的行为不再是"环境噪声"'}},
+  {k:'确定性',o:[['det','确定性'],['stoch','随机'],['strategic','策略性']],
+   h:{det:'下一状态由当前状态和动作唯一决定',stoch:'下一状态有随机性 —— 必须按期望算',strategic:'本身是确定的，但对手怎么走你不知道（确定 + 多 agent）'}},
+  {k:'片段性',o:[['epi','片段式'],['seq','序贯']],
+   h:{epi:'每一段独立，上一段不影响下一段（不需要跨片段记忆）',seq:'当前的动作会影响未来的状态 —— 要做规划'}},
+  {k:'静态性',o:[['static','静态'],['semi','半动态'],['dynamic','动态']],
+   h:{static:'你想的时候环境不变（可以先想清楚再动）',semi:'环境状态不变，但"时间在流逝"本身算进性能',dynamic:'你想的时候环境还在变 —— 必须边看边动'}},
+  {k:'离散性',o:[['discrete','离散'],['continuous','连续']],
+   h:{discrete:'状态、时间、感知、动作都能数得清',continuous:'连续量 —— 查表这条路直接断了'}},
+  {k:'已知性',o:[['known','已知'],['unknown','未知']],
+   h:{known:'环境的"规则"（转移/收益）设计者已经知道',unknown:'规则要 agent 自己去学'}}
+];
+var TEPRE={
+  chess:['full','multi','strategic','seq','semi','discrete','known'],
+  poker:['partial','multi','stoch','seq','static','discrete','known'],
+  crossword:['full','single','det','seq','static','discrete','known'],
+  taxi:['partial','multi','stoch','seq','dynamic','continuous','unknown'],
+  medical:['partial','single','stoch','seq','dynamic','continuous','unknown'],
+  vacuum:['partial','single','det','seq','static','discrete','known'],
+  sat:['full','single','stoch','epi','static','continuous','unknown'],
+  sort:['partial','single','stoch','epi','dynamic','continuous','unknown'],
+  teach:['partial','multi','stoch','seq','dynamic','discrete','unknown'],
+  chat:['partial','multi','stoch','seq','dynamic','discrete','unknown']
+};
+var TEHARD=['partial','multi',['stoch','strategic'],'seq','dynamic','continuous','unknown'];
+function teCfg(){
+  var c=[];
+  for(var i=0;i<7;i++)c.push($('#teD'+i).value);
+  return c;
+}
+/* 由 7 个维度推出「最简够用的 agent 结构」（规则可真算） */
+function teNeed(c){
+  var need=[];
+  if(c[0]==='partial')need.push('内部状态（记住看不见的部分）');
+  if(c[1]==='multi'||c[2]==='strategic')need.push('对手建模（别人的行为不是噪声）');
+  if(c[2]==='stoch'||c[5]==='continuous')need.push('期望计算（在不确定的结果间权衡）');
+  if(c[3]==='seq')need.push('多步规划（当前动作影响未来）');
+  if(c[4]==='dynamic')need.push('边感知边行动（不能先想完再动）');
+  if(c[6]==='unknown')need.push('学习（规则自己去学）');
+  var base;
+  if(c[2]==='stoch'||c[5]==='continuous'||c[2]==='strategic')base='基于效用的 agent';
+  else if(c[3]==='seq')base='基于目标的 agent';
+  else if(c[0]==='partial')base='基于模型的反射 agent';
+  else base='简单反射 agent';
+  if(c[6]==='unknown')base='学习型 agent（内核：'+base+'）';
+  return {base:base,need:need};
+}
+function teRender(){
+  var pre=$('#tePre').value;
+  if(pre!=='custom'&&TEPRE[pre]){
+    TEPRE[pre].forEach(function(v,i){$('#teD'+i).value=v;});
+  }
+  var c=teCfg(),r=teNeed(c);
+  var t='<tr><th class="m">维度</th><th class="m">当前</th><th class="m">这一维逼 agent 长出什么</th></tr>';
+  var hard=0;
+  for(var i=0;i<7;i++){
+    var lab='';
+    TEDIM[i].o.forEach(function(o){if(o[0]===c[i])lab=o[1];});
+    var hs=TEHARD[i],isHard=Array.isArray(hs)?hs.indexOf(c[i])>=0:(hs===c[i]);
+    if(isHard)hard++;
+    t+='<tr'+(isHard?' class="cex"':'')+'><td class="m mono">'+TEDIM[i].k+'</td>'+
+      '<td class="m mono">'+lab+(isHard?'　<b>← 难的一端</b>':'')+'</td>'+
+      '<td class="m">'+TEDIM[i].h[c[i]]+'</td></tr>';
+  }
+  $('#teTab').innerHTML=t;
+  $('#teFx').innerHTML='<span class="kw">不是贴标签：每一维都在逼出一种能力</span>\n'+
+    r.need.map(function(x,i){return (i+1)+'. '+x;}).join('\n')+
+    (r.need.length?'\n':'\n（这个组合很温和：几乎不需要额外结构）')+'\n\n'+
+    '<span class="kw">推出的最简够用结构</span>\n'+
+    '→ <b>'+r.base+'</b>\n\n'+
+    '<span class="kw">判定规则（可在页面外复算）</span>\n'+
+    '· partial → 需要内部状态\n'+
+    '· multi 或 strategic → 需要对手建模\n'+
+    '· stoch / continuous / strategic → 需要按期望权衡 → 基于效用\n'+
+    '· 否则 seq → 需要规划 → 基于目标\n'+
+    '· 否则 partial → 基于模型的反射；否则简单反射\n'+
+    '· unknown → 再叠一层学习';
+  /* SVG：每一维落在「易 → 难」轴的哪里 */
+  var W=520,H=190,x0=92,x1=W-104,y0=20,rh=(H-42)/7;
+  var s2='';
+  for(var d=0;d<7;d++){
+    var yy=y0+rh*d+rh/2,opts=TEDIM[d].o,n=opts.length,ci=0;
+    opts.forEach(function(o,i){if(o[0]===c[d])ci=i;});
+    s2+='<text x="'+(x0-8)+'" y="'+fx(yy+4,1)+'" text-anchor="end" font-size="10" fill="var(--dim)">'+TEDIM[d].k+'</text>';
+    s2+='<line x1="'+x0+'" y1="'+fx(yy,1)+'" x2="'+x1+'" y2="'+fx(yy,1)+'" stroke="var(--line)" stroke-width="1"/>';
+    for(var oi=0;oi<n;oi++){
+      s2+='<circle cx="'+fx(x0+(x1-x0)*(n<=1?0:oi/(n-1)),1)+'" cy="'+fx(yy,1)+'" r="3" fill="var(--line)"/>';
+    }
+    var hs2=TEHARD[d],isH=Array.isArray(hs2)?hs2.indexOf(c[d])>=0:(hs2===c[d]);
+    var cxx=x0+(x1-x0)*(n<=1?0:ci/(n-1));
+    s2+='<circle cx="'+fx(cxx,1)+'" cy="'+fx(yy,1)+'" r="6" fill="'+(isH?'var(--bad)':'var(--ok)')+'"/>';
+    var lab='';opts.forEach(function(o){if(o[0]===c[d])lab=o[1];});
+    s2+='<text x="'+(x1+8)+'" y="'+fx(yy+4,1)+'" font-size="10" fill="'+(isH?'var(--bad)':'var(--ok)')+'">'+lab+'</text>';
+  }
+  s2+='<text x="'+x0+'" y="'+(H-8)+'" font-size="10" fill="var(--dim)">← 容易的一端</text>';
+  s2+='<text x="'+x1+'" y="'+(H-8)+'" text-anchor="end" font-size="10" fill="var(--dim)">难的一端 →（红色 = 落在难端）</text>';
+  $('#teSvg').innerHTML=s2;
+  $('#teNeed').textContent=r.base+'　（共需要 '+r.need.length+' 项额外能力）';
+  $('#teHard').textContent=(7-hard)+' 维不在难的一端　（难端命中 '+hard+'/7）';
+  var v=$('#teVerdict');
+  v.className='verdict '+(hard>=5?'no':(hard>=3?'mid':'yes'));
+  v.innerHTML='<b>当前组合：'+c.map(function(x,i){
+    var lab='';TEDIM[i].o.forEach(function(o){if(o[0]===x)lab=o[1];});return lab;}).join(' · ')+
+    '</b><br><span class="dim">最简够用的结构是 <b>'+r.base+'</b>。'+
+    (hard>=5?'这个组合已经落在最难那一格 —— 教材说<b>大部分真实任务都在这一格</b>。':
+     hard<=2?'这个组合很温和：几乎不需要额外结构，简单反射就能干。':
+     '中等难度：需要的能力已经超出"看一眼就反应"。')+'</span>';
+}
+$('#tePre').onchange=teRender;
+for(var ti=0;ti<7;ti++)$('#teD'+ti).onchange=teRender;
+teRender();
+
+
+/* ---------- ⑦ 四种 agent 程序 ---------- */
+var apSeed=31337;
+function apPars(){
+  var N=+$('#apN').value,d=+$('#apD').value/100,dp=[];
+  for(var i=0;i<N;i++)dp.push(d);
+  return {N:N,T:+$('#apT').value,dp:dp,cost:+$('#apC').value,seed:apSeed};
+}
+function apAgents(w){
+  var N=w.N,T=w.T,cost=w.cost;
+  /* 1) 简单反射：只看脚下 */
+  var reflex={act:function(st){return ((st.mask>>st.pos)&1)?'S':(st.pos<N-1?'R':'L');}};
+  /* 2) 基于模型的反射：记住每格上次看到的状态 */
+  var model={init:function(){var k=[],ls=[];for(var i=0;i<N;i++){k.push(0);ls.push(-99);}return {k:k,ls:ls};},
+    act:function(st,mem,ww,t){
+      mem.k[st.pos]=((st.mask>>st.pos)&1)?1:2;
+      mem.ls[st.pos]=t;
+      if((st.mask>>st.pos)&1){mem.k[st.pos]=2;return 'S';}
+      var best=-1,bd=1e9;
+      for(var j=0;j<N;j++){
+        if(mem.k[j]===2)continue;
+        var dd=Math.abs(j-st.pos);
+        if(dd>0&&dd<bd){bd=dd;best=j;}
+      }
+      if(best<0){                       /* 全部已知干净 → 去最久没看过的那格复查（它会重新变脏） */
+        var old=-1,oa=-1e9;
+        for(var q=0;q<N;q++){
+          if(q===st.pos)continue;
+          var age=t-mem.ls[q];
+          if(age>oa){oa=age;old=q;}
+        }
+        if(old<0)return 'N';
+        return old<st.pos?'L':'R';
+      }
+      return best<st.pos?'L':'R';
+    }};
+  /* 3) 基于目标：算出覆盖所有目标格的最短路径，然后走完（中途不折返） */
+  var goal={init:function(){var k=[],ls=[];for(var i=0;i<N;i++){k.push(0);ls.push(-99);}return {k:k,ls:ls,dir:0};},
+    act:function(st,mem,ww,t){
+      mem.k[st.pos]=((st.mask>>st.pos)&1)?1:2;
+      mem.ls[st.pos]=t;
+      if((st.mask>>st.pos)&1){mem.k[st.pos]=2;return 'S';}
+      var lo=-1,hi=-1;
+      for(var j=0;j<N;j++){if(mem.k[j]===2)continue;if(lo<0)lo=j;hi=j;}
+      if(lo<0){                         /* 没有「已知脏 / 未知」的目标 → 复查最久没看过的格子 */
+        var oa=-1e9;
+        for(var q=0;q<N;q++){
+          if(q===st.pos)continue;
+          if(t-mem.ls[q]>oa){oa=t-mem.ls[q];lo=q;hi=q;}
+        }
+        if(lo<0)return 'N';
+      }
+      /* 最短覆盖路径 = (hi−lo) + min(|pos−lo|, |pos−hi|) → 先去较近的一端 */
+      if(mem.dir===0)mem.dir=(Math.abs(st.pos-lo)<=Math.abs(st.pos-hi))?1:-1;
+      var tgt=(mem.dir===1)?lo:hi;
+      if(st.pos===tgt)return 'N';
+      return tgt<st.pos?'L':'R';
+    }};
+  /* 4) 基于效用：把「跑过去值不值」算成一个数再比（会权衡，所以可能在原地不动） */
+  var util={init:function(){var k=[],ls=[];for(var i=0;i<N;i++){k.push(0);ls.push(-99);}return {k:k,ls:ls};},
+    act:function(st,mem,ww,t){
+      mem.k[st.pos]=((st.mask>>st.pos)&1)?1:2;
+      mem.ls[st.pos]=t;
+      var pDirty=function(j){
+        if(mem.k[j]===1)return 1;
+        var age=(mem.ls[j]<0)?5:(t-mem.ls[j]);
+        return 1-Math.pow(1-ww.dp[j],age+1);   /* 扫干净之后放得越久，越可能又脏了 */
+      };
+      var left=T-t,bestU=0,ba='N';
+      /* 吸当前格：只有它真的脏才有收益 */
+      var u0=((st.mask>>st.pos)&1)?left:0;
+      if(u0>bestU){bestU=u0;ba='S';}
+      /* 去别的格子 */
+      for(var j=0;j<N;j++){
+        if(j===st.pos)continue;
+        var dist=Math.abs(j-st.pos);
+        var u=pDirty(j)*(left-dist)-dist*cost;
+        if(u>bestU){bestU=u;ba=(j<st.pos?'L':'R');}
+      }
+      return ba;
+    }};
+  return [{k:'reflex',n:'简单反射',d:'看一眼就反应：脏就吸，不脏就往右（到头往左）',s:'看得见脚下',a:reflex},
+    {k:'model',n:'基于模型的反射',d:'记住每格上次看到的状态，只去没确认干净的格子',s:'看得见 + 记得住',a:model},
+    {k:'goal',n:'基于目标',d:'算出覆盖全部目标格的<b>最短路径</b>，中途不折返',s:'记得住 + 会规划多步',a:goal},
+    {k:'utility',n:'基于效用',d:'算「跑过去值不值」：概率 × 收益 − 距离 × 代价；不值就不动',s:'记得住 + 会权衡',a:util}];
+}
+function apRender(){
+  var P=apPars(),w=mkWorld(P);
+  $('#apNv').textContent=P.N;$('#apTv').textContent=P.T;$('#apDv').textContent=fx(P.dp[0],2);
+  $('#apCv').textContent=P.cost;$('#apSeed').textContent='seed '+P.seed;
+  var ags=apAgents(w);
+  var out=ags.map(function(g){return {g:g,r:wRun(w,g.a)};});
+  var best=Math.max.apply(null,out.map(function(o){return o.r.total;}));
+  var t='<tr><th class="m">结构</th><th class="m">它多了什么</th><th class="m">内部表示</th><th class="m">总分</th><th class="m">与第一名差</th></tr>';
+  out.forEach(function(o){
+    t+='<tr'+(o.r.total===best?' class="cex"':'')+'><td class="m mono">'+o.g.n+'</td><td class="m">'+o.g.d+
+      '</td><td class="m">'+o.g.s+'</td><td class="m mono"><b>'+o.r.total+'</b></td>'+
+      '<td class="m mono">'+(o.r.total-best)+'</td></tr>';
+  });
+  $('#apTab').innerHTML=t;
+  /* 轨迹：显示排第一的那个 */
+  var win=out.filter(function(o){return o.r.total===best;})[0];
+  $('#apTitle').textContent=win.g.n+'（本轮第一）';
+  $('#apStep').innerHTML=trajTable(win.r,w,win.g.n);
+  /* SVG：四条累计得分曲线 */
+  var W=520,H=220,x0=50,x1=W-14,y0=20,y1=H-38;
+  var mx=Math.max.apply(null,out.map(function(o){return o.r.total;})),mn=0;
+  var px=function(i){return x0+(x1-x0)*(P.T<=1?0:i/(P.T-1));};
+  var py=function(v){return y1-(y1-y0)*(v-mn)/((mx-mn)||1);};
+  var COL=['var(--bad)','var(--warn)','var(--accent)','var(--ok)'];
+  var s='<line x1="'+x0+'" y1="'+py(0)+'" x2="'+x1+'" y2="'+py(0)+'" stroke="var(--line)"/>';
+  out.forEach(function(o,i){
+    s+='<polyline points="'+o.r.traj.map(function(r,j){return fx(px(j),1)+','+fx(py(r.total),1);}).join(' ')+
+      '" fill="none" stroke="'+COL[i]+'" stroke-width="2.2"/>';
+    s+='<text x="'+(x1-2)+'" y="'+fx(py(o.r.total)-5,1)+'" text-anchor="end" font-size="10" fill="'+COL[i]+'">'+
+      o.g.n+' '+o.r.total+'</text>';
+  });
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：步数　纵轴：累计得分（同一条世界、同一个种子）</text>';
+  $('#apSvg').innerHTML=s;
+  var reflex=out[0].r.total,util=out[3].r.total;
+  $('#apFx').innerHTML='<span class="kw">四种结构的差别不在"聪明"，在内部表示</span>\n'+
+    '简单反射：状态 = 无（只看当前感知）\n'+
+    '基于模型：状态 = 每格上次看到的样子\n'+
+    '基于目标：状态 + <b>目标</b>（哪些格子要变干净）+ 搜索\n'+
+    '基于效用：状态 + <b>效用</b>（跑过去的期望收益 vs 代价）→ 可以直接选择"什么都不做"\n\n'+
+    '<span class="kw">这一轮的关键一步：基于效用的 agent 是怎么想的</span>\n'+
+    '去第 j 格： EU = P(j 已脏)·(剩余步数 − 距离) − 距离 × '+P.cost+'\n'+
+    '原地不动： EU = P(当前格脏)·剩余步数\n'+
+    '取大者 —— 当移动代价 '+P.cost+' 很大、而那边脏的概率又不高时，它会算出来「不值得跑」。\n\n'+
+    '<span class="kw">本轮结果</span>\n'+
+    out.map(function(o){return o.g.n+'：'+o.r.total;}).join('　');
+  $('#apBest').textContent=out.filter(function(o){return o.r.total===best;}).map(function(o){return o.g.n;}).join('、')+
+    '　（'+best+' 分）';
+  $('#apGap').textContent=(best-reflex)+' 分　（简单反射 '+reflex+'）';
+  var v=$('#apVerdict');
+  v.className='verdict '+(util>=reflex?'yes':'no');
+  v.innerHTML='<b>第一名：'+out.filter(function(o){return o.r.total===best;}).map(function(o){return o.g.n;}).join('、')+
+    '（'+best+' 分）；简单反射 '+reflex+' 分，差 '+(best-reflex)+'。</b>'+
+    '<br><span class="dim">'+
+    (P.cost===0?'把<b>移动代价</b>拉到 2 再看看：有了代价，基于效用的 agent 会开始"懒得跑"——'+
+      '那不是变笨，是它把「概率 × 收益 − 代价」算清楚了，而基于目标的 agent 只会闷头追目标。':
+      '移动代价是 '+P.cost+'：这时"跑过去"不再无条件正确，基于效用的 agent 靠算期望胜出。'+
+      '把代价调回 0，你会发现基于目标/基于模型的反而更稳 —— 没有权衡时，追目标就够了。')+'</span>';
+}
+['#apN','#apT','#apD','#apC'].forEach(function(i){$(i).oninput=apRender;});
+$('#apNext').onclick=function(){apSeed++;apRender();};
+apRender();
+
+
+/* ---------- ⑧ 学习型 agent ---------- */
+var lrSeed=90210;
+/* 变脏率的最大似然估计：一次观察 = (隔了多少步没看, 这次看到脏不脏) */
+function lrMLE(obs){
+  if(!obs.length)return 0.5;
+  var best=0.5,bll=-Infinity,p,k,q,ll;
+  for(p=0.01;p<0.99;p+=0.01){
+    ll=0;
+    for(k=0;k<obs.length;k++){
+      q=1-Math.pow(1-p,Math.max(1,obs[k].age));
+      ll+=obs[k].d?Math.log(q+1e-12):Math.log(Math.max(1-q,1e-12));
+    }
+    if(ll>bll){bll=ll;best=p;}
+  }
+  return best;
+}
+/* 学习 agent：边跑边用 MLE 估变脏率，按 ε 的概率专门去探索另一格 */
+function lrAgent(w,eps){
+  var M={obs:[],ls:[-9,-9],est:[0.5,0.5],r:mkRnd(w.seed+4242)};
+  return {mem:M,ag:{init:function(){return M;},act:function(st,mem,ww,t){
+    var i=st.pos,d=(st.mask>>i)&1;
+    M.obs.push({j:i,age:(M.ls[i]<0?3:t-M.ls[i]),d:d});
+    M.ls[i]=t;
+    M.est[i]=lrMLE(M.obs.filter(function(o){return o.j===i;}));
+    if(mem.r()<eps)return (i===0?'R':'L');              /* 探索：去看另一格 */
+    if(d)return 'S';                                     /* 脚下脏：吸 */
+    var pd=function(j){
+      var age=(mem.ls[j]<0)?3:(t-mem.ls[j]);
+      return 1-Math.pow(1-mem.est[j],age+1);             /* 用模型算「那边现在脏的概率」 */
+    };
+    var other=1-i;
+    if(pd(other)>pd(i)*0.5)return (other<i?'L':'R');
+    return 'N';
+  }}};
+}
+function lrPars(){
+  return {N:2,T:+$('#lrT').value,dp:[+$('#lrA').value/100,+$('#lrB').value/100],
+    cost:0,seed:lrSeed,eps:+$('#lrE').value/100};
+}
+function lrRender(){
+  var P=lrPars(),w=mkWorld(P);
+  $('#lrAv').textContent=fx(P.dp[0],2);$('#lrBv').textContent=fx(P.dp[1],2);
+  $('#lrEv').textContent=fx(P.eps,2);$('#lrTv').textContent=P.T;$('#lrSeed').textContent='seed '+P.seed;
+  var L=lrAgent(w,P.eps);
+  var rnd={init:function(){return {r:mkRnd(w.seed+99)};},
+    act:function(st,mem){var x=mem.r();return x<0.34?'S':(x<0.67?'R':'L');}};
+  var vi=viPolicy(w);
+  var omni=polAgent(vi,w);
+  var rL=wRun(w,L.ag),rR=wRun(w,rnd),rO=wRun(w,omni);
+  /* 估计值 = 最大似然（不是「看到脏的比例」—— 采样间隔不同会带偏差） */
+  var est=L.mem.est;
+  var mm={n:[0,0],s:[0,0]};
+  L.mem.obs.forEach(function(o){mm.n[o.j]++;if(o.d)mm.s[o.j]++;});
+  var t='<tr><th class="m">格子</th><th class="m">真实变脏率 p</th><th class="m">被观察到几次</th>'+
+    '<th class="m">其中脏了几次</th><th class="m">估计 p̂（最大似然）</th><th class="m">误差 |p̂−p|</th></tr>';
+  for(var j2=0;j2<2;j2++){
+    t+='<tr><td class="m mono">'+VALOC[j2]+'</td><td class="m mono">'+fx(P.dp[j2],2)+'</td>'+
+      '<td class="m mono">'+mm.n[j2]+'</td><td class="m mono">'+mm.s[j2]+'</td>'+
+      '<td class="m mono"><b>'+fx(est[j2],3)+'</b></td><td class="m mono">'+fx(Math.abs(est[j2]-P.dp[j2]),3)+'</td></tr>';
+  }
+  $('#lrTab').innerHTML=t;
+  var avg=function(r){return r.total/P.T;};
+  var t2='<tr><th class="m">玩家</th><th class="m">它知道什么</th><th class="m">平均每步得分</th><th class="m">相当于全知的</th></tr>';
+  [[rO,'全知（知道真实变脏率）',avg(rO)],[rL,'学习型 agent（边跑边估）',avg(rL)],[rR,'随机',avg(rR)]].forEach(function(x,i){
+    t2+='<tr'+(i===0?' class="cex"':'')+'><td class="m mono">'+x[1]+'</td><td class="m">'+
+      (i===0?'p 的真值':(i===1?'观察频率（Beta 后验均值）+ ε='+fx(P.eps,2)+' 探索':'什么也不用'))+
+      '</td><td class="m mono"><b>'+fx(x[2],3)+'</b></td>'+
+      '<td class="m mono">'+fx(100*x[2]/(avg(rO)||1),1)+'%</td></tr>';
+  });
+  $('#lrCmp').innerHTML=t2;
+  /* SVG：每 10 轮一格的学习曲线 */
+  var W=520,H=220,x0=52,x1=W-14,y0=20,y1=H-38,K=12;
+  var step=Math.max(1,Math.floor(P.T/K));
+  var buckets=[],errs=[];
+  var n2=[0,0],s2=[0,0];
+  for(var b=0;b<K;b++){
+    var lo=b*step,hi=Math.min(P.T,(b+1)*step);
+    if(lo>=hi)break;
+    var sc=0,cnt=0;
+    for(var t3=lo;t3<hi;t3++){
+      var r=rL.traj[t3];if(!r)continue;
+      sc+=r.score;cnt++;
+      var i3=r.pos,d3=(r.mask>>i3)&1;
+      n2[i3]++;if(d3)s2[i3]++;
+    }
+    buckets.push(cnt?sc/cnt:0);
+    var e1=Math.abs((s2[0]+1)/(n2[0]+2)-P.dp[0]),e2=Math.abs((s2[1]+1)/(n2[1]+2)-P.dp[1]);
+    errs.push((e1+e2)/2);
+  }
+  var mxScore=Math.max(2,Math.max.apply(null,buckets),avg(rO));
+  var px=function(i){return x0+(x1-x0)*(buckets.length<=1?0:i/(buckets.length-1));};
+  var py=function(v){return y1-(y1-y0)*v/mxScore;};
+  var s='';
+  s+='<line x1="'+x0+'" y1="'+py(0)+'" x2="'+x1+'" y2="'+py(0)+'" stroke="var(--line)"/>';
+  s+='<line x1="'+x0+'" y1="'+fx(py(avg(rO)),1)+'" x2="'+x1+'" y2="'+fx(py(avg(rO)),1)+
+    '" stroke="var(--accent)" stroke-dasharray="6 4"/>';
+  s+='<text x="'+(x0+6)+'" y="'+fx(py(avg(rO))-6,1)+'" font-size="10" fill="var(--accent)">全知基线 '+fx(avg(rO),3)+'</text>';
+  s+='<polyline points="'+buckets.map(function(v,i){return fx(px(i),1)+','+fx(py(v),1);}).join(' ')+
+    '" fill="none" stroke="var(--ok)" stroke-width="2.4"/>';
+  s+='<polyline points="'+errs.map(function(v,i){return fx(px(i),1)+','+fx(py(v*mxScore/0.5),1);}).join(' ')+
+    '" fill="none" stroke="var(--purple)" stroke-width="2" stroke-dasharray="5 3"/>';
+  s+='<text x="'+x1+'" y="'+(y0+12)+'" text-anchor="end" font-size="10" fill="var(--ok)">学习 agent 的平均分</text>';
+  s+='<text x="'+x1+'" y="'+(y0+26)+'" text-anchor="end" font-size="10" fill="var(--purple)">估计误差（右端 ≈ 0.5）</text>';
+  s+='<text x="'+((x0+x1)/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10" fill="var(--dim)">横轴：轮次（每 '+step+' 轮一格）　纵轴：平均每步得分</text>';
+  $('#lrSvg').innerHTML=s;
+  $('#lrErr').textContent=fx(Math.abs(est[0]-P.dp[0]),3)+' / '+fx(Math.abs(est[1]-P.dp[1]),3);
+  $('#lrPct').textContent=fx(100*avg(rL)/(avg(rO)||1),1)+'%　（学习 '+fx(avg(rL),3)+' vs 全知 '+fx(avg(rO),3)+'）';
+  $('#lrFx').innerHTML='<span class="kw">估计：最大似然 p̂ = argmax Π P(观察 | p)</span>\n'+
+    '一次观察 = 「隔了 age 步没看，这次看到脏不脏」；\n'+
+    'P(看到脏 | p, age) = 1 − (1−p)^age　→ 在 p ∈ (0,1) 上扫描取似然最大者。\n'+
+    '<span class="dim">（直接用「看到脏的比例」会偏：访问得越勤，每次间隔越短，看到脏的机会越少。）</span>\n\n'+
+    'A：观察到 '+mm.n[0]+' 次、其中脏 '+mm.s[0]+' 次 → p̂ = '+fx(est[0],3)+'　（真值 '+fx(P.dp[0],2)+'）\n'+
+    'B：观察到 '+mm.n[1]+' 次、其中脏 '+mm.s[1]+' 次 → p̂ = '+fx(est[1],3)+'　（真值 '+fx(P.dp[1],2)+'）\n\n'+
+    '<span class="kw">探索 / 利用</span>\n'+
+    '以 ε = '+fx(P.eps,2)+' 的概率<b>随机去看另一格</b>（哪怕当前估计说它不重要）；'+
+    '其余时候按当前估计 + 模型算出的「那边现在脏的概率」行动。\n'+
+    '<span class="dim">所以 ε = 0 时它并没有停止探索 —— 只是换成了模型驱动的那种。</span>\n\n'+
+    '<span class="kw">学费是可以量化的</span>\n'+
+    '全知 '+fx(avg(rO),3)+' − 学习 '+fx(avg(rL),3)+' = '+fx(avg(rO)-avg(rL),3)+' 分/步　← 这就是「从零开始学」的价钱。';
+  var v=$('#lrVerdict');
+  var good=Math.abs(est[0]-P.dp[0])<0.12&&Math.abs(est[1]-P.dp[1])<0.12;
+  v.className='verdict '+(good?'yes':'mid');
+  v.innerHTML='<b>'+P.T+' 轮之后：估计误差 A '+fx(Math.abs(est[0]-P.dp[0]),3)+'、B '+fx(Math.abs(est[1]-P.dp[1]),3)+
+    '；学习 agent 拿到全知的 '+fx(100*avg(rL)/(avg(rO)||1),1)+'%。</b>'+
+    '<br><span class="dim">'+
+    (P.eps>=0.35?'<b>ε = '+fx(P.eps,2)+' 太大了</b>：约 '+fx(P.eps*100,0)+'% 的步数都花在跑腿上，'+
+      '探索的代价已经盖过了它带来的信息 —— 把它拉回 0.1 左右。':
+     '误差曲线在往下走、得分曲线在往上走 —— 这就是学习元素在起作用。'+
+     '把 ε 拉到 0.4，看看「过度探索」要付多少钱。')+'</span>';
+}
+['#lrA','#lrB','#lrE','#lrT'].forEach(function(i){$(i).oninput=lrRender;});
+$('#lrNext').onclick=function(){lrSeed++;lrRender();};
+lrRender();
+
+
+/* ---------- ⑨ 全卷速查 ---------- */
+var UQROWS=null;
+function uqRender(){
+  if(!UQROWS)UQROWS=QQ('#uqTab tr[data-ch]').map(function(r){
+    return {ch:r.dataset.ch,html:r.innerHTML,txt:r.textContent.toLowerCase()};
+  });
+  var q=($('#uqQ').value||'').trim().toLowerCase(),c=$('#uqC').value,n=0;
+  var t='<tr><th class="m">章</th><th class="m">主题</th><th class="m">一句话</th><th class="m">最容易踩的坑</th></tr>';
+  UQROWS.forEach(function(r){
+    if(c&&r.ch!==c)return;
+    if(q&&r.txt.indexOf(q)<0)return;
+    n++;t+='<tr data-ch="'+r.ch+'">'+r.html+'</tr>';
+  });
+  $('#uqTab').innerHTML=t;
+  $('#uqN').textContent=n;
+}
+$('#uqQ').oninput=uqRender;$('#uqC').onchange=uqRender;
+uqRender();
+
+})();
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

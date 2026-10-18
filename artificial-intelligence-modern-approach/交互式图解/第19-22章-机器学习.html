@@ -1,0 +1,3457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIMA 第 19–22 章 · 机器学习（样例学习 · 概率模型 · 深度学习 · 强化学习） · 交互式图解</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1b2130; --line:#2b3444;
+  --fg:#e6edf3; --dim:#93a1b1; --faint:#6e7d8d;
+  --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --gold:#e3b341; --purple:#bc8cff; --cyan:#39c5cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#ffffff; --panel:#f6f8fa; --panel2:#eaeef2; --line:#d0d7de;
+    --fg:#1f2328; --dim:#57606a; --faint:#818b98;
+    --accent:#0969da; --ok:#1a7f37; --warn:#9a6700; --bad:#cf222e; --gold:#9a6700; --purple:#8250df; --cyan:#1b7c83;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:15px;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;line-height:1.3}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:18px 0 6px;color:var(--fg)}
+p{margin:8px 0}
+.lead{font-size:17px;color:var(--fg)}
+.dim{color:var(--dim)}
+.faint{color:var(--faint);font-size:13px}
+code,.mono{font-family:var(--mono)}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.hero .eq{font-family:var(--mono);font-size:15px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;margin-top:12px;display:block;color:var(--cyan)}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;
+  padding:6px 14px;font-size:13px;cursor:pointer;user-select:none}
+.tab:hover{color:var(--fg)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card>h2{margin-bottom:2px}
+.sub{color:var(--dim);font-size:13px;margin:0 0 10px}
+
+button.btn{border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;
+  padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+button.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.btn.pri:hover{filter:brightness(1.1);color:#fff}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+label.ck{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--dim);cursor:pointer}
+select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+input[type=range]{accent-color:var(--accent)}
+textarea{width:100%;min-height:150px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:8px;padding:10px;font-family:var(--mono);font-size:12.5px;line-height:1.7;resize:vertical}
+
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);font-weight:600;color:var(--dim);font-size:12.5px}
+td.m,th.m{text-align:center}
+tr.kbtrue td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+tr.cex td{background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.t{color:var(--ok);font-weight:700}
+.f{color:var(--bad);font-weight:700}
+.u{color:var(--faint)}
+
+/* ---- 闭环图 ---- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:12px 0}
+.fbox{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:10px 12px;min-width:120px;font-size:13px}
+.fbox b{display:block;font-size:13px}
+.fbox span{font-size:11.5px;color:var(--dim)}
+.fbox.kb{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);min-width:190px}
+.arw{display:flex;align-items:center;color:var(--faint);font-size:18px}
+.loopnote{border-left:3px solid var(--warn);padding:6px 12px;margin:10px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+
+/* ---- wumpus ---- */
+.wgrid{display:grid;grid-template-columns:repeat(4,72px);gap:6px;margin:12px 0}
+.wc{height:72px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:12px;position:relative;cursor:default}
+.wc.clickable{cursor:pointer}
+.wc.clickable:hover{border-color:var(--accent)}
+.wc .tag{font-family:var(--mono);font-size:12.5px;font-weight:700}
+.wc .pos{position:absolute;top:3px;left:5px;font-size:9.5px;color:var(--faint);font-family:var(--mono)}
+.wc .ic{font-size:15px;line-height:1}
+.wc.visited{background:color-mix(in srgb,var(--cyan) 10%,transparent);border-color:var(--cyan)}
+.wc.ok{color:var(--ok);border-color:var(--ok)}
+.wc.ok .tag{color:var(--ok)}
+.wc.maybe{color:var(--warn);border-color:var(--warn)}
+.wc.maybe .tag{color:var(--warn)}
+.wc.deadly{color:var(--bad);border-color:var(--bad)}
+.wc.deadly .tag{color:var(--bad)}
+.wc.agent{outline:2px solid var(--accent);outline-offset:1px}
+.wc.died{background:color-mix(in srgb,var(--bad) 22%,transparent)}
+.percept{font-family:var(--mono);font-size:13px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 11px;display:inline-block}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;
+  font-family:var(--mono);margin:2px 3px 2px 0;color:var(--dim)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+.pill.g{border-color:var(--ok);color:var(--ok)}
+.pill.r{border-color:var(--bad);color:var(--bad)}
+
+/* ---- 归结 / 链 ---- */
+.clist{font-family:var(--mono);font-size:12.5px;display:flex;flex-direction:column;gap:4px;margin-top:10px;
+  max-height:330px;overflow:auto}
+.cl{border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:var(--panel2);display:flex;gap:8px;align-items:baseline}
+.cl .idx{color:var(--faint);min-width:26px}
+.cl.new{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.cl.empty{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent);font-weight:700}
+.cl .from{color:var(--faint);font-size:11.5px}
+.lit.res{color:var(--bad);text-decoration:line-through}
+.lit.keep{color:var(--fg)}
+.lit.neg{color:var(--cyan)}
+
+.rules{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:var(--mono);font-size:13px}
+.rule{border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2);display:flex;
+  justify-content:space-between;gap:10px;align-items:center}
+.rule.fired{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.rule.active{border-color:var(--accent)}
+.badge{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--dim)}
+.badge.zero{border-color:var(--ok);color:var(--ok);font-weight:700}
+.queue{display:flex;flex-wrap:wrap;gap:4px;min-height:26px}
+.qchip{font-family:var(--mono);font-size:12px;border:1px solid var(--accent);color:var(--accent);
+  border-radius:6px;padding:1px 8px;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.qchip.done{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+
+.andor{font-family:var(--mono);font-size:13px;margin:12px 0}
+.orN{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{border:1px solid var(--line);border-radius:7px;padding:4px 11px;background:var(--panel2);display:inline-block}
+.node.fact{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.node.hl{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--fg)}
+.node.fail{border-color:var(--bad);color:var(--bad)}
+.andG{display:flex;flex-direction:column;align-items:center;margin-top:14px;position:relative;padding-top:14px}
+.andG::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:14px;background:var(--line)}
+.andRow{display:flex;gap:26px;align-items:flex-start;justify-content:center;position:relative;padding-top:14px}
+.andRow>.leg{position:absolute;top:0;height:2px;background:var(--line)}
+.stem{width:2px;height:14px;background:var(--line);margin:0 auto}
+.stackline{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:8px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}.wgrid{grid-template-columns:repeat(4,64px)}}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-size:13.5px}
+.kv b{font-family:var(--mono);color:var(--accent)}
+.verdict{border-radius:9px;padding:10px 13px;font-size:14px;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.yes{border-color:var(--ok);color:var(--ok)}
+.verdict.no{border-color:var(--bad);color:var(--bad)}
+.verdict.mid{border-color:var(--warn);color:var(--warn)}
+.note{border-left:3px solid var(--purple);padding:6px 12px;margin:12px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+.note b{color:var(--fg)}
+details{margin-top:10px}
+details>summary{cursor:pointer;color:var(--dim);font-size:13px}
+ul.tight{margin:6px 0;padding-left:20px}
+ul.tight li{margin:3px 0;font-size:13.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.mini{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--panel2)}
+.mini b{display:block;font-size:13px;margin-bottom:4px}
+.mini span{font-size:12.5px;color:var(--dim)}
+svg text{fill:var(--fg)}
+svg .ax{stroke:var(--line)}
+svg .gl{stroke:var(--line);stroke-dasharray:3 3}
+
+/* ---- 第 8-10 章新增 ---- */
+.mx{border-collapse:collapse;font-size:11px}
+.mx th,.mx td{border:1px solid var(--line);padding:2px 5px;text-align:center}
+.mx td{cursor:pointer;color:var(--faint);min-width:26px}
+.mx td:hover{border-color:var(--accent)}
+.mx td.on{background:color-mix(in srgb,var(--ok) 24%,transparent);color:var(--fg);font-weight:700}
+.mx th.rt{text-align:right;color:var(--dim);font-weight:600}
+.objtab td,.objtab th{padding:3px 6px;font-size:12px}
+.objtab td.m{text-align:center}
+.slist{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.sitem{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:8px 11px;font-size:13px;position:relative}
+.sitem .fl{font-family:var(--mono);font-size:12.5px}
+.sitem .vd{float:right;font-weight:700;font-size:12px;margin-left:10px}
+.vd.t{color:var(--ok)}.vd.f{color:var(--bad)}
+.exp{margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--dim);border-left:2px solid var(--line);padding-left:10px}
+.exp div{margin:1px 0}
+.exp .T{color:var(--ok)}.exp .F{color:var(--bad)}
+.steps{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.stp{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:8px 12px;font-size:13px;opacity:.32}
+.stp.on{opacity:1;border-color:var(--accent)}
+.stp .num{font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700}
+.stp .fml{font-family:var(--mono);font-size:12.5px;margin-top:4px;word-break:break-all}
+.stp .why{font-size:12px;color:var(--dim);margin-top:3px}
+.spine{display:flex;flex-direction:column;gap:4px;font-family:var(--mono);font-size:12px;margin-top:10px}
+.sp{border:1px solid var(--line);border-radius:7px;padding:5px 10px;background:var(--panel2);opacity:.4}
+.sp.on{opacity:1;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.sp .rr{color:var(--faint);font-size:11px;display:block}
+.node .th{font-size:10.5px;color:var(--faint);display:block;font-family:var(--mono)}
+.hier{font-family:var(--mono);font-size:12.5px}
+.hlvl{display:flex;gap:16px;justify-content:center;margin-bottom:6px}
+.obox{border:1px solid var(--line);border-radius:9px;padding:5px 13px;background:var(--panel2);text-align:center;font-size:13px}
+.obox.hit{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.obox.own{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 16%,transparent)}
+.obox .att{font-size:10.5px;color:var(--dim);display:block}
+.vsep{width:2px;height:20px;background:var(--line);margin:0 auto}
+.roundfacts{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.rf{border:1px solid var(--ok);border-radius:7px;padding:4px 10px;font-family:var(--mono);font-size:12.5px;
+  background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.rf .src{color:var(--dim);font-size:11px;display:block}
+
+/* ---- 第 11 章新增 ---- */
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.act{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 10px;
+  font-size:12.5px;font-family:var(--mono);cursor:pointer}
+.act:hover{border-color:var(--accent);color:var(--accent)}
+.act.off{opacity:.3;cursor:not-allowed}
+.act.off:hover{border-color:var(--line);color:inherit}
+.act.on{border-color:var(--ok);color:var(--ok)}
+.hist{display:flex;flex-direction:column;gap:4px;margin:10px 0;font-family:var(--mono);font-size:12.5px}
+.hrow{border:1px solid var(--line);border-radius:7px;padding:5px 10px;background:var(--panel2)}
+.hrow .add{color:var(--ok)}
+.hrow .del{color:var(--bad);text-decoration:line-through}
+.hrow .why{color:var(--dim);font-size:11.5px;display:block}
+.lits{font-family:var(--mono);font-size:12.5px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 11px;margin:8px 0;word-break:break-word}
+.bars{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.bar{display:grid;grid-template-columns:1fr 132px;font-size:12px;align-items:center;gap:10px}
+.bar .nm{font-size:12px;color:var(--dim)}
+.bar .tr{border:1px solid var(--line);border-radius:4px;background:var(--panel2);height:15px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent)}
+.bar .fl.bad{background:var(--bad)}
+.bar .vv{font-family:var(--mono);text-align:right;font-size:12px}
+.gantt{border:1px solid var(--line);border-radius:9px;background:var(--panel2);padding:12px;margin:10px 0}
+.grow{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:5px 0;font-size:12px}
+.gnm{font-family:var(--mono);font-size:11.5px;color:var(--dim);text-align:right}
+.gtrack{position:relative;height:20px;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.gblk{position:absolute;top:1px;height:16px;border-radius:3px;background:var(--accent);
+  font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.gblk.j2{background:var(--purple)}
+.gblk.slk{background:var(--faint)}
+.gaxis{display:grid;grid-template-columns:104px 1fr;gap:8px;font-size:10.5px;color:var(--faint);font-family:var(--mono)}
+.gaxis .tk{position:relative;height:14px}
+.gaxis .tk span{position:absolute;transform:translateX(-50%)}
+.sd9{display:grid;grid-template-columns:repeat(3,48px);gap:4px;margin:10px 0}
+.sd9 .c{height:48px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);display:flex;
+  align-items:center;justify-content:center;font-family:var(--mono);font-size:17px;font-weight:700}
+.sd9 .c.sub{color:var(--accent);border-color:var(--accent)}
+.sd9 .c.fit{color:var(--ok);border-color:var(--ok)}
+.sd9 .c.zero{color:var(--faint)}
+.pddl{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:9px 11px;margin:8px 0;white-space:pre-wrap;line-height:1.7}
+.pddl .kw{color:var(--purple);font-weight:700}
+.pddl .pn{color:var(--accent)}
+.pddl .neg{color:var(--bad)}
+.dec{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:var(--mono);font-size:12.5px}
+.drow{border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2);
+  display:flex;justify-content:space-between;gap:10px;align-items:center}
+.drow.prune{border-color:var(--bad);color:var(--bad)}
+.drow.commit{border-color:var(--ok);color:var(--ok)}
+.drow .rs{font-size:11.5px;color:var(--dim)}
+.mgrid{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.mcell{border:1px solid var(--line);border-radius:6px;padding:4px;background:var(--panel2);cursor:pointer}
+.mcell.hi{border-color:var(--accent)}
+.mcell.no{opacity:.35}
+.mrow{display:flex;gap:2px}
+.mbit{width:17px;height:17px;border:1px solid var(--line);border-radius:3px;background:var(--panel);
+  font-size:9.5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);color:var(--faint)}
+.mbit.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.trrow{cursor:pointer}
+.trrow:hover{background:var(--panel2)}
+.trbad{color:var(--bad)}
+.trgood{color:var(--ok)}
+.wire{fill:none;stroke-width:2}
+.sig1{stroke:var(--accent)}
+.sig0{stroke:var(--faint)}
+.gatebox{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}
+.gatebox.hot{stroke:var(--accent);stroke-width:2.5}
+.gatetxt{font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--fg);text-anchor:middle}
+.sigtxt{font-family:var(--mono);font-size:11px;text-anchor:middle;font-weight:700}
+.pick{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">AIMA 第 19–22 章 · 从样例中学习 → 学习概率模型 → 深度学习 → 强化学习</div>
+  <h1>学习 = 用数据换掉「手写规则」</h1>
+  <p class="lead">前五卷里，智能体的知识都是我们<b>写进去</b>的。从这一卷开始，知识是<b>从样例里学出来</b>的：
+  给定数据 <code>D</code> 与假设空间 <code>H</code>，找一个 <code>h</code> 使它在<b>没见过的数据</b>上也对。
+  全部内容都在回答两个问题：<strong>怎么从数据里挑出那个 h</strong>，以及<strong>凭什么相信它在新数据上也行</strong>。</p>
+  <div class="eq">经验损失 EmpLoss(h) = (1/N) Σⱼ L(yⱼ, h(xⱼ)) &nbsp; ← 在训练集上 &nbsp;|&nbsp; 泛化误差 ← 在没见过的数据上<br>
+  Cost(h) = EmpLoss(h) + λ·Complexity(h) &nbsp;&nbsp;|&nbsp;&nbsp; 本章追求的：<b>训练误差小，且验证误差也小</b></div>
+</header>
+
+<nav class="tabs">
+  <div class="tab on" data-panel="p1">① 学习全景 · PAC</div>
+  <div class="tab" data-panel="p2">② 熵与信息增益</div>
+  <div class="tab" data-panel="p3">③ ID3 决策树</div>
+  <div class="tab" data-panel="p4">④ 回归与梯度下降</div>
+  <div class="tab" data-panel="p5">⑤ 感知机 vs 逻辑回归</div>
+  <div class="tab" data-panel="p6">⑥ 过拟合与模型选择</div>
+  <div class="tab" data-panel="p7">⑦ 贝叶斯糖果袋</div>
+  <div class="tab" data-panel="p8">⑧ MLE vs Beta 后验</div>
+  <div class="tab" data-panel="p9">⑨ 朴素贝叶斯与平滑</div>
+  <div class="tab" data-panel="p10">⑩ EM 两袋糖</div>
+  <div class="tab" data-panel="p11">⑪ 贝叶斯回归与 MDL</div>
+  <div class="tab" data-panel="p12">⑫ 激活函数</div>
+  <div class="tab" data-panel="p13">⑬ 卷积</div>
+  <div class="tab" data-panel="p14">⑭ 反向传播手算</div>
+  <div class="tab" data-panel="p15">⑮ 优化器</div>
+  <div class="tab" data-panel="p16">⑯ 注意力与 LSTM</div>
+  <div class="tab" data-panel="p17">⑰ 价值迭代</div>
+  <div class="tab" data-panel="p18">⑱ 被动学习</div>
+  <div class="tab" data-panel="p19">⑲ Q vs SARSA</div>
+  <div class="tab" data-panel="p20">⑳ 多臂赌博机</div>
+  <div class="tab" data-panel="p21">㉑ 奖励黑客</div>
+  <div class="tab" data-panel="p22">㉒ 全卷速查</div>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section class="panel on" id="p1">
+  <div class="card">
+    <h2>学习的三种反馈，与一个最硬的定理</h2>
+    <p class="sub">监督（给标准答案）、无监督（只给数据）、强化（只给奖励）。
+    三者共用同一件事：从 <code>H</code> 里挑一个 <code>h</code>。挑得多好，PAC 学习理论给了个<b>能算出来</b>的界。</p>
+    <div class="controls">
+      <span class="faint">反馈类型</span>
+      <select id="mlKind">
+        <option value="sup">监督学习（有标签）</option>
+        <option value="unsup">无监督学习（只有 x）</option>
+        <option value="rl">强化学习（只有奖励）</option>
+      </select>
+    </div>
+    <div class="pddl" id="mlKindTxt"></div>
+    <h3>PAC 样本复杂度：要多少样例才够</h3>
+    <div class="controls">
+      <span class="faint">|H| 的指数 log₁₀|H|</span><input type="range" id="pacH" min="1" max="20" step="1" value="6"><b class="mono" id="pacHv">6</b>
+      <span class="faint">误差 ε</span><input type="range" id="pacE" min="1" max="30" step="1" value="10"><b class="mono" id="pacEv">0.10</b>
+      <span class="faint">失败概率 δ</span><input type="range" id="pacD" min="1" max="30" step="1" value="5"><b class="mono" id="pacDv">0.05</b>
+    </div>
+    <div class="two">
+      <div>
+        <div class="pddl" id="pacFx"></div>
+        <div class="kv"><span>需要的样本数 N ≥</span><b id="pacN">—</b></div>
+        <div class="kv"><span>其中「置信度」贡献</span><b id="pacC1">—</b></div>
+        <div class="kv"><span>其中「假设空间」贡献</span><b id="pacC2">—</b></div>
+      </div>
+      <div>
+        <div class="bars" id="pacBars"></div>
+      </div>
+    </div>
+    <h3>假设空间有多大：n 个布尔属性</h3>
+    <div class="controls">
+      <span class="faint">属性个数 n</span><input type="range" id="pacN2" min="1" max="8" step="1" value="4"><b class="mono" id="pacN2v">4</b>
+    </div>
+    <div class="kv"><span>可能的输入组合</span><b id="pacComb">—</b></div>
+    <div class="kv"><span>可能的布尔函数 |H| = 2^(2ⁿ)</span><b id="pacHs">—</b></div>
+    <div class="kv"><span>一致假设需要的样本（ε=0.1, δ=0.05）</span><b id="pacNeed">—</b></div>
+    <div id="pacVerdict" class="verdict"></div>
+    <div class="note"><b>PAC 界最重要的那句话：</b><span class="mono">N ≥ (1/ε)(ln(1/δ) + ln|H|)</span>。
+    |H| 出现在 <b>ln 里面</b> —— 假设空间从 10⁶ 涨到 10¹²，样本数只从 ≈152 涨到 ≈290（ε=0.1, δ=0.05）。
+    「假设空间很大」本身<b>不是</b>灾难，真正的灾难是<b>误差随 1/ε 线性增长</b>：想把误差减半，样本要翻倍。</div>
+    <div class="note"><b>没有免费午餐：</b>任何学习算法都自带<b>归纳偏置</b>（偏好某些 h）。
+    离开偏置，对「所有可能的函数」的平均误差对所有算法都一样 —— 所以"更好的算法"永远是"更适合这个世界的偏置"。</div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="panel" id="p2">
+  <div class="card">
+    <h2>熵与信息增益：先问哪个属性</h2>
+    <p class="sub">决策树每一步要挑一个"最能降低不确定性"的属性。判据是<b>信息增益</b>：
+    分裂前的熵，减去分裂后各组的加权平均熵。下面用的是书上 12 条餐馆数据，数字全都是真算的。</p>
+    <div class="controls">
+      <span class="faint">看哪个属性</span>
+      <select id="igA"></select>
+      <span class="faint">布尔熵 B(q) 的 q</span><input type="range" id="igQ" min="0" max="100" step="1" value="50"><b class="mono" id="igQv">0.50</b>
+    </div>
+    <svg id="igSvg" viewBox="0 0 520 150" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="two">
+      <div>
+        <h3>按 <span id="igName">—</span> 分组</h3>
+        <table id="igTable"></table>
+      </div>
+      <div>
+        <h3>10 个属性的信息增益</h3>
+        <div class="bars" id="igBars"></div>
+      </div>
+    </div>
+    <div class="kv"><span>分裂前的熵 B(6/12)</span><b id="igH">—</b></div>
+    <div class="kv"><span>分裂后的剩余熵 Remainder</span><b id="igR">—</b></div>
+    <div class="kv"><span>信息增益 Gain</span><b id="igG">—</b></div>
+    <div id="igVerdict" class="verdict"></div>
+    <div class="note"><b>信息增益的陷阱：</b>它偏爱<b>取值多</b>的属性。极端情况下给每个样本一个唯一取值（比如邮编），
+    每组只剩 1 条、熵全为 0，增益最大 —— 但这样的树<b>什么也没学到</b>，只是在背答案。</div>
+    <div class="note"><b>Alt、Bar、Type 三个属性的增益都是 0</b>：按"附近有没有别家""有没有吧台""什么菜系"分组后，
+    每组都是 1:1 或 2:2，和总体的 6:6 <b>一模一样</b> —— 一点信息都没得到。
+    Friday / Rain / Reservation 也只有 0.021。
+    真正有用的是 <b>Patrons（0.541）</b>：店里没人 → 一定不等，坐满了 → 八成不等。
+    其次是 <b>Est（0.207）</b> 和 Hungry / Price（0.196）。</div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="panel" id="p3">
+  <div class="card">
+    <h2>ID3：一步步把树长出来</h2>
+    <p class="sub">ID3 是贪心：每次挑<b>当前</b>信息增益最大的属性分裂，直到这一堆样本全同类。
+    它一定能拟合训练集，但拟合得太好就过拟合 —— 所以要<b>剪枝</b>。</p>
+    <div class="controls">
+      <button class="btn pri" id="dtStep">长一步</button>
+      <button class="btn" id="dtAll">一直长完</button>
+      <button class="btn" id="dtReset">重置</button>
+      <span class="faint">χ² 剪枝</span>
+      <select id="dtPrune">
+        <option value="none">不剪枝</option>
+        <option value="5">剪（显著性 5%）</option>
+        <option value="1">剪（显著性 1%）</option>
+      </select>
+    </div>
+    <div class="two">
+      <div>
+        <div class="pddl" id="dtTree"></div>
+      </div>
+      <div>
+        <table id="dtQueue"></table>
+      </div>
+    </div>
+    <div class="kv"><span>节点数 / 叶数</span><b id="dtSize">—</b></div>
+    <div class="kv"><span>训练集准确率</span><b id="dtAcc">—</b></div>
+    <div class="kv"><span>χ² 统计量 Δ（最近一次分裂）</span><b id="dtChi">—</b></div>
+    <div id="dtVerdict" class="verdict"></div>
+    <div class="note"><b>χ² 剪枝在问什么：</b>这个分裂带来的分布差异，会不会只是<b>随机波动</b>？
+    它算 Δ = Σ (观测 − 期望)²/期望，自由度 = 取值数 − 1；若 Δ 小于临界值（df=3 时 5% 对应 7.82），
+    就认为"这一刀不显著"，直接做成叶节点而不是继续分裂。</div>
+    <div class="note"><b>剪枝 ≠ 早停。</b>XOR 那种问题上，单个属性单独看<b>毫无信息</b>，早停会直接放弃；
+    所以要"先长完再回头剪"，而不是"看不对就停"。</div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="panel" id="p4">
+  <div class="card">
+    <h2>线性回归：闭式解 vs 梯度下降</h2>
+    <p class="sub">平方损失是<b>凸</b>的，所以它有唯一最小值 —— 既能一步算出（正规方程），也能一步步滚下去（梯度下降）。
+    滚下去的好处是：大数据下每一步都很便宜。</p>
+    <div class="controls">
+      <span class="faint">数据</span>
+      <select id="rgData">
+        <option value="line">教科书直线 y ≈ 2x + 1</option>
+        <option value="house">房价：面积 → 价格</option>
+        <option value="quad">其实是曲线（欠拟合）</option>
+      </select>
+      <span class="faint">方法</span>
+      <select id="rgMethod">
+        <option value="closed">闭式解（一步到位）</option>
+        <option value="gd">批量梯度下降</option>
+        <option value="sgd">随机梯度下降 SGD</option>
+      </select>
+      <span class="faint">学习率 α</span><input type="range" id="rgA" min="1" max="250" step="1" value="10"><b class="mono" id="rgAv">0.100</b>
+      <button class="btn pri" id="rgStep">走 1 步</button>
+      <button class="btn" id="rgRun">走 100 步</button>
+      <span id="rgHint" class="faint" style="margin-left:6px"></span>
+      <button class="btn" id="rgReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="rgSvg" viewBox="0 0 520 260" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <svg id="rgLoss" viewBox="0 0 520 170" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="kv"><span>w₀（截距） / w₁（斜率）</span><b id="rgW">—</b></div>
+    <div class="kv"><span>均方误差 MSE</span><b id="rgL">—</b></div>
+    <div class="kv"><span>已走步数</span><b id="rgT">0</b></div>
+    <div id="rgVerdict" class="verdict"></div>
+    <div class="note"><b>闭式解：</b><span class="mono">w₁ = (N·Σxy − Σx·Σy) / (N·Σx² − (Σx)²)</span>，
+    <span class="mono">w₀ = (Σy − w₁Σx)/N</span> —— 一步到位，但要算 Σ（大数据下贵）。</div>
+    <div class="note"><b>梯度下降：</b><span class="mono">wᵢ ← wᵢ + α·Σⱼ (yⱼ − h_w(xⱼ))·xⱼ,ᵢ</span>。
+    α 太小 → 爬得慢；α 太大 → <b>来回震荡甚至发散</b>。把 α 拉到最大试试，看损失曲线怎么炸掉。</div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="panel" id="p5">
+  <div class="card">
+    <h2>感知机 vs 逻辑回归：一条线的两种学法</h2>
+    <p class="sub">两者都在找一条<b>线性边界</b>，区别只在"错了怎么改"。
+    感知机只看<b>错得多离谱</b>（硬阈值），逻辑回归看<b>概率离目标多远</b>（连续输出）。</p>
+    <div class="controls">
+      <span class="faint">模型</span>
+      <select id="pcModel">
+        <option value="perc">感知机（硬阈值）</option>
+        <option value="log">逻辑回归（Logistic）</option>
+      </select>
+      <span class="faint">数据</span>
+      <select id="pcData">
+        <option value="sep">线性可分</option>
+        <option value="non">不可分（必然有错）</option>
+      </select>
+      <span class="faint">学习率 α</span><input type="range" id="pcA" min="1" max="100" step="1" value="20"><b class="mono" id="pcAv">0.20</b>
+      <button class="btn pri" id="pcStep">走 1 步</button>
+      <button class="btn" id="pcRun">走 200 步</button>
+      <button class="btn" id="pcReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="pcSvg" viewBox="0 0 520 300" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <svg id="pcErr" viewBox="0 0 520 180" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+        <div class="pddl" id="pcUpdate"></div>
+      </div>
+    </div>
+    <div class="kv"><span>权重 w₀, w₁, w₂</span><b id="pcW">—</b></div>
+    <div class="kv"><span>当前错分数 / 总样本</span><b id="pcE">—</b></div>
+    <div class="kv"><span>历史上最好（最少错误）</span><b id="pcBest">—</b></div>
+    <div id="pcVerdict" class="verdict"></div>
+    <div class="note"><b>感知机（硬阈值）：</b><span class="mono">wᵢ ← wᵢ + α(y − h_w(x))·xᵢ</span>，
+    h = 阈值(w·x)。数据<b>线性可分</b>时它一定收敛；不可分时它会<b>一直抖</b> —— 反复经过误差最小的那组权重，却永远停不下来。</div>
+    <div class="note"><b>逻辑回归：</b>h = 1/(1+e^{−w·x})，更新 <span class="mono">wᵢ ← wᵢ + α(y − h)·h·(1−h)·xᵢ</span>。
+    多乘的那个 <span class="mono">h(1−h)</span> 是 logistic 的导数 —— <b>已经很确定的样本，梯度几乎为 0</b>，所以它学得更稳。</div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="panel" id="p6">
+  <div class="card">
+    <h2>过拟合：把噪声也背下来了</h2>
+    <p class="sub">同一个真函数，用不同复杂度的模型去拟合：<b>太简单</b>欠拟合，<b>太复杂</b>把噪声当规律。
+    验证集上的误差是一条 <b>U 形</b>曲线，最低点就是你要的复杂度。</p>
+    <div class="controls">
+      <span class="faint">多项式次数 d</span><input type="range" id="ovD" min="0" max="9" step="1" value="3"><b class="mono" id="ovDv">3</b>
+      <span class="faint">噪声 σ</span><input type="range" id="ovS" min="0" max="40" step="1" value="15"><b class="mono" id="ovSv">0.15</b>
+      <span class="faint">训练点数 N</span><input type="range" id="ovN" min="5" max="60" step="1" value="15"><b class="mono" id="ovNv">15</b>
+      <span class="faint">正则 λ</span><input type="range" id="ovL" min="0" max="100" step="1" value="0"><b class="mono" id="ovLv">0.000</b>
+      <select id="ovReg">
+        <option value="l2">L2（岭）</option>
+        <option value="l1">L1（Lasso，压到 0）</option>
+      </select>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="ovSvg" viewBox="0 0 520 260" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <svg id="ovCurve" viewBox="0 0 520 170" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+        <div class="pddl" id="ovW"></div>
+      </div>
+    </div>
+    <div class="kv"><span>训练 RMSE</span><b id="ovTr">—</b></div>
+    <div class="kv"><span>验证（新数据）RMSE</span><b id="ovVa">—</b></div>
+    <div class="controls">
+      <span class="faint">k 折交叉验证</span>
+      <select id="ovK">
+        <option value="2">2 折</option>
+        <option value="5" selected>5 折</option>
+        <option value="10">10 折</option>
+        <option value="0">留一法 LOOCV</option>
+      </select>
+      <button class="btn pri" id="ovCV">跑一遍 CV</button>
+    </div>
+    <div class="bars" id="ovCVBars"></div>
+    <div id="ovVerdict" class="verdict"></div>
+    <div class="note"><b>为什么一定要有验证集：</b>训练误差随复杂度<b>单调下降</b>，它永远偏爱"最复杂的那个"。
+    只有<b>没参与训练</b>的数据才能告诉你模型是不是在背答案。测试集更是只能摸一次 —— 拿它调参，它就已经不是测试集了。</div>
+    <div class="note"><b>正则化是在给"复杂"标价：</b><span class="mono">Cost = EmpLoss + λ·Complexity</span>。
+    L2 的 Complexity = Σwᵢ²，把权重<b>均匀压小</b>；L1 = Σ|wᵢ|，会把没用的权重<b>压成 0</b>（自动做特征选择）。
+    把 λ 拉大，看那条抖动的曲线怎么被压平。</div>
+  </div>
+</section>
+
+
+<!-- ============ 7 ============ -->
+<section class="panel" id="p7">
+  <div class="card">
+    <h2>贝叶斯糖果袋：五个假设在赛跑</h2>
+    <p class="sub">袋子里樱桃糖和柠檬糖的比例未知，只有 <b>5 个候选假设</b>。每打开一颗糖，
+    就按贝叶斯法则把所有假设的后验<b>重新加权</b>。注意：<b>贝叶斯预测</b>是对所有假设取平均，
+    而 <b>MAP 预测</b>只信当前最可能的那个 —— 它们的答案常常不一样。</p>
+    <div class="controls">
+      <button class="btn pri" data-candy="cherry">打开一颗：樱桃 🍒</button>
+      <button class="btn" data-candy="lime">打开一颗：柠檬 🍋</button>
+      <button class="btn" id="cb10">连开 10 颗柠檬</button>
+      <button class="btn" id="cbReset">重置</button>
+    </div>
+    <div class="pddl" id="cbSeq"></div>
+    <div class="two">
+      <div>
+        <h3>5 个假设的后验</h3>
+        <div class="bars" id="cbBars"></div>
+      </div>
+      <div>
+        <h3>两种预测的分歧</h3>
+        <div class="kv"><span>贝叶斯预测 P(下一颗 = 柠檬)</span><b id="cbBayes">—</b></div>
+        <div class="kv"><span>MAP 假设</span><b id="cbMap">—</b></div>
+        <div class="kv"><span>MAP 预测 P(下一颗 = 柠檬)</span><b id="cbMapP">—</b></div>
+        <div class="pddl" id="cbWhy"></div>
+      </div>
+    </div>
+    <div id="cbVerdict" class="verdict"></div>
+    <div class="note"><b>MAP 更冒险，贝叶斯更诚实。</b>看完 3 颗柠檬后，
+    <span class="mono">h₅</span>（0% 樱桃）后验最大，于是 MAP 拍胸脯说"下一颗一定是柠檬（1.0）"。
+    贝叶斯预测却只有 <b>0.8</b> —— 因为它把 h₄、h₃ 的可能性也算了进去。
+    <b>用 MAP 近似贝叶斯，会丢掉假设空间里的不确定性。</b></div>
+    <div class="note"><b>数据量足够时两者会合流：</b>随着证据增多，后验越来越集中在一个假设上，
+    MAP 与贝叶斯预测趋于一致。这就是"数据最终会压倒先验"。</div>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="panel" id="p8">
+  <div class="card">
+    <h2>MLE 与 Beta 后验：只抛一次硬币，你敢说 θ = 1 吗</h2>
+    <p class="sub">最大似然（MLE）是"哪个参数让数据最可能出现"；
+    贝叶斯是"参数的<b>整个分布</b>变成什么样"。数据少的时候，两者的差距非常刺眼。</p>
+    <div class="controls">
+      <span class="faint">抛了 N 次</span><input type="range" id="beN" min="1" max="100" step="1" value="1"><b class="mono" id="beNv">1</b>
+      <span class="faint">其中正面 c</span><input type="range" id="beC" min="0" max="100" step="1" value="1"><b class="mono" id="beCv">1</b>
+      <span class="faint">先验 a</span><input type="range" id="beA" min="1" max="20" step="1" value="1"><b class="mono" id="beAv">1</b>
+      <span class="faint">先验 b</span><input type="range" id="beB" min="1" max="20" step="1" value="1"><b class="mono" id="beBv">1</b>
+    </div>
+    <svg id="beSvg" viewBox="0 0 520 200" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="two">
+      <div>
+        <div class="kv"><span>MLE：θ̂ = c/N</span><b id="beMle">—</b></div>
+        <div class="kv"><span>后验：Beta(a+c, b+ℓ)</span><b id="bePost">—</b></div>
+        <div class="kv"><span>后验均值 (a+c)/(a+b+N)</span><b id="beMean">—</b></div>
+        <div class="kv"><span>后验标准差</span><b id="beSd">—</b></div>
+        <div class="kv"><span>95% 可信区间</span><b id="beCi">—</b></div>
+      </div>
+      <div>
+        <div class="pddl" id="beFx"></div>
+      </div>
+    </div>
+    <div id="beVerdict" class="verdict"></div>
+    <div class="note"><b>先验 = 虚拟计数。</b><span class="mono">Beta(a,b)</span> 相当于"在看到真实数据之前，
+    你已经见过 a 次正面、b 次反面"。<span class="mono">Beta(1,1)</span> 是均匀分布（什么都不假设），
+    均匀先验下 <b>MAP ≡ MLE</b>。</div>
+    <div class="note"><b>数据越多，后验越尖。</b><span class="mono">Beta(3,1) → Beta(6,2) → Beta(30,10)</span>：
+    均值都在 0.75 附近，但标准差一路从 0.19 缩到 0.075 —— 这就是"学"的过程：
+    不是找到一个点，而是把不确定性<b>挤掉</b>。</div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="panel" id="p9">
+  <div class="card">
+    <h2>朴素贝叶斯：一个"几乎不成立"却很好用的假设</h2>
+    <p class="sub">假设给定类别后，所有属性<b>相互独立</b> —— 于是 <span class="mono">P(C|x) ∝ P(C)·Π P(xᵢ|C)</span>，
+    参数从指数级降到 <b>2n+1</b> 个。用第 19 章那 12 条餐馆数据就能跑。</p>
+    <div class="controls">
+      <span class="faint">要分类的样例</span>
+      <select id="nbCase"></select>
+      <span class="faint">平滑</span>
+      <select id="nbSmooth">
+        <option value="none">不做平滑</option>
+        <option value="1" selected>拉普拉斯平滑（+1）</option>
+        <option value="0.5">Jeffreys（+0.5）</option>
+      </select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>学到的参数（1 + 2×Σ(|Vᵢ|−1) = 33 个）</h3>
+        <table id="nbTab"></table>
+      </div>
+      <div>
+        <h3>逐属性相乘</h3>
+        <div class="pddl" id="nbMul"></div>
+      </div>
+    </div>
+    <div class="kv"><span>P(WillWait = Yes | x)</span><b id="nbYes">—</b></div>
+    <div class="kv"><span>P(WillWait = No | x)</span><b id="nbNo">—</b></div>
+    <div class="kv"><span>在 12 条训练集上的准确率</span><b id="nbAcc">—</b></div>
+    <div id="nbVerdict" class="verdict"></div>
+    <div class="note"><b>不做平滑会怎样：</b>只要某个属性值在某个类别里<b>一次都没出现过</b>，
+    <span class="mono">P(xᵢ|C) = 0</span> → 整个乘积变成 0 → 两边都是 0，分类器直接失灵。
+    拉普拉斯平滑给每个计数加 1，等于说"没见过 ≠ 不可能"。</div>
+    <div class="note"><b>它的概率是过度自信的。</b>条件独立假设在现实里几乎从不成立，
+    把 10 个"半独立"的概率连乘，结果会<b>趋近 0 或 1</b>。所以朴素贝叶斯当<b>分类器</b>很好用，
+    但当<b>概率估计器</b>要小心。</div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="panel" id="p10">
+  <div class="card">
+    <h2>EM：不知道糖来自哪个袋子，也要把参数学出来</h2>
+    <p class="sub">两袋糖混在一起，你只看到 (包装纸颜色, 有没有孔, 味道) 的<b>计数</b>，
+    不知道每颗来自哪袋 —— 这是<b>隐变量</b>。EM 的做法是：先猜参数 → 算每颗糖属于各袋的概率（E 步）
+    → 用这些"软计数"重新估参数（M 步）→ 重复。</p>
+    <div class="controls">
+      <button class="btn pri" id="emStep">走一轮</button>
+      <button class="btn" id="em10">走 10 轮</button>
+      <button class="btn" id="emReset">重置</button>
+      <span class="faint">初值 θ</span><input type="range" id="emT" min="10" max="90" step="5" value="60"><b class="mono" id="emTv">0.60</b>
+      <span class="faint">袋 1 的 F/W/H 初值</span><input type="range" id="emA" min="10" max="90" step="5" value="60"><b class="mono" id="emAv">0.60</b>
+      <span class="faint">袋 2 的</span><input type="range" id="emB" min="10" max="90" step="5" value="40"><b class="mono" id="emBv">0.40</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>1000 颗糖的观测计数</h3>
+        <table id="emTab"></table>
+      </div>
+      <div>
+        <svg id="emSvg" viewBox="0 0 520 170" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+    </div>
+    <div class="pddl" id="emLog"></div>
+    <div class="kv"><span>对数似然 ℓ(θ)</span><b id="emL">—</b></div>
+    <div class="kv"><span>已走轮数</span><b id="emR">0</b></div>
+    <div id="emVerdict" class="verdict"></div>
+    <div class="note"><b>EM 保证"每一步都不变差"：</b>对数似然单调上升（这是 EM 的核心定理）。
+    但它<b>不保证找到全局最优</b> —— 换一组初值（拉动上面三个滑块）可能收敛到完全不同的解。</div>
+    <div class="note"><b>不可辨识的警告：</b>如果只有 2 个属性却要恢复 5 个参数，
+    不同的参数组合会给出<b>完全一样</b>的观测分布（比如两个袋子对调），此时根本学不出来 ——
+    参数个数不能超过独立计数的个数。</div>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="panel" id="p11">
+  <div class="card">
+    <h2>贝叶斯线性回归：连"我还不确定"也算出来</h2>
+    <p class="sub">普通回归给你<b>一个</b>权重；贝叶斯回归给你权重的<b>分布</b>。
+    于是预测不只是一个数，而是一个<b>区间</b> —— 而且离数据越远，区间越宽。</p>
+    <div class="controls">
+      <span class="faint">数据集</span>
+      <select id="brData">
+        <option value="near">3 个点，都挤在原点附近</option>
+        <option value="far">再加 2 个远处的点</option>
+      </select>
+      <span class="faint">先验均值 θ₀</span><input type="range" id="brT0" min="-20" max="20" step="1" value="0"><b class="mono" id="brT0v">0.0</b>
+      <span class="faint">先验标准差 σ₀</span><input type="range" id="brS0" min="1" max="30" step="1" value="10"><b class="mono" id="brS0v">1.0</b>
+      <span class="faint">噪声 σ</span><input type="range" id="brS" min="1" max="20" step="1" value="5"><b class="mono" id="brSv">0.5</b>
+    </div>
+    <svg id="brSvg" viewBox="0 0 520 260" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="kv"><span>后验均值 θ_N</span><b id="brT">—</b></div>
+    <div class="kv"><span>后验方差 σ_N²</span><b id="brS2">—</b></div>
+    <div class="kv"><span>预测方差（x = 4 处）</span><b id="brPv">—</b></div>
+    <h3>结构学习：为什么必须给"复杂"罚款</h3>
+    <div class="controls">
+      <span class="faint">每个参数的罚分 λ</span><input type="range" id="brL" min="0" max="40" step="1" value="16"><b class="mono" id="brLv">8.0</b>
+    </div>
+    <table id="brMdl"></table>
+    <div id="brVerdict" class="verdict"></div>
+    <div class="note"><b>预测带为什么是喇叭形：</b>预测方差 = <span class="mono">σ² + σ_N²·x²</span>。
+    <span class="mono">σ²</span> 是数据本身的噪声（哪儿都有），
+    <span class="mono">σ_N²·x²</span> 是"斜率还不确定"带来的 —— 离原点越远，斜率的一点误差被放得越大。</div>
+    <div class="note"><b>纯最大似然的结构学习必然选全连接网</b>（多加一条父边，似然只会升不会降），
+    所以必须加复杂度惩罚：<span class="mono">MDL = −log₂P(d|h) − log₂P(h)</span>。
+    把 λ 拉到 0，看最复杂的结构是不是立刻"赢"了。</div>
+  </div>
+</section>
+
+
+<!-- ============ 12 ============ -->
+<section class="panel" id="p12">
+  <div class="card">
+    <h2>激活函数动物园：非线性从哪来</h2>
+    <p class="sub">没有非线性，堆多少层都等价于<b>一层</b>线性变换。
+    激活函数的形状决定了梯度能不能流回去 —— 这比它长什么样重要得多。</p>
+    <div class="controls">
+      <span class="faint">函数</span>
+      <select id="afF">
+        <option value="logistic">logistic σ</option>
+        <option value="tanh">tanh</option>
+        <option value="relu">ReLU</option>
+        <option value="lrelu">Leaky ReLU</option>
+        <option value="softplus">softplus</option>
+        <option value="silu">SiLU / swish</option>
+      </select>
+      <span class="faint">x 的取值</span><input type="range" id="afX" min="-60" max="60" step="1" value="20"><b class="mono" id="afXv">2.0</b>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="afSvg" viewBox="0 0 520 240" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <div class="pddl" id="afFx"></div>
+        <div class="kv"><span>g(x)</span><b id="afG">—</b></div>
+        <div class="kv"><span>g′(x)</span><b id="afD">—</b></div>
+        <div class="kv"><span>值域</span><b id="afRange">—</b></div>
+      </div>
+    </div>
+    <h3>softmax：把一串实数变成分布</h3>
+    <div class="controls">
+      <span class="faint">温度 T</span><input type="range" id="afT" min="10" max="300" step="5" value="100"><b class="mono" id="afTv">1.00</b>
+      <span class="faint">logits</span><input type="range" id="afL1" min="-40" max="40" step="1" value="20"><input type="range" id="afL2" min="-40" max="40" step="1" value="10"><input type="range" id="afL3" min="-40" max="40" step="1" value="-5">
+    </div>
+    <div class="bars" id="afSoft"></div>
+    <div class="kv"><span>熵（不确定性）</span><b id="afH">—</b></div>
+    <div id="afVerdict" class="verdict"></div>
+    <div class="note"><b>ReLU 为什么赢：</b>它的导数在正半轴<b>恒为 1</b>，梯度可以无损地穿过多层，
+    而 logistic / tanh 的导数最大只有 0.25 / 1，连乘十几层就<b>趋近 0</b>（梯度消失）。
+    代价是：负半轴导数恒为 0 —— 一旦某个神经元的所有输入都为负，它就<b>永久死亡</b>，再也不更新。</div>
+    <div class="note"><b>softmax 的温度：</b>T → 0 时它变成<b>硬取最大</b>（one-hot），
+    T → ∞ 时变成<b>均匀分布</b>。蒸馏、采样都在调这个旋钮：想要"确定"就降温，想要"多样"就升温。</div>
+  </div>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="panel" id="p13">
+  <div class="card">
+    <h2>卷积：同一个核扫过整张图</h2>
+    <p class="sub">卷积层做的是<b>局部连接 + 参数共享</b>：不管图多大，核都是那几个数。
+    下面这个特征图是一格一格<b>真算</b>出来的。</p>
+    <div class="controls">
+      <span class="faint">核</span>
+      <select id="cvK">
+        <option value="edge">边缘检测 [[1,0,−1]×3]</option>
+        <option value="blur">模糊（全 1/9）</option>
+        <option value="sharp">锐化 [[0,−1,0],[−1,5,−1],[0,−1,0]]</option>
+        <option value="sobel">Sobel（水平边缘）</option>
+      </select>
+      <span class="faint">核大小</span>
+      <select id="cvS"><option value="3">3×3</option><option value="2">2×2</option></select>
+      <span class="faint">步长</span>
+      <select id="cvStr"><option value="1">1</option><option value="2">2</option></select>
+      <span class="faint">填充</span>
+      <select id="cvPad"><option value="0">0</option><option value="1">1</option></select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>输入 5×5</h3>
+        <div class="mgrid" id="cvIn"></div>
+      </div>
+      <div>
+        <h3>核</h3>
+        <div class="mgrid" id="cvKer"></div>
+        <h3>输出特征图 <span id="cvOutSize" class="dim"></span></h3>
+        <div class="mgrid" id="cvOut"></div>
+      </div>
+    </div>
+    <div class="kv"><span>这一层的参数个数</span><b id="cvP">—</b></div>
+    <div class="kv"><span>换成全连接的参数个数</span><b id="cvFull">—</b></div>
+    <div id="cvVerdict" class="verdict"></div>
+    <div class="note"><b>参数共享省在哪：</b>一个 3×3 卷积核只有 <b>9 个参数（+1 偏置）</b>，
+    无论输入是 5×5 还是 1000×1000。要是全连接，784 → 784 就要 <b>61 万</b>个参数。
+    省下来的不只是内存：共享意味着"这个特征在<b>任何位置</b>都长这样" —— 这就是平移等变性。</div>
+    <div class="note"><b>卷积不是真的"卷积"：</b>深度学习里的卷积其实是<b>互相关</b>（不翻转核）。
+    因为核是学出来的，翻不翻转只是换个初始化，数学上等价。</div>
+  </div>
+</section>
+
+<!-- ============ 14 ============ -->
+<section class="panel" id="p14">
+  <div class="card">
+    <h2>反向传播：把每一步的账都算给你看</h2>
+    <p class="sub">经典的 2–2–2 小网络：2 输入、2 隐单元、2 输出。
+    前向算出输出与损失，反向沿着<b>同一条链</b>把误差分摊回每个权重。每个数字都是真算的。</p>
+    <div class="controls">
+      <button class="btn pri" id="bpStep">走一步（前向 + 反向 + 更新）</button>
+      <button class="btn" id="bp10">走 10 步</button>
+      <button class="btn" id="bpReset">重置</button>
+      <span class="faint">学习率 α</span><input type="range" id="bpA" min="1" max="100" step="1" value="50"><b class="mono" id="bpAv">0.50</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>前向</h3>
+        <div class="pddl" id="bpFwd"></div>
+      </div>
+      <div>
+        <h3>反向</h3>
+        <div class="pddl" id="bpBwd"></div>
+      </div>
+    </div>
+    <div class="kv"><span>总损失 E = ½Σ(target − out)²</span><b id="bpE">—</b></div>
+    <div class="kv"><span>已训练步数</span><b id="bpT">0</b></div>
+    <svg id="bpSvg" viewBox="0 0 520 150" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div id="bpVerdict" class="verdict"></div>
+    <div class="note"><b>链式法则就是"分摊责任"：</b>
+    <span class="mono">∂E/∂w₁ = ∂E/∂out_h₁ · ∂out_h₁/∂net_h₁ · ∂net_h₁/∂w₁</span>。
+    三层括号分别回答：这个隐单元对误差<b>有多大责任</b>、激活函数<b>放行了</b>多少、这个权重<b>经手了</b>多少输入。</div>
+    <div class="note"><b>算一遍就够：</b>反向传播的计算量与前向<b>同阶</b>（都是 O(边数)），
+    这正是它比"数值梯度"（每个参数都要重算一次前向）快得多的原因 —— 也是深度学习能训练的根本。</div>
+  </div>
+</section>
+
+<!-- ============ 15 ============ -->
+<section class="panel" id="p15">
+  <div class="card">
+    <h2>优化器：SGD 卡在峡谷里，Adam 直接冲过去</h2>
+    <p class="sub">同一个损失面 <span class="mono">L(w) = 0.1·w₁² + 5·w₂²</span>（一个细长的峡谷）：
+    三个优化器从同一个点出发，看谁先到谷底。</p>
+    <div class="controls">
+      <span class="faint">优化器</span>
+      <select id="opM">
+        <option value="sgd">SGD</option>
+        <option value="mom">SGD + 动量</option>
+        <option value="adam">Adam</option>
+      </select>
+      <span class="faint">学习率 α</span><input type="range" id="opA" min="1" max="100" step="1" value="20"><b class="mono" id="opAv">0.050</b>
+      <button class="btn pri" id="opStep">走 10 步</button>
+      <button class="btn" id="opRun">走 200 步</button>
+      <button class="btn" id="opReset">重置</button>
+    </div>
+    <svg id="opSvg" viewBox="0 0 520 280" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="kv"><span>当前 w、损失</span><b id="opW">—</b></div>
+    <div class="kv"><span>走到 L &lt; 0.01 用了几步</span><b id="opN">—</b></div>
+    <div class="pddl" id="opFx"></div>
+    <div id="opVerdict" class="verdict"></div>
+    <div class="note"><b>动量为啥有用：</b>峡谷里梯度在"陡的方向"来回震荡、在"平的方向"走得很慢。
+    动量把历史梯度<b>累加</b>起来，震荡方向互相抵消，平坦方向不断加速 —— 就像带惯性的球。</div>
+    <div class="note"><b>Adam 在改什么：</b>它对每个参数<b>各自</b>做尺度归一（除以梯度二阶矩的平方根），
+    于是所有方向的有效步长都差不多 —— 细长的峡谷被"拉圆"了。
+    代价：Adam 泛化有时不如精调的 SGD + 动量，而且它<b>也有超参数</b>（β₁、β₂、ε）。</div>
+  </div>
+</section>
+
+<!-- ============ 16 ============ -->
+<section class="panel" id="p16">
+  <div class="card">
+    <h2>注意力：让每个词直接看所有词</h2>
+    <p class="sub">RNN 要把信息一步步传下去（传着传着就没了）；
+    Transformer 让每个位置<b>一步直达</b>所有位置：
+    <span class="mono">Attention(Q,K,V) = softmax(QKᵀ/√d)·V</span>。</p>
+    <div class="controls">
+      <span class="faint">句子</span>
+      <select id="atS">
+        <option value="0">[猫, 追, 老鼠]</option>
+        <option value="1">[我, 爱, 机器学习, 。]</option>
+      </select>
+      <span class="faint">头</span>
+      <select id="atH"><option value="0">头 1</option><option value="1">头 2</option></select>
+      <span class="faint">除以 √dₖ</span>
+      <select id="atScale"><option value="1">要（标准做法）</option><option value="0">不要</option></select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>注意力权重 softmax(QKᵀ/√dₖ)</h3>
+        <table id="atTab"></table>
+      </div>
+      <div>
+        <h3>输出 = 权重 · V</h3>
+        <div class="pddl" id="atOut"></div>
+        <div class="kv"><span>计算量 O(n²·d)</span><b id="atCost">—</b></div>
+      </div>
+    </div>
+    <div id="atVerdict" class="verdict"></div>
+    <h3>另一条路：RNN 的梯度消失</h3>
+    <div class="controls">
+      <span class="faint">序列长度 T</span><input type="range" id="rnT" min="1" max="30" step="1" value="10"><b class="mono" id="rnTv">10</b>
+      <span class="faint">循环权重 w</span><input type="range" id="rnW" min="10" max="100" step="1" value="50"><b class="mono" id="rnWv">0.50</b>
+      <span class="faint">用 LSTM 门控</span><select id="rnL"><option value="0">不用</option><option value="1">用（加性恒等路径）</option></select>
+    </div>
+    <div class="kv"><span>传到第 1 步时梯度还剩</span><b id="rnG">—</b></div>
+    <svg id="rnSvg" viewBox="0 0 520 120" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div id="rnVerdict" class="verdict"></div>
+    <div class="note"><b>为什么要除以 √dₖ：</b>两个 d 维向量点积的量级是 <span class="mono">√d</span>，
+    d 一大，点积就很大 → softmax 进入<b>饱和区</b>（梯度近乎 0，学不动）。
+    除以 √dₖ 把方差拉回 1。把上面的开关切到"不要"，看权重怎么塌成 one-hot。</div>
+    <div class="note"><b>LSTM 的解法：</b>给记忆单元开一条<b>加性</b>的恒等通路（cell state），
+    梯度可以无损地一直往回传 <span class="mono">∂c_t/∂c_{t−1} = f_t</span>（遗忘门，接近 1 时≈无损）。
+    上面把"用 LSTM 门控"打开，看梯度能传多远。</div>
+  </div>
+</section>
+
+
+
+<!-- ============ 17 ============ -->
+<section class="panel" id="p17">
+  <div class="card">
+    <h2>价值迭代：把 Bellman 方程迭代到不动点</h2>
+    <p class="sub">智能体知道转移模型 <span class="mono">P(s'|s,a)</span> 和奖励，只是不知道该怎么做 ——
+    那就反复用 <span class="mono">U(s) = R(s) + γ·max_a Σ P(s'|s,a)U(s')</span> 更新，直到收敛。
+    这就是<b>价值迭代</b>。</p>
+    <div class="controls">
+      <span class="faint">折扣 γ</span><input type="range" id="viG" min="50" max="100" step="1" value="100"><b class="mono" id="viGv">1.00</b>
+      <span class="faint">每步奖励 R(s)</span><input type="range" id="viR" min="-200" max="0" step="5" value="-4"><b class="mono" id="viRv">−0.04</b>
+      <button class="btn pri" id="viStep">迭代 1 次</button>
+      <button class="btn" id="viRun">迭代到收敛</button>
+      <button class="btn" id="viPolicy">改跑策略迭代</button>
+      <button class="btn" id="viReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="viSvg" viewBox="0 0 520 300" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <table id="viTab"></table>
+      </div>
+    </div>
+    <div class="kv"><span>已迭代次数</span><b id="viN">0</b></div>
+    <div class="kv"><span>收敛判据</span><b id="viEps">—</b></div>
+    <div id="viVerdict" class="verdict"></div>
+    <div class="note"><b>为什么迭代一定会收敛：</b>Bellman 更新是一个<b>压缩映射</b>（γ &lt; 1 时），
+    每次迭代都把所有 U 值之间的距离压缩 γ 倍 → 几何级数收敛。
+    γ = 1 时它依然收敛（因为最终会碰到终止状态），只是<b>没有折扣</b>，agent 会为了远期奖励无限拖延。</div>
+    <div class="note"><b>价值迭代 vs 策略迭代：</b>价值迭代每轮只做一次 Bellman 更新（便宜但轮数多）；
+    策略迭代每轮要做完整的<b>策略评估</b>（解方程，贵但轮数极少，通常 3–5 轮）。
+    状态多时两者都做不动 —— 那就要靠后面的<b>近似</b>方法。</div>
+  </div>
+</section>
+
+<!-- ============ 18 ============ -->
+<section class="panel" id="p18">
+  <div class="card">
+    <h2>被动学习：同一个策略，三种学法</h2>
+    <p class="sub">策略<b>固定不变</b>（就用上一面板价值迭代算出来的那个最优策略），只是从"跑出来的轨迹"里估它有多好。
+    三种方法的区别只在于：<b>用多少信息</b>。
+    下面是同一个 4×3 网格上<b>真跑出来的</b>轨迹，误差是相对真值 U* 的 RMS，按每个状态被访问的次数加权 ——
+    从没去过的格子不算，因为三种方法在那儿都只能给出初始值。</p>
+    <div class="controls">
+      <button class="btn pri" id="pl10">跑 10 轮</button>
+      <button class="btn" id="pl100">跑 100 轮</button>
+      <button class="btn" id="pl500">跑到 500 轮</button>
+      <button class="btn" id="plReset">重置</button>
+      <span class="faint">学习率 α</span><input type="range" id="plA" min="1" max="50" step="1" value="20"><b class="mono" id="plAv">0.20</b>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="plSvg" viewBox="0 0 520 190" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <table id="plTab"></table>
+      </div>
+    </div>
+    <div class="kv"><span>已跑轮数</span><b id="plN">0</b></div>
+    <div id="plVerdict" class="verdict"></div>
+    <div class="note"><b>三者的信息量排序：</b>ADP 用了<b>学到的完整模型</b>（可以做动态规划），
+    所以最好；TD 只用了"下一步的实际后果"（自举），次之；
+    蒙特卡洛只用了<b>整条轨迹的最终回报</b>（方差最大），最差。</div>
+    <div class="note"><b>TD 为什么比 MC 好：</b>MC 要等一整条轨迹跑完才更新，而且它把终局的随机性
+    <b>整条</b>灌回每个状态；TD 每走一步就更新一次，只把<b>一步</b>的随机性引进来 —— 方差小得多。
+    但 TD 有<b>自举偏差</b>（它相信的是自己当前的估计）。</div>
+  </div>
+</section>
+
+<!-- ============ 19 ============ -->
+<section class="panel" id="p19">
+  <div class="card">
+    <h2>主动学习：Q-learning 敢走悬崖边，SARSA 不敢</h2>
+    <p class="sub">同一个悬崖世界、同一个 ε-greedy 探索，只差一个更新公式：
+    Q-learning 用 <b>max</b>（学"最优策略"，off-policy），SARSA 用<b>实际会执行的下一步</b>（on-policy）。
+    结果它们的<b>性格</b>完全不同。</p>
+    <div class="controls">
+      <button class="btn pri" id="ql100">各跑 200 轮</button>
+      <button class="btn" id="qlReset">重置</button>
+      <span class="faint">探索率 ε</span><input type="range" id="qlE" min="0" max="50" step="1" value="10"><b class="mono" id="qlEv">0.10</b>
+      <span class="faint">学习率 α</span><input type="range" id="qlA" min="5" max="100" step="5" value="50"><b class="mono" id="qlAv">0.50</b>
+    </div>
+    <svg id="qlSvg" viewBox="0 0 520 200" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="two">
+      <div>
+        <h3>Q-learning 学到的路径</h3>
+        <div class="pddl" id="qlQ"></div>
+      </div>
+      <div>
+        <h3>SARSA 学到的路径</h3>
+        <div class="pddl" id="qlS"></div>
+      </div>
+    </div>
+    <div class="kv"><span>Q-learning：最后 100 轮平均奖励</span><b id="qlQr">—</b></div>
+    <div class="kv"><span>SARSA：最后 100 轮平均奖励</span><b id="qlSr">—</b></div>
+    <div class="kv"><span>掉下悬崖的次数</span><b id="qlFall">—</b></div>
+    <div id="qlVerdict" class="verdict"></div>
+    <div class="note"><b>为什么 SARSA 更"怂"：</b>它在更新时把<b>ε-greedy 的探索</b>也算进去了 ——
+    "我接下来有 10% 的概率乱走，那走悬崖边就很可能掉下去"。
+    于是它学会绕开悬崖。<b>它学到的是"带探索的自己"的最优策略，不是"纯策略"的最优策略。</b></div>
+    <div class="note"><b>Q-learning 学到了最优策略，却在探索时表现更差</b> —— 这正是书的图里那条反直觉的曲线。
+    所以实际系统里常这么做：训练时用 Q-learning（学最优），部署时把 ε 降到 0。</div>
+  </div>
+</section>
+
+<!-- ============ 20 ============ -->
+<section class="panel" id="p20">
+  <div class="card">
+    <h2>多臂赌博机：探索到底值多少钱</h2>
+    <p class="sub">三个摇臂，真实回报率分别是 0.2 / 0.5 / 0.8（伯努利：以该概率给 1，否则给 0）。
+    你不知道哪个最好，只能一边试一边收钱。差的那部分叫<b>后悔（regret）</b>。
+    单次实验运气成分太大，所以下面所有数字都是 <b>20 次独立重复实验的平均</b>。</p>
+    <div class="controls">
+      <span class="faint">策略</span>
+      <select id="bbM">
+        <option value="greedy">纯贪心（永不探索）</option>
+        <option value="eps">ε-greedy</option>
+        <option value="ucb">UCB（置信上界）</option>
+        <option value="opt">乐观初始化（Q₀ = 5）</option>
+      </select>
+      <span class="faint">ε</span><input type="range" id="bbE" min="0" max="50" step="1" value="10"><b class="mono" id="bbEv">0.10</b>
+      <span class="faint">UCB 的 c</span><input type="range" id="bbC" min="0" max="40" step="1" value="10"><b class="mono" id="bbCv">1.0</b>
+      <span class="faint">拉 N 次</span><input type="range" id="bbN" min="100" max="3000" step="100" value="1000"><b class="mono" id="bbNv">1000</b>
+      <button class="btn pri" id="bbGo">开跑</button>
+    </div>
+    <svg id="bbSvg" viewBox="0 0 520 190" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+    <div class="two">
+      <div>
+        <table id="bbTab"></table>
+      </div>
+      <div>
+        <div class="pddl" id="bbFx"></div>
+      </div>
+    </div>
+    <div class="kv"><span>累计后悔（N 次，20 次重复的平均）</span><b id="bbR">—</b></div>
+    <div class="kv"><span>选中最优臂的比例</span><b id="bbBest">—</b></div>
+    <div class="kv"><span>最后锁死在次优臂的实验比例</span><b id="bbLock">—</b></div>
+    <div id="bbVerdict" class="verdict"></div>
+    <div class="note"><b>后悔值的下界是 Ω(log N)：</b>你不可能既"一直吃最优臂"又"确定它是最优的" ——
+    探索本身有代价，而且这个代价<b>不可能被消除</b>，只能被压到对数级。
+    UCB 和 Thompson 采样都做到了 <span class="mono">O(log N)</span>，ε-greedy 做不到（它的 ε 是常数，后悔线性增长）。</div>
+    <div class="note"><b>乐观初始化为什么有效：</b>把没试过的臂的初始 Q 值设得<b>很高</b>，
+    智能体就会被"骗"去把它们都试一遍；随着尝试，Q 值下降，它自然收敛到最好的那个。
+    <b>它不需要 ε，也不需要 UCB 公式</b> —— 简单得离谱，而且在确定性环境里特别好使。</div>
+  </div>
+</section>
+
+<!-- ============ 21 ============ -->
+<section class="panel" id="p21">
+  <div class="card">
+    <h2>奖励黑客：你是按你写的奖励优化的，不是按你的本意</h2>
+    <p class="sub">设计者想让 agent 到终点，顺手给"捡罐子"加了点奖励。
+    底下这个 3×3 小世界里，最优策略是<b>真算出来的</b> —— 调一调奖励，看它什么时候开始摆烂。</p>
+    <div class="controls">
+      <span class="faint">捡到罐子的奖励 r</span><input type="range" id="rhR" min="0" max="100" step="5" value="50"><b class="mono" id="rhRv">0.50</b>
+      <span class="faint">每步代价 c</span><input type="range" id="rhC" min="-20" max="0" step="1" value="0"><b class="mono" id="rhCv">0.00</b>
+      <span class="faint">折扣 γ</span><input type="range" id="rhG" min="70" max="99" step="1" value="90"><b class="mono" id="rhGv">0.90</b>
+      <button class="btn" id="rhReset">重置</button>
+    </div>
+    <div class="two">
+      <div>
+        <svg id="rhSvg" viewBox="0 0 520 280" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)"></svg>
+      </div>
+      <div>
+        <table id="rhTab"></table>
+        <div class="pddl" id="rhFx"></div>
+      </div>
+    </div>
+    <div id="rhVerdict" class="verdict"></div>
+    <div class="note"><b>奖励黑客的本质：</b>agent 不是"理解你的意图"，
+    它只是在最大化你写下来的那个数。只要你写的奖励里有<b>可以反复刷的漏洞</b>，
+    最优策略就一定会去刷 —— 而且刷得越彻底越好。这不是 bug，这就是<b>最优</b>。</div>
+    <div class="note"><b>三条止血办法：</b>① 给每步<b>负奖励</b>（让"绕圈"有代价，上面的 c 滑块）；
+    ② 把 γ 调小（让远期奖励不值钱）；③ 别把奖励设计成"可以重复领取" ——
+    罐子捡完就<b>不再刷新</b>，是最简单也最有效的修法。</div>
+  </div>
+</section>
+
+
+
+
+<!-- ============ 22 · 速查 ============ -->
+<section class="panel" id="p22">
+  <div class="card">
+    <h2>全卷速查</h2>
+    <p class="sub">21 个面板讲完的东西，压成一张表。输入关键词可以即时过滤（试试「后悔」「共轭」「γ」）。</p>
+    <div class="controls">
+      <span class="faint">过滤</span><input type="text" id="qcQ" placeholder="关键词，如 PAC / 共轭 / 后悔 / 温度" style="width:260px">
+      <span class="faint">章</span>
+      <select id="qcC">
+        <option value="all">全部</option>
+        <option value="19">第 19 章 · 从样例中学习</option>
+        <option value="20">第 20 章 · 概率模型</option>
+        <option value="21">第 21 章 · 深度学习</option>
+        <option value="22">第 22 章 · 强化学习</option>
+      </select>
+      <b class="mono" id="qcN">—</b>
+    </div>
+    <table id="qcTab">
+      <tr><th class="m">章</th><th class="m">主题</th><th>一句话</th><th>最容易踩的坑</th></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">三种反馈</td><td>监督给标准答案，无监督只给数据，强化只给奖励信号。</td><td>强化的奖励<b>不是</b>标签：它可能延迟、稀疏、还能被刷。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">假设空间 / 归纳偏置</td><td>选 H 就是选<b>你允许自己学到什么</b>。</td><td>H 太小 → 欠拟合；太大 → 过拟合，而且 PAC 界会一起爆炸。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">PAC 样本复杂度</td><td>N ≥ (1/ε)(ln(1/δ) + ln|H|)。</td><td>它只保证<b> consistent 假设</b>的误差，且是个<b>上界</b>；ln|H| 让纯记忆表直接爆炸。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">熵与信息增益</td><td>Gain = B(q) − Σ (pᵢ+nᵢ)/(p+n) · B(qᵢ)。</td><td>信息增益偏爱<b>取值多</b>的属性（如日期），要 gain ratio 或干脆别用。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">ID3 与剪枝</td><td>每次挑增益最大的属性分裂，再用 χ² 检验剪掉统计上不显著的枝。</td><td>不剪枝的树在训练集上能到 100%，在测试集上什么都不是。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">线性回归</td><td>最小二乘有闭式解；数据大时用梯度下降。</td><td>α 太大会<b>发散</b>；特征尺度差太远必须标准化，否则下降走 Z 字。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">L1 / L2 正则</td><td>在损失上加 λ·Σ|w| 或 λ·Σw²，惩罚大权重。</td><td>L1 会造出<b>稀疏解</b>（部分权重归零）；截距<b>不</b>参与惩罚；λ 太大 → 欠拟合。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">模型选择</td><td>留出集 / k 折交叉验证 / 留一法。</td><td>用<b>测试集</b>调超参 = 测试集已经不干净了，它不再是泛化误差的无偏估计。</td></tr>
+      <tr data-ch="19"><td class="m">19</td><td class="m">感知机 vs 逻辑回归</td><td>感知机输出硬 0/1，逻辑回归输出概率且可微。</td><td>数据<b>线性不可分</b>时感知机永远不收敛，会一直抖；逻辑回归给的是<b>概率</b>，可以定阈值。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">贝叶斯推断</td><td>P(h|d) = α·P(d|h)·P(h)，后验 ∝ 似然 × 先验。</td><td>先验<b>不是</b>随便编的偏好：数据少时它主导结论，数据多时它被淹没。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">MAP vs 贝叶斯预测</td><td>MAP 用后验最大的那一个 h；贝叶斯预测对<b>全部</b> h 做加权平均。</td><td>MAP 是贝叶斯预测的<b>近似</b>，丢掉了不确定性；小数据下两者结论可以完全不同。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">MLE</td><td>θ̂ = argmax P(d|θ)，只看数据。</td><td>抛 3 次全是正面 → MLE 说 P(H)=1。零概率会毁掉后面所有计算。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">共轭（Beta-Bernoulli）</td><td>Beta(a,b) × 伯努利数据 → 还是 Beta(a+h, b+t)。</td><td>共轭只是<b>好算</b>，不是"更对"；真实后验常常没有闭式解。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">朴素贝叶斯</td><td>假设给定类别后各属性条件独立 → P(C|x) ∝ P(C)·Π P(xᵢ|C)。</td><td>独立性假设几乎<b>从不成立</b>，但分类仍然常常很准；没见过的属性值要平滑。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">拉普拉斯 / 杰弗里斯平滑</td><td>计数加 1 或加 ½，避免零概率。</td><td>加多少是<b>先验强度</b>，不是常数魔法；属性多时 +1 会明显改变估计。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">EM</td><td>E 步补齐隐藏变量的期望，M 步用补齐的数据重估参数。</td><td>只保证<b>似然单调不降</b>，不保证找到全局最优；初值不同 → 不同的局部最优。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">贝叶斯线性回归</td><td>不估一个 w，而是估 w 的<b>后验分布</b>；预测方差随 x 离数据中心的距离增大。</td><td>预测带在训练数据<b>之外</b>会张开 —— 这正是它比点估计有用的地方。</td></tr>
+      <tr data-ch="20"><td class="m">20</td><td class="m">MDL</td><td>代价 = −log₂P(d|h) + λ·k，拟合好坏 + 描述 h 的比特数。</td><td>λ 是<b>你自己</b>选的（单位换算系数），不是从数据里学出来的。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">激活函数</td><td>sigmoid 会饱和、ReLU 稀疏不死、tanh 零中心。</td><td>sigmoid 饱和区梯度≈0 → 梯度消失；ReLU 有<b>死神经元</b>（输入恒负则永久为 0）。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">softmax 温度</td><td>pᵢ = exp(zᵢ/T)/Σexp(zⱼ/T)。</td><td>T→0 变硬 argmax、T→∞ 变均匀分布；默认 T=1 常常<b>过于自信</b>。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">卷积</td><td>参数共享 + 局部连接：一个 k×k 核只有 k²+1 个参数。</td><td>同一个核扫全图 → 学会的是<b>平移不变</b>的特征；全连接层做不到、也做不到参数量这么省。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">反向传播</td><td>就是链式法则，只不过从输出层往回算，中间结果复用。</td><td>它不是"另一种算法"，就是<b>高效的求导</b>；数值梯度只是用来验算的。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">SGD / 动量 / Adam</td><td>SGD 直接用梯度；动量累积方向；Adam 再按梯度的二阶矩自适应缩放步长。</td><td>各向异性的碗里 SGD 会来回<b>震荡</b>；Adam 快但泛化有时略差。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">自注意力</td><td>Attention(Q,K,V) = softmax(QKᵀ/√dₖ)V。</td><td>不除 √dₖ 时点积太大 → softmax 饱和 → 梯度消失。代价是 O(n²)。</td></tr>
+      <tr data-ch="21"><td class="m">21</td><td class="m">RNN vs LSTM</td><td>RNN 每步乘 w·σ′，连乘导致梯度指数消失；LSTM 的记忆单元走<b>加性</b>通路。</td><td>LSTM 也不是万能：它仍然<b>顺序</b>计算，长序列上训练慢，这才有了 Transformer。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">MDP 与 Bellman 方程</td><td>U(s) = R(s) + γ·max_a Σ P(s'|s,a)U(s')。</td><td>γ 既是"折扣"也是"收敛保证"；γ=1 时压缩映射的证明就不成立了。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">价值迭代 vs 策略迭代</td><td>价值迭代每轮一次 Bellman 更新（便宜、轮数多）；策略迭代每轮完整评估（贵、轮数少）。</td><td>两者都要求<b>状态可枚举</b>；状态一多就只能靠近似/采样。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">被动学习三兄弟</td><td>ADP 学模型再做 DP；TD(0) 自举一步；蒙特卡洛用整条轨迹的回报。</td><td>TD 有<b>自举偏差</b>但方差小；MC 无偏但方差大；ADP 最省样本但要先学对模型。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">Q-learning vs SARSA</td><td>Q 用 max（off-policy），SARSA 用实际下一步（on-policy）。</td><td>Q 学到的是<b>最优策略</b>，却因为贴边探索在线摔得更惨；SARSA 学到的是"带探索的自己"。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">多臂赌博机</td><td>后悔下界 Ω(log N)；UCB 与 Thompson 采样达到 O(log N)，ε-greedy 只能线性。</td><td>ε-greedy 的 ε 是<b>常数</b> → 永远在乱试；UCB 的探索预算会随证据自动收缩。</td></tr>
+      <tr data-ch="22"><td class="m">22</td><td class="m">奖励黑客</td><td>agent 最大化的是<b>你写下来的奖励</b>，不是你的本意。</td><td>不是 bug，是最优解。修法：每步负代价、降低 γ、让奖励<b>不可重复领取</b>。</td></tr>
+    </table>
+
+    <h3>五个「看起来像、其实不是」</h3>
+    <div class="grid2">
+      <div class="mini"><b>监督 vs 强化</b><span>监督的标签是"这一步该做什么"，强化的奖励是"结果有多好" —— 后者可能延迟很多步才到，中间每步都<b>没有</b>标准答案。</span></div>
+      <div class="mini"><b>MAP vs 贝叶斯预测</b><span>MAP 挑一个 h 就用；贝叶斯预测对<b>所有</b> h 按后验加权。前者丢掉了"我不确定"，小数据时两者会给出不同的决策。</span></div>
+      <div class="mini"><b>off-policy vs on-policy</b><span>Q-learning 更新时用的是"如果我之后都最优"；SARSA 用的是"我接下来<b>真的会</b>做什么（含探索）"。差的就是那个 ε。</span></div>
+      <div class="mini"><b>偏差 vs 方差</b><span>TD 自举 → 有偏差、方差小；MC 用真实回报 → 无偏、方差大。样本少的时候<b>方差</b>才是主要矛盾。</span></div>
+      <div class="mini"><b>过拟合 vs 欠拟合</b><span>两者都表现为"误差大"，但一个是训练误差已经很低、验证误差高；另一个是训练误差本身就下不来。看<b>两条曲线</b>才分得清。</span></div>
+      <div class="mini"><b>探索 vs 利用</b><span>后悔下界说得很清楚：你<b>不可能</b>既一直吃最优臂又确定它是最优的。探索的代价只能压到对数级，不能消除。</span></div>
+    </div>
+
+    <div class="note"><b>四章一条线：</b>第 19 章在<b>挑</b>一个 h（并问"挑得多好"）；
+    第 20 章不再挑，而是<b>保留</b>整个后验分布；第 21 章把 h 换成一个<b>可微的巨大函数</b>，用梯度去搜；
+    第 22 章连"标准答案"都没有了，只有一个<b>奖励信号</b>，而且这个信号还可能被你自己写错。</div>
+
+    <details>
+      <summary>核心术语中英对照（点击展开）</summary>
+      <table style="margin-top:8px">
+        <tr><th>中文</th><th>English</th><th>中文</th><th>English</th></tr>
+        <tr><td>假设空间 / 假设</td><td>Hypothesis space / h</td><td>归纳偏置</td><td>Inductive bias</td></tr>
+        <tr><td>经验损失 / 泛化误差</td><td>Empirical loss / Generalization error</td><td>过拟合 / 欠拟合</td><td>Overfitting / Underfitting</td></tr>
+        <tr><td>可能近似正确</td><td>PAC (probably approximately correct)</td><td>样本复杂度</td><td>Sample complexity</td></tr>
+        <tr><td>信息增益 / 熵</td><td>Information gain / Entropy</td><td>剪枝 / 卡方检验</td><td>Pruning / Chi-squared test</td></tr>
+        <tr><td>正则化 / 岭回归</td><td>Regularization / Ridge</td><td>k 折交叉验证</td><td>k-fold cross-validation</td></tr>
+        <tr><td>感知机 / 逻辑回归</td><td>Perceptron / Logistic regression</td><td>梯度下降 / 学习率</td><td>Gradient descent / Learning rate</td></tr>
+        <tr><td>似然 / 后验 / 先验</td><td>Likelihood / Posterior / Prior</td><td>最大后验</td><td>MAP (maximum a posteriori)</td></tr>
+        <tr><td>极大似然估计</td><td>MLE</td><td>共轭先验</td><td>Conjugate prior</td></tr>
+        <tr><td>朴素贝叶斯 / 平滑</td><td>Naive Bayes / Smoothing</td><td>期望最大化</td><td>EM (expectation–maximization)</td></tr>
+        <tr><td>最小描述长度</td><td>MDL</td><td>反向传播</td><td>Back-propagation</td></tr>
+        <tr><td>激活函数 / 饱和</td><td>Activation / Saturation</td><td>参数共享 / 感受野</td><td>Parameter sharing / Receptive field</td></tr>
+        <tr><td>自注意力 / 缩放点积</td><td>Self-attention / Scaled dot-product</td><td>长短期记忆</td><td>LSTM</td></tr>
+        <tr><td>贝尔曼方程 / 折扣</td><td>Bellman equation / Discount</td><td>价值迭代 / 策略迭代</td><td>Value / Policy iteration</td></tr>
+        <tr><td>时间差分 / 自举</td><td>TD / Bootstrapping</td><td>同策略 / 离策略</td><td>On-policy / Off-policy</td></tr>
+        <tr><td>后悔 / 置信上界</td><td>Regret / UCB</td><td>奖励黑客</td><td>Reward hacking</td></tr>
+      </table>
+    </details>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<script>
+/* 浮动「章节」按钮（JS 动态创建，不写死在 HTML 里）：滚到任何位置都能一键回到标签栏切换面板 */
+(function(){
+  function ini(){
+    if(!document.createElement||!document.body)return;
+    var tt=document.createElement('button');
+    tt.className='btn'; tt.type='button';
+    tt.textContent='↑ 章节'; tt.title='回到章节标签栏';
+    tt.style.cssText='position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:0 4px 16px rgba(0,0,0,.45)';
+    tt.onclick=function(){
+      var n=(document.querySelector&&document.querySelector('.tabs'));
+      if(n&&n.scrollIntoView)n.scrollIntoView({behavior:'smooth',block:'start'});
+      else if(window.scrollTo)window.scrollTo(0,0);
+    };
+    document.body.appendChild(tt);
+    if(window.addEventListener)window.addEventListener('scroll',function(){
+      tt.style.display=(window.scrollY>320)?'block':'none';},{passive:true});
+  }
+  if(document.readyState==='loading'&&document.addEventListener)document.addEventListener('DOMContentLoaded',ini);
+  else ini();
+})();
+
+
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function num(n){return n.toLocaleString('en-US');}
+function fx(n,d){return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+function sci(n){
+  if(!isFinite(n))return '∞';
+  if(n===0)return '0';
+  var e=Math.floor(Math.log(Math.abs(n))/Math.LN10);
+  var m=n/Math.pow(10,e);
+  if(e>=0&&e<7)return num(Math.round(n));
+  return (Math.round(m*1000)/1000)+'×10^'+e;
+}
+
+/* ---------- tabs ---------- */
+function goPanel(id,push){
+  var tab=$$('.tab').filter(function(x){return x.dataset.panel===id;})[0];
+  if(!tab)return;
+  $$('.tab').forEach(function(x){x.classList.remove('on');});
+  $$('.panel').forEach(function(p){p.classList.remove('on');});
+  tab.classList.add('on');
+  var pnl=document.getElementById(id);
+  if(pnl)pnl.classList.add('on');
+  if(push){try{history.replaceState(null,'','#'+id);}catch(e){}}
+  var nav=$('.tabs');if(nav&&tab.offsetLeft)nav.scrollLeft=tab.offsetLeft-24;
+  var pn=$('#'+id);
+  if(pn&&pn.getBoundingClientRect){var pr=pn.getBoundingClientRect();
+    if(pr.top<0||pr.top>innerHeight-80)window.scrollTo({top:Math.max(0,scrollY+pr.top-70),behavior:'smooth'});}
+}
+$$('.tab').forEach(function(b){b.onclick=function(){goPanel(b.dataset.panel,true);};});
+if(typeof location!=='undefined'&&/^#p\d+$/.test(location.hash))goPanel(location.hash.slice(1),false);
+
+/* =========================================================
+   ① 学习全景与 PAC 样本复杂度
+   ========================================================= */
+var MLKIND={
+  sup:{t:'监督学习',d:'每个样本都带"标准答案" y：给 x，要预测 y。\n例：邮件 → 是否垃圾；面积 → 房价；图片 → 猫/狗。\n要回答的问题：<b>h 在没见过的 x 上对不对</b>（泛化）。\n两件武器：<b>正则化</b>（限制 h 的复杂度）与<b>验证集</b>（独立评判）。'},
+  unsup:{t:'无监督学习',d:'只有 x，没有 y —— 自己从数据里找结构。\n聚类（分群）、降维（压成 2 维好看）、密度估计（哪里密）。\n要回答的问题：<b>没有标准答案，"好"到底怎么定义</b>？\n常见做法：给一个生成模型，最大化数据的似然。'},
+  rl:{t:'强化学习',d:'不给答案，只给<b>奖励</b>，而且常常延迟很久。\n例：下棋（只有最后赢/输）、控制机器人、推荐。\n要回答的问题：<b>探索还是利用</b> —— 不试不知道，试又要付代价。\n学的东西可以是效用 U(s)、动作价值 Q(s,a)，或直接学策略 π(s)。'}
+};
+function pacRender(){
+  var k=$('#mlKind').value,d=MLKIND[k];
+  $('#mlKindTxt').innerHTML='<span class="kw">'+d.t+'</span>\n'+d.d;
+  var h=+$('#pacH').value,eps=+$('#pacE').value/100,del=+$('#pacD').value/100;
+  $('#pacHv').textContent=h;$('#pacEv').textContent=fx(eps,2);$('#pacDv').textContent=fx(del,2);
+  var lnH=h*Math.LN10,lnD=Math.log(1/del);
+  var N=(1/eps)*(lnD+lnH);
+  $('#pacFx').innerHTML='<span class="kw">PAC 样本复杂度</span>\n'+
+    'N ≥ (1/ε)·( ln(1/δ) + ln|H| )\n\n'+
+    'ε = '+fx(eps,2)+'　（允许的误差）\n'+
+    'δ = '+fx(del,2)+'　（允许的失败概率）\n'+
+    '|H| = 10^'+h+'　（假设空间大小）';
+  $('#pacN').textContent=num(Math.ceil(N))+' 个样例';
+  $('#pacC1').textContent=fx((1/eps)*lnD,1)+'（ln(1/δ)/ε）';
+  $('#pacC2').textContent=fx((1/eps)*lnH,1)+'（ln|H|/ε）';
+  var mx=Math.max((1/eps)*lnD,(1/eps)*lnH);
+  $('#pacBars').innerHTML=
+    '<div class="bar"><span class="nm">置信度贡献 ln(1/δ)/ε　'+fx((1/eps)*lnD,1)+'</span>'+
+      '<span class="tr"><span class="fl" style="width:'+((1/eps)*lnD/mx*100)+'%"></span></span></div>'+
+    '<div class="bar"><span class="nm">假设空间贡献 ln|H|/ε　'+fx((1/eps)*lnH,1)+'</span>'+
+      '<span class="tr"><span class="fl bad" style="width:'+((1/eps)*lnH/mx*100)+'%"></span></span></div>';
+  var n=+$('#pacN2').value;
+  $('#pacN2v').textContent=n;
+  var comb=Math.pow(2,n),Hs=Math.pow(2,comb);
+  $('#pacComb').textContent=num(comb)+' 种输入';
+  $('#pacHs').textContent=sci(Hs)+' 个函数';
+  $('#pacNeed').textContent=num(Math.ceil((1/0.1)*(Math.log(1/0.05)+Math.log(Hs))))+' 个样例';
+  var v=$('#pacVerdict');
+  v.className='verdict mid';
+  v.innerHTML='|H| 从 10^6 涨到 10^12（翻 <b>10⁶ 倍</b>），需要的样本只从 '+
+    num(Math.ceil((1/eps)*(lnD+6*Math.LN10)))+' 涨到 '+num(Math.ceil((1/eps)*(lnD+12*Math.LN10)))+
+    ' —— 因为 |H| 在 <b>ln 里面</b>。<br><span class="dim">真正贵的是精度：ε 从 0.10 降到 0.05，样本数直接翻倍。</span>';
+}
+$('#mlKind').onchange=pacRender;
+['#pacH','#pacE','#pacD','#pacN2'].forEach(function(i){$(i).oninput=pacRender;});
+pacRender();
+
+/* =========================================================
+   ② 熵与信息增益（书上的 12 条餐馆数据）
+   ========================================================= */
+var RATTR=[
+  {k:'Alt',n:'Alt：附近还有别家可去',v:['Y','N']},
+  {k:'Bar',n:'Bar：有没有吧台',v:['Y','N']},
+  {k:'Fri',n:'Fri：是不是周五',v:['Y','N']},
+  {k:'Hun',n:'Hun：饿不饿',v:['Y','N']},
+  {k:'Pat',n:'Pat：店里人多少',v:['None','Some','Full']},
+  {k:'Price',n:'Price：价位',v:['$','$$','$$$']},
+  {k:'Rain',n:'Rain：下不下雨',v:['Y','N']},
+  {k:'Res',n:'Res：订没订位',v:['Y','N']},
+  {k:'Type',n:'Type：菜系',v:['French','Thai','Burger','Italian']},
+  {k:'Est',n:'Est：估计等待时间',v:['0–10','10–30','30–60','>60']}
+];
+var REST=[
+  ['Y','N','N','Y','Some','$$$','N','Y','French','0–10',1],
+  ['Y','N','N','Y','Full','$','N','N','Thai','30–60',0],
+  ['N','Y','N','N','Some','$','N','N','Burger','0–10',1],
+  ['Y','N','Y','Y','Full','$','Y','N','Thai','10–30',1],
+  ['Y','N','Y','N','Full','$$$','N','Y','French','>60',0],
+  ['N','Y','N','Y','Some','$$','Y','Y','Italian','0–10',1],
+  ['N','Y','N','N','None','$','Y','N','Burger','0–10',0],
+  ['N','N','N','Y','Some','$$','Y','Y','Thai','0–10',1],
+  ['N','Y','Y','N','Full','$','Y','N','Burger','>60',0],
+  ['Y','Y','Y','Y','Full','$$$','N','Y','Italian','10–30',0],
+  ['N','N','N','N','None','$','N','N','Thai','0–10',0],
+  ['Y','Y','Y','Y','Full','$','N','N','Burger','30–60',1]
+];
+function B(q){
+  if(q<=0||q>=1)return 0;
+  return -(q*Math.log(q)/Math.LN2+(1-q)*Math.log(1-q)/Math.LN2);
+}
+function igOf(k,ex){
+  var idx=RATTR.map(function(a){return a.k;}).indexOf(k);
+  var vals=RATTR[idx].v,groups=[],p=0,n=0;
+  ex.forEach(function(i){if(REST[i][10]===1)p++;else n++;});
+  vals.forEach(function(v){
+    var g={val:v,p:0,n:0,ex:[]};
+    ex.forEach(function(i){if(REST[i][idx]===v){g.ex.push(i);if(REST[i][10]===1)g.p++;else g.n++;}});
+    if(g.ex.length)groups.push(g);
+  });
+  var rem=0;
+  groups.forEach(function(g){rem+=(g.p+g.n)/(p+n)*B(g.p/(g.p+g.n));});
+  return {gain:B(p/(p+n))-rem,rem:rem,p:p,n:n,groups:groups,h:B(p/(p+n))};
+}
+var IGINIT=false;
+function igRender(){
+  if(!IGINIT){
+    IGINIT=true;
+    $('#igA').innerHTML=RATTR.map(function(a){return '<option value="'+a.k+'">'+esc(a.n)+'</option>';}).join('');
+    $('#igA').value='Pat';
+  }
+  var k=$('#igA').value,g=igOf(k,REST.map(function(r,i){return i;}));
+  var an=RATTR.filter(function(a){return a.k===k;})[0];
+  $('#igName').textContent=k;
+  var t='<tr><th class="m">'+k+' 取值</th><th class="m">Yes</th><th class="m">No</th><th class="m">B(q)</th></tr>';
+  g.groups.forEach(function(x){
+    t+='<tr><td class="mono">'+esc(x.val)+'</td><td class="m">'+x.p+'</td><td class="m">'+x.n+
+       '</td><td class="m mono">'+fx(B(x.p/(x.p+x.n)),3)+'</td></tr>';
+  });
+  $('#igTable').innerHTML=t;
+  $('#igH').textContent=fx(g.h,4)+' 比特（6 Yes / 6 No）';
+  $('#igR').textContent=fx(g.rem,4)+' 比特';
+  $('#igG').textContent=fx(g.gain,4)+' 比特';
+  var all=RATTR.map(function(a){return {k:a.k,n:a.n,g:igOf(a.k,REST.map(function(r,i){return i;})).gain};});
+  all.sort(function(a,b){return b.g-a.g;});
+  var mx=all[0].g||1;
+  $('#igBars').innerHTML=all.map(function(a){
+    var on=a.k===k;
+    return '<div class="bar"><span class="nm"'+(on?' style="color:var(--accent)"':'')+'>'+
+      esc(a.k)+'　'+fx(a.g,3)+'</span><span class="tr"><span class="fl'+(on?'':' bad')+
+      '" style="width:'+Math.max(1,a.g/mx*100)+'%"></span></span></div>';
+  }).join('');
+  var v=$('#igVerdict');
+  v.className='verdict '+(g.gain>0.2?'yes':(g.gain>0?'mid':'no'));
+  v.innerHTML='按 <b>'+esc(k)+'</b> 分：增益 <b>'+fx(g.gain,4)+'</b> 比特。'+
+    (g.gain===0?'　<b>完全没信息</b>：每组的 Yes:No 比例和总体一模一样。':'')+
+    '<br><span class="dim">全部 10 个属性里最高的是 <b>'+esc(all[0].k)+'（'+fx(all[0].g,3)+
+    '）</b> —— ID3 第一步就会选它。</span>';
+  var q=+$('#igQ').value/100;
+  $('#igQv').textContent=fx(q,2);
+  var W=520,H=150,pad=26;
+  var s='';
+  for(var i=0;i<=10;i++){
+    var yy=pad+(1-B(i/10))*(H-2*pad);
+    s+='<line x1="'+(pad+ (i/10)*(W-2*pad))+'" y1="'+pad+'" x2="'+(pad+(i/10)*(W-2*pad))+'" y2="'+(H-pad)+
+       '" style="stroke:var(--line);stroke-width:.5"/>';
+  }
+  var pts=[];
+  for(var i=0;i<=200;i++){
+    var qq=i/200,xx=pad+qq*(W-2*pad),yy=pad+(1-B(qq))*(H-2*pad);
+    pts.push(xx.toFixed(1)+','+yy.toFixed(1));
+  }
+  s+='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--accent);stroke-width:2"/>'+
+     '<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--dim)"/>'+
+     '<text x="'+pad+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim)">0</text>'+
+     '<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">1</text>'+
+     '<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--dim)">1 比特</text>';
+  var mx2=pad+q*(W-2*pad),my2=pad+(1-B(q))*(H-2*pad);
+  s+='<circle cx="'+mx2.toFixed(1)+'" cy="'+my2.toFixed(1)+'" r="5" style="fill:var(--warn)"/>'+
+     '<text x="'+(mx2+8).toFixed(1)+'" y="'+(my2-6).toFixed(1)+'" class="sigtxt" style="fill:var(--warn)">B('+
+     fx(q,2)+')='+fx(B(q),3)+'</text>';
+  $('#igSvg').innerHTML=s;
+}
+$('#igA').onchange=igRender;
+$('#igQ').oninput=igRender;
+igRender();
+
+/* =========================================================
+   ③ ID3 决策树（含 χ² 剪枝）
+   ========================================================= */
+var CHI={'5':{1:3.84,2:5.99,3:7.82,4:9.49,5:11.07},'1':{1:6.63,2:9.21,3:11.35,4:13.28,5:15.09}};
+var DT={root:null,pending:null,chi:null};
+function dtChi(g,p,n,N){
+  var d=0;
+  if(p<=0||n<=0)return 0;
+  g.forEach(function(x){
+    var pk=p*(x.p+x.n)/N,nk=n*(x.p+x.n)/N;
+    if(pk>0)d+=(x.p-pk)*(x.p-pk)/pk;
+    if(nk>0)d+=(x.n-nk)*(x.n-nk)/nk;
+  });
+  return d;
+}
+function dtReset(){
+  DT.root={type:'pending',ex:REST.map(function(r,i){return i;}),attrs:RATTR.map(function(a){return a.k;}),kids:null};
+  DT.pending=[DT.root];DT.chi=null;
+  dtRender();
+}
+function dtStep(){
+  if(!DT.pending||!DT.pending.length)return false;
+  var node=DT.pending.shift();
+  var ex=node.ex,p=0,n=0;
+  ex.forEach(function(i){if(REST[i][10]===1)p++;else n++;});
+  if(n===0||p===0||!node.attrs.length){
+    node.type='leaf';node.label=(p>=n?'Yes':'No');node.n=ex.length;
+    node.d=(node.attrs.length?'纯的了':'属性用完了');
+    return true;
+  }
+  var best=null;
+  node.attrs.forEach(function(k){var g=igOf(k,ex);if(!best||g.gain>best.g.gain)best={k:k,g:g};});
+  var d=dtChi(best.g.groups,p,n,ex.length),df=best.g.groups.length-1;
+  var crit=CHI[$('#dtPrune').value]?(CHI[$('#dtPrune').value][Math.min(df,5)]||999):0;
+  DT.chi={k:best.k,delta:d,df:df,crit:crit,gain:best.g.gain};
+  if($('#dtPrune').value!=='none'&&d<crit){
+    node.type='leaf';node.label=(p>=n?'Yes':'No');node.n=ex.length;
+    node.d='Δ='+fx(d,2)+' < '+crit+' → 不显著，剪掉';
+    return true;
+  }
+  node.type='split';node.attr=best.k;node.gain=best.g.gain;node.delta=d;node.n=ex.length;node.kids=[];
+  var rest=node.attrs.filter(function(k){return k!==best.k;});
+  best.g.groups.forEach(function(g){
+    var kid={type:'pending',ex:g.ex,attrs:rest,kids:null};
+    node.kids.push({val:g.val,node:kid});
+    DT.pending.push(kid);
+  });
+  return true;
+}
+function dtLines(node,pre,last,out){
+  if(node.type==='pending'){
+    out.push(pre+(last?'└─ ':'├─ ')+'…（待分裂，'+node.ex.length+' 条）');
+  }else if(node.type==='leaf'){
+    out.push(pre+(last?'└─ ':'├─ ')+'<span class="'+(node.label==='Yes'?'t':'f')+'">'+node.label+
+      '</span>（'+node.n+' 条）'+(node.d?'　<span class="dim">'+esc(node.d)+'</span>':''));
+  }else{
+    out.push(pre+(last?'└─ ':'├─ ')+'<b>'+esc(node.attr)+'?</b>　<span class="dim">gain='+
+      fx(node.gain,3)+'，Δ='+fx(node.delta,2)+'</span>');
+    node.kids.forEach(function(kd,i){
+      dtLines(kd.node,pre+(last?'　 ':'│  '),i===node.kids.length-1,out);
+    });
+  }
+}
+function dtPredict(node,i){
+  while(node.type==='split'){
+    var idx=RATTR.map(function(a){return a.k;}).indexOf(node.attr),v=REST[i][idx],nx=null;
+    node.kids.forEach(function(kd){if(kd.val===v)nx=kd.node;});
+    if(!nx)break;
+    node=nx;
+  }
+  if(node.type==='pending'){
+    var p=0,n=0;node.ex.forEach(function(j){if(REST[j][10]===1)p++;else n++;});
+    return p>=n?1:0;
+  }
+  return node.label==='Yes'?1:0;
+}
+function dtRender(){
+  var out=[];dtLines(DT.root,'',true,out);
+  $('#dtTree').innerHTML=out.join('\n');
+  var q='<tr><th class="m">待分裂节点</th><th class="m">样本</th><th class="m">Yes/No</th></tr>';
+  (DT.pending||[]).forEach(function(nd){
+    var p=0,n=0;nd.ex.forEach(function(j){if(REST[j][10]===1)p++;else n++;});
+    q+='<tr><td class="mono">'+nd.ex.length+' 条</td><td class="m mono">'+
+       nd.ex.map(function(j){return 'x'+(j+1);}).slice(0,8).join(' ')+'</td><td class="m mono">'+p+'/'+n+'</td></tr>';
+  });
+  $('#dtQueue').innerHTML=q||'<tr><td class="m dim">（没有待分裂的节点了）</td></tr>';
+  var nodes=0,leaves=0;
+  (function walk(nd){nodes++;if(nd.type==='leaf')leaves++;if(nd.kids)nd.kids.forEach(function(k){walk(k.node);});})(DT.root);
+  var correct=0;
+  REST.forEach(function(r,i){if(dtPredict(DT.root,i)===REST[i][10])correct++;});
+  $('#dtSize').textContent=nodes+' / '+leaves+' 叶';
+  $('#dtAcc').textContent=correct+' / 12 = '+fx(correct/12*100,1)+'%';
+  $('#dtChi').textContent=DT.chi?('Δ='+fx(DT.chi.delta,3)+'，df='+DT.chi.df+
+    (DT.chi.crit?'，临界值 '+DT.chi.crit:'')):'—';
+  var v=$('#dtVerdict');
+  if(!DT.pending.length){
+    v.className='verdict '+(correct===12?'yes':'mid');
+    v.innerHTML='<b>树长完了。</b>'+nodes+' 个节点（'+leaves+' 个叶），训练集准确率 '+fx(correct/12*100,1)+'%。'+
+      '<br><span class="dim">ID3 一定会把训练集拟合到 100% —— 但它同时把<b>噪声也背下来了</b>。'+
+      '切到"剪枝 5%"再建一次，看节点少了多少。</span>';
+  }else{
+    v.className='verdict mid';
+    v.innerHTML='还有 <b>'+DT.pending.length+'</b> 个节点等着分裂。点"长一步"看它下一步选哪个属性。';
+  }
+}
+$('#dtStep').onclick=function(){dtStep();dtRender();};
+$('#dtAll').onclick=function(){var g=0;while(g++<40&&DT.pending.length)dtStep();dtRender();};
+$('#dtReset').onclick=function(){$('#dtPrune').value=$('#dtPrune').value;dtReset();};
+$('#dtPrune').onchange=dtReset;
+dtReset();
+
+/* =========================================================
+   ④ 线性回归：闭式解 vs 梯度下降
+   ========================================================= */
+var RGD={
+  line:{n:'y ≈ 2x + 1',xs:[1,2,3,4,5,6,7,8,9,10],
+        ys:[3.1,4.9,6.8,9.2,11.0,12.9,15.2,16.8,19.1,21.2]},
+  house:{n:'面积（千平方英尺）→ 价格（千美元）',
+        xs:[0.5,0.8,1.1,1.4,1.7,2.0,2.3,2.6,2.9,3.2],
+        ys:[131,168,196,238,262,305,327,372,398,441]},
+  quad:{n:'其实是曲线（直线必然欠拟合）',xs:[1,2,3,4,5,6,7,8,9,10],
+        ys:[8.2,3.4,1.1,0.4,1.2,3.6,8.1,14.2,22.5,32.8]}
+};
+var RG={w0:0,w1:0,t:0,loss:[],sx:1,sy:1,mx:0,my:0};
+function rgData(){return RGD[$('#rgData').value];}
+function rgStd(){
+  var d=rgData(),N=d.xs.length,mx=0,my=0;
+  d.xs.forEach(function(x){mx+=x;});d.ys.forEach(function(y){my+=y;});
+  mx/=N;my/=N;
+  var vx=0,vy=0;
+  d.xs.forEach(function(x){vx+=(x-mx)*(x-mx);});d.ys.forEach(function(y){vy+=(y-my)*(y-my);});
+  RG.mx=mx;RG.my=my;RG.sx=Math.sqrt(vx/N)||1;RG.sy=Math.sqrt(vy/N)||1;
+}
+function rgClosed(){
+  var d=rgData(),N=d.xs.length,sx=0,sy=0,sxy=0,sxx=0;
+  for(var j=0;j<N;j++){sx+=d.xs[j];sy+=d.ys[j];sxy+=d.xs[j]*d.ys[j];sxx+=d.xs[j]*d.xs[j];}
+  var w1=(N*sxy-sx*sy)/(N*sxx-sx*sx),w0=(sy-w1*sx)/N;
+  return {w0:w0,w1:w1};
+}
+function rgMSE(w0,w1){
+  var d=rgData(),N=d.xs.length,s=0;
+  for(var j=0;j<N;j++){var e=d.ys[j]-(w0+w1*d.xs[j]);s+=e*e;}
+  return s/N;
+}
+function rgReset(){
+  rgStd();RG.w0=0;RG.w1=0;RG.t=0;RG.loss=[];
+  if($('#rgMethod').value==='closed'){var c=rgClosed();RG.w0=c.w0;RG.w1=c.w1;RG.loss=[rgMSE(RG.w0,RG.w1)];}
+  else RG.loss=[rgMSE(0,0)];
+  rgRender();
+}
+function rgStep(n){
+  if($('#rgMethod').value==='closed'){$('#rgHint').innerHTML='当前是<b>闭式解</b>，一步就到最优，没有「下一歩」可言。';return;}
+  var d=rgData(),N=d.xs.length,a=+$('#rgA').value/100;
+  for(var s=0;s<n;s++){
+    var g0=0,g1=0;
+    if($('#rgMethod').value==='sgd'){
+      var j=RG.t%N;
+      var xj=(d.xs[j]-RG.mx)/RG.sx,yj=(d.ys[j]-RG.my)/RG.sy;
+      var h=RG.w0+RG.w1*xj,e=yj-h;
+      g0=e;g1=e*xj;
+    }else{
+      for(var i=0;i<N;i++){
+        var x2=(d.xs[i]-RG.mx)/RG.sx,y2=(d.ys[i]-RG.my)/RG.sy;
+        var e2=y2-(RG.w0+RG.w1*x2);
+        g0+=e2;g1+=e2*x2;
+      }
+      g0/=N;g1/=N;
+    }
+    RG.w0+=a*g0;RG.w1+=a*g1;RG.t++;
+    var uw1=RG.sy*RG.w1/RG.sx,uw0=RG.my+RG.sy*RG.w0-uw1*RG.mx;
+    RG.loss.push(rgMSE(uw0,uw1));
+    if(RG.loss.length>400)RG.loss.shift();
+  }
+  rgRender();
+}
+function rgRender(){
+  var d=rgData(),a=+$('#rgA').value/100;
+  $('#rgAv').textContent=fx(a,3);
+  var w0=RG.w0,w1=RG.w1;
+  if($('#rgMethod').value!=='closed'){
+    w1=RG.sy*RG.w1/RG.sx;
+    w0=RG.my+RG.sy*RG.w0-w1*RG.mx;
+  }
+  var mse=rgMSE(w0,w1);
+  $('#rgW').textContent=fx(w0,3)+' / '+fx(w1,3);
+  $('#rgL').textContent=fx(mse,4);
+  $('#rgT').textContent=RG.t;
+  var W=520,H=260,pad=30;
+  var xmin=Math.min.apply(null,d.xs),xmax=Math.max.apply(null,d.xs);
+  var ymin=Math.min.apply(null,d.ys),ymax=Math.max.apply(null,d.ys);
+  var px=function(x){return pad+(x-xmin)/(xmax-xmin||1)*(W-2*pad);};
+  var py=function(y){return H-pad-(y-ymin)/(ymax-ymin||1)*(H-2*pad);};
+  var s='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--dim)"/>'+
+        '<line x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(H-pad)+'" style="stroke:var(--dim)"/>';
+  s+='<line x1="'+px(xmin)+'" y1="'+py(w0+w1*xmin)+'" x2="'+px(xmax)+'" y2="'+py(w0+w1*xmax)+
+     '" style="stroke:var(--accent);stroke-width:2.5"/>';
+  d.xs.forEach(function(x,i){
+    s+='<circle cx="'+px(x).toFixed(1)+'" cy="'+py(d.ys[i]).toFixed(1)+'" r="4" style="fill:var(--gold)"/>';
+  });
+  s+='<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">x</text>';
+  $('#rgSvg').innerHTML=s;
+  var L=RG.loss,mx=Math.max.apply(null,L.concat([1e-9])),mn=Math.min.apply(null,L);
+  var W2=520,H2=170,p2=24,pts=[];
+  L.forEach(function(v,i){
+    var xx=p2+(L.length<2?0:i/(L.length-1))*(W2-2*p2);
+    var yy=p2+(1-(v-mn)/(mx-mn||1))*(H2-2*p2);
+    pts.push(xx.toFixed(1)+','+yy.toFixed(1));
+  });
+  var s2='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:'+
+    (L[L.length-1]>mx*0.9&&L.length>3?'var(--bad)':'var(--ok)')+';stroke-width:2"/>'+
+    '<text x="'+p2+'" y="16" class="sigtxt" style="fill:var(--dim)">MSE '+fx(L[L.length-1],3)+'</text>'+
+    '<text x="'+(W2-p2)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">最高 '+fx(mx,3)+'</text>';
+  $('#rgLoss').innerHTML=s2;
+  var v=$('#rgVerdict');
+  if($('#rgMethod').value==='closed'){
+    v.className='verdict yes';
+    v.innerHTML='<b>闭式解一步到位：</b>w₀ = '+fx(w0,3)+'，w₁ = '+fx(w1,3)+'，MSE = '+fx(mse,4)+
+      '。<br><span class="dim">平方损失是<b>凸</b>的，所以这个解就是全局最优 —— 不存在"卡在局部最优"这回事。</span>';
+  }else{
+    var div=!isFinite(mse)||mse>mx*0.99&&RG.t>20;
+    v.className='verdict '+(div?'no':'mid');
+    v.innerHTML=(div?'<b>发散了！</b>α = '+fx(a,3)+' 太大，每一步都跨过了最低点。把 α 调小再试。':
+      '已走 <b>'+RG.t+'</b> 步，MSE = '+fx(mse,4)+'　（目标：闭式解的 '+fx(rgMSE(rgClosed().w0,rgClosed().w1),4)+'）')+
+      '<br><span class="dim">梯度下降在<b>标准化</b>后的数据上跑（x、y 各减去均值除以标准差），'+
+      '所以 α 的量纲与原始数据无关。</span>';
+  }
+  var closed=($('#rgMethod').value==='closed');
+  $('#rgStep').disabled=closed;$('#rgRun').disabled=closed;
+  $('#rgHint').innerHTML=closed?'闭式解<b>一步到位</b>，没有迭代过程 —— 想看它一步步下降，把「方法」切到梯度下降或 SGD。':'';
+}
+$('#rgData').onchange=rgReset;
+$('#rgMethod').onchange=rgReset;
+$('#rgA').oninput=function(){rgRender();};
+$('#rgStep').onclick=function(){rgStep(1);};
+$('#rgRun').onclick=function(){rgStep(100);};
+$('#rgReset').onclick=rgReset;
+rgReset();
+
+/* =========================================================
+   ⑤ 感知机 vs 逻辑回归
+   ========================================================= */
+var PCDATA={
+  sep:[[1,2,3],[1,3,4],[1,4,3],[1,3,2],[1,5,4],[1,4,5],
+       [0,7,1],[0,8,2],[0,7,3],[0,9,2],[0,8,4],[0,6,1]],
+  non:[[1,2,3],[1,3,4],[1,4,3],[1,3,2],[0,5,4],
+       [0,7,1],[0,8,2],[0,7,3],[0,9,2],[0,8,4],[1,6,1],[0,4,5]]
+};
+var PC={w:[0,0,0],t:0,err:[],best:99};
+function pcData(){return PCDATA[$('#pcData').value];}
+function pcReset(){PC.w=[0.1,-0.2,0.3];PC.t=0;PC.err=[];PC.best=99;pcRender();}
+function pcErrCount(){
+  var d=pcData(),e=0;
+  d.forEach(function(s){var h=PC.w[0]+PC.w[1]*s[1]+PC.w[2]*s[2];if((h>=0?1:0)!==s[0])e++;});
+  return e;
+}
+function pcStep(n){
+  var d=pcData(),a=+$('#pcA').value/100,model=$('#pcModel').value;
+  for(var s=0;s<n;s++){
+    var i=PC.t%d.length,x=d[i];
+    var z=PC.w[0]+PC.w[1]*x[1]+PC.w[2]*x[2];
+    if(model==='perc'){
+      var h=z>=0?1:0;
+      for(var k=0;k<3;k++)PC.w[k]+=a*(x[0]-h)*x[k];
+    }else{
+      var g=1/(1+Math.exp(-z));
+      for(var k2=0;k2<3;k2++)PC.w[k2]+=a*(x[0]-g)*g*(1-g)*x[k2];
+    }
+    PC.t++;
+    var e=pcErrCount();
+    PC.err.push(e);
+    if(e<PC.best)PC.best=e;
+    if(PC.err.length>400)PC.err.shift();
+  }
+  pcRender();
+}
+function pcRender(){
+  var a=+$('#pcA').value/100;
+  $('#pcAv').textContent=fx(a,2);
+  var W=520,H=300,pad=26;
+  var d=pcData();
+  var px=function(x){return pad+x/10*(W-2*pad);};
+  var py=function(y){return H-pad-y/6*(H-2*pad);};
+  var s='';
+  // 决策边界 w0 + w1*x + w2*y = 0
+  var w=PC.w;
+  if(Math.abs(w[2])>1e-9){
+    var y1=-(w[0]+w[1]*0)/w[2],y2=-(w[0]+w[1]*10)/w[2];
+    s+='<line x1="'+px(0)+'" y1="'+py(Math.max(-1,Math.min(7,y1)))+'" x2="'+px(10)+'" y2="'+
+       py(Math.max(-1,Math.min(7,y2)))+'" style="stroke:var(--accent);stroke-width:2.5"/>';
+  }
+  d.forEach(function(x){
+    s+='<circle cx="'+px(x[1]).toFixed(1)+'" cy="'+py(x[2]).toFixed(1)+'" r="6" style="fill:'+
+       (x[0]?'var(--ok)':'var(--bad)')+';stroke:var(--panel)"/>';
+  });
+  s+='<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">x₁</text>';
+  $('#pcSvg').innerHTML=s;
+  var E=PC.err,W2=520,H2=180,p2=24,pts=[];
+  var mx=Math.max.apply(null,E.concat([1]));
+  E.forEach(function(v,i){
+    var xx=p2+(E.length<2?0:i/(E.length-1))*(W2-2*p2);
+    var yy=p2+(1-v/mx)*(H2-2*p2);
+    pts.push(xx.toFixed(1)+','+yy.toFixed(1));
+  });
+  $('#pcErr').innerHTML='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--warn);stroke-width:2"/>'+
+    '<text x="'+p2+'" y="16" class="sigtxt" style="fill:var(--dim)">错分数（最高 '+mx+'）</text>'+
+    '<text x="'+(W2-p2)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">当前 '+
+    (E.length?E[E.length-1]:'—')+'</text>';
+  var D=pcData(),d2=D[PC.t%D.length];
+  var z=PC.w[0]+PC.w[1]*d2[1]+PC.w[2]*d2[2],g=1/(1+Math.exp(-z));
+  $('#pcUpdate').innerHTML='<span class="kw">'+$('#pcModel').value+'</span>：w = ⟨'+
+    PC.w.map(function(v){return fx(v,3);}).join(', ')+'⟩\n'+
+    '下一个样本 x = ⟨1, '+d2[1]+', '+d2[2]+'⟩，y = '+d2[0]+'\n'+
+    'z = w·x = '+fx(z,3)+'　'+
+    ($('#pcModel').value==='perc'?('h = '+fx(z,3)+' ≥ 0 ? 1 : 0'):('h = σ(z) = '+fx(g,4)))+
+    '\n更新：wᵢ ← wᵢ + α·(y − h)'+($('#pcModel').value==='perc'?'':'·h(1−h)')+'·xᵢ';
+  $('#pcW').textContent=PC.w.map(function(v){return fx(v,3);}).join(' , ');
+  var e=pcErrCount();
+  $('#pcE').textContent=e+' / '+pcData().length;
+  $('#pcBest').textContent=PC.best+' 个错误';
+  var v=$('#pcVerdict');
+  var sep=$('#pcData').value==='sep';
+  v.className='verdict '+(e===0?'yes':(sep?'mid':'no'));
+  v.innerHTML=(sep
+    ? (e===0?'<b>收敛了！</b>数据线性可分时，感知机<b>保证</b>在有限步内找到一条完全正确的分界线。':
+       '可分数据，还在学（已走 '+PC.t+' 步，错 '+e+' 个）。继续点"走 200 步"。')
+    : '<b>不可分数据：</b>不存在一条直线能全分对，所以它会<b>一直抖</b> —— '+
+      '历史上最少错 <b>'+PC.best+'</b> 个，但一会儿又跳出去了。')+
+    '<br><span class="dim">逻辑回归多乘的 h(1−h) 让"已经分得很对"的样本几乎不再更新，所以曲线更平滑。</span>';
+}
+$('#pcModel').onchange=pcReset;
+$('#pcData').onchange=pcReset;
+$('#pcA').oninput=pcRender;
+$('#pcStep').onclick=function(){pcStep(1);};
+$('#pcRun').onclick=function(){pcStep(200);};
+$('#pcReset').onclick=pcReset;
+pcReset();
+
+/* =========================================================
+   ⑥ 过拟合与模型选择
+   ========================================================= */
+var OVSEED=12345;
+function ovRnd(){OVSEED=(OVSEED*1103515245+12345)%2147483648;return OVSEED/2147483648;}
+function ovGauss(){var u=1-ovRnd(),v=ovRnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+var OV={xs:[],ys:[],vx:[],vy:[]};
+function ovTrue(x){return Math.sin(2*Math.PI*x);}
+function ovGen(){
+  OVSEED=4242;
+  var N=+$('#ovN').value,sig=+$('#ovS').value/100;
+  OV.xs=[];OV.ys=[];
+  for(var j=0;j<N;j++){
+    var x=(j+0.5)/N;
+    OV.xs.push(x);OV.ys.push(ovTrue(x)+sig*ovGauss());
+  }
+  OV.vx=[];OV.vy=[];
+  for(var i=0;i<120;i++){var vx=i/119;OV.vx.push(vx);OV.vy.push(ovTrue(vx));}
+}
+function ovDesign(xs,d){
+  return xs.map(function(x){
+    var row=[];for(var k=0;k<=d;k++)row.push(Math.pow(x,k));return row;
+  });
+}
+function ovSolve(A,b){
+  var n=b.length,M=[];
+  for(var i=0;i<n;i++)M.push(A[i].slice().concat([b[i]]));
+  for(var c=0;c<n;c++){
+    var piv=c;
+    for(var r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[piv][c]))piv=r;
+    var t=M[c];M[c]=M[piv];M[piv]=t;
+    if(Math.abs(M[c][c])<1e-10)continue;
+    for(var r2=0;r2<n;r2++){
+      if(r2===c)continue;
+      var f=M[r2][c]/M[c][c];
+      for(var k=c;k<=n;k++)M[r2][k]-=f*M[c][k];
+    }
+  }
+  var x=[];
+  for(var i2=0;i2<n;i2++)x.push(Math.abs(M[i2][i2])<1e-10?0:M[i2][n]/M[i2][i2]);
+  return x;
+}
+function ovFit(xs,ys,d,lam,mode){
+  var X=ovDesign(xs,d),N=xs.length,m=d+1;
+  if(mode==='l1'){
+    var w=new Array(m).fill(0);
+    for(var it=0;it<300;it++){
+      for(var k=0;k<m;k++){
+        var num=0,den=0;
+        for(var j=0;j<N;j++){
+          var pred=0;for(var q=0;q<m;q++)if(q!==k)pred+=w[q]*X[j][q];
+          num+=X[j][k]*(ys[j]-pred);den+=X[j][k]*X[j][k];
+        }
+        num/=N;den/=N;
+        if(k===0){w[k]=den<1e-12?0:num/den;continue;}   // 截距不惩罚
+        var soft=Math.abs(num)-lam;
+        w[k]=den<1e-12?0:(soft>0?(num>0?soft:-soft):0)/den;
+      }
+    }
+    return w;
+  }
+  var A=[],b=[];
+  for(var i=0;i<m;i++){
+    A.push(new Array(m).fill(0));b.push(0);
+    for(var j2=0;j2<N;j2++)b[i]+=X[j2][i]*ys[j2];
+  }
+  for(var i3=0;i3<m;i3++)for(var j3=0;j3<m;j3++){
+    var s=0;for(var j4=0;j4<N;j4++)s+=X[j4][i3]*X[j4][j3];
+    A[i3][j3]=s/N+((i3===j3&&i3>0)?lam:0);   // 截距不惩罚
+  }
+  for(var i4=0;i4<m;i4++)b[i4]/=N;
+  return ovSolve(A,b);
+}
+function ovRMSE(w,xs,ys){
+  var X=ovDesign(xs,w.length-1),s=0;
+  for(var j=0;j<xs.length;j++){
+    var p=0;for(var k=0;k<w.length;k++)p+=w[k]*X[j][k];
+    s+=(ys[j]-p)*(ys[j]-p);
+  }
+  return Math.sqrt(s/xs.length);
+}
+function ovCV(k){
+  var d=+$('#ovD').value,lam=+$('#ovL').value/1000,mode=$('#ovReg').value,N=OV.xs.length;
+  var folds=k===0?N:k,idx=OV.xs.map(function(x,i){return i;}),errs=[];
+  for(var f=0;f<folds;f++){
+    var tr=[],te=[];
+    idx.forEach(function(i){
+      if(k===0){(i===f?te:tr).push(i);}
+      else{(i%folds===f?te:tr).push(i);}
+    });
+    if(!te.length)continue;
+    var w=ovFit(tr.map(function(i){return OV.xs[i];}),tr.map(function(i){return OV.ys[i];}),d,lam,mode);
+    errs.push(ovRMSE(w,te.map(function(i){return OV.xs[i];}),te.map(function(i){return OV.ys[i];})));
+  }
+  return errs.reduce(function(a,b){return a+b;},0)/errs.length;
+}
+function ovRender(){
+  ovGen();
+  var d=+$('#ovD').value,lam=+$('#ovL').value/1000,mode=$('#ovReg').value;
+  $('#ovDv').textContent=d;$('#ovSv').textContent=fx($('#ovS').value/100,2);
+  $('#ovNv').textContent=$('#ovN').value;$('#ovLv').textContent=fx(lam,3);
+  var w=ovFit(OV.xs,OV.ys,d,lam,mode);
+  var tr=ovRMSE(w,OV.xs,OV.ys),va=ovRMSE(w,OV.vx,OV.vy);
+  $('#ovTr').textContent=fx(tr,4);
+  $('#ovVa').textContent=fx(va,4);
+  $('#ovW').innerHTML='<span class="kw">系数</span>（d='+d+'，'+(mode==='l1'?'L1':'L2')+'，λ='+fx(lam,3)+'）\n'+
+    w.map(function(v,i){return 'w'+i+' = '+fx(v,3);}).join('　');
+  var W=520,H=260,pad=26;
+  var ymin=-1.8,ymax=1.8;
+  var px=function(x){return pad+x*(W-2*pad);};
+  var py=function(y){return H-pad-(y-ymin)/(ymax-ymin)*(H-2*pad);};
+  var s='<line x1="'+pad+'" y1="'+py(0)+'" x2="'+(W-pad)+'" y2="'+py(0)+'" style="stroke:var(--line)"/>';
+  var tp=[];
+  for(var i=0;i<=200;i++){var x=i/200;tp.push(px(x).toFixed(1)+','+py(ovTrue(x)).toFixed(1));}
+  s+='<polyline points="'+tp.join(' ')+'" style="fill:none;stroke:var(--dim);stroke-width:1.5;stroke-dasharray:4 3"/>';
+  var fp=[];
+  for(var i2=0;i2<=200;i2++){
+    var x2=i2/200,p=0;
+    for(var k2=0;k2<w.length;k2++)p+=w[k2]*Math.pow(x2,k2);
+    fp.push(px(x2).toFixed(1)+','+py(Math.max(ymin,Math.min(ymax,p))).toFixed(1));
+  }
+  s+='<polyline points="'+fp.join(' ')+'" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>';
+  OV.xs.forEach(function(x,i3){
+    s+='<circle cx="'+px(x).toFixed(1)+'" cy="'+py(Math.max(ymin,Math.min(ymax,OV.ys[i3]))).toFixed(1)+
+       '" r="3.5" style="fill:var(--gold)"/>';
+  });
+  s+='<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">真函数（虚线） vs 拟合（实线）</text>';
+  $('#ovSvg').innerHTML=s;
+  var trs=[],vas=[];
+  for(var dd=0;dd<=9;dd++){
+    var ww=ovFit(OV.xs,OV.ys,dd,lam,mode);
+    trs.push(ovRMSE(ww,OV.xs,OV.ys));
+    vas.push(ovRMSE(ww,OV.vx,OV.vy));
+  }
+  var mx=Math.max.apply(null,trs.concat(vas).concat([0.001]));
+  var W2=520,H2=170,p2=24;
+  function pline(arr,col){
+    return '<polyline points="'+arr.map(function(v,i){
+      var xx=p2+i/9*(W2-2*p2),yy=p2+(1-v/mx)*(H2-2*p2);
+      return xx.toFixed(1)+','+yy.toFixed(1);
+    }).join(' ')+'" style="fill:none;stroke:'+col+';stroke-width:2"/>';
+  }
+  var bd=0;for(var i5=0;i5<=9;i5++)if(vas[i5]<vas[bd])bd=i5;
+  $('#ovCurve').innerHTML=pline(trs,'var(--ok)')+pline(vas,'var(--bad)')+
+    '<circle cx="'+(p2+d/9*(W2-2*p2)).toFixed(1)+'" cy="'+(p2+(1-vas[d]/mx)*(H2-2*p2)).toFixed(1)+
+    '" r="5" style="fill:var(--accent)"/>'+
+    '<text x="'+p2+'" y="16" class="sigtxt" style="fill:var(--ok)">训练 RMSE</text>'+
+    '<text x="'+(p2+70)+'" y="16" class="sigtxt" style="fill:var(--bad)">验证 RMSE（U 形）</text>'+
+    '<text x="'+(W2-p2)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">d=0…9，最优 d='+bd+'</text>';
+  var v=$('#ovVerdict');
+  v.className='verdict '+(d===bd?'yes':(d>bd?'no':'mid'));
+  v.innerHTML='当前 d = <b>'+d+'</b>：训练 RMSE '+fx(tr,4)+'，验证 RMSE '+fx(va,4)+
+    '　（这条数据下最优 d ≈ <b>'+bd+'</b>）'+
+    (d>bd?'<br><b>过拟合了：</b>训练误差还在降，验证误差已经在升 —— 多出来的自由度去<b>拟合噪声</b>了。':'')+
+    (d<bd?'<br><b>欠拟合：</b>模型太简单，连真函数的形状都表达不出来。':'')+
+    '<br><span class="dim">把 N 调大，最优 d 会跟着变大 —— 数据越多，越"养得起"复杂的模型。</span>';
+}
+['#ovD','#ovS','#ovN','#ovL'].forEach(function(i){$(i).oninput=ovRender;});
+$('#ovReg').onchange=ovRender;
+function ovCVRun(){
+  var k=+$('#ovK').value,res=[];
+  for(var d=0;d<=9;d++){
+    $('#ovD').value=d;
+    res.push({d:d,e:ovCV(k)});
+  }
+  $('#ovD').value=3;
+  var mx=Math.max.apply(null,res.map(function(r){return r.e;}));
+  var bd=res.reduce(function(a,b){return b.e<a.e?b:a;});
+  $('#ovCVBars').innerHTML=res.map(function(r){
+    return '<div class="bar"><span class="nm"'+(r.d===bd.d?' style="color:var(--ok)"':'')+'>d = '+r.d+
+      '　CV 误差 '+fx(r.e,4)+'</span><span class="tr"><span class="fl'+(r.d===bd.d?'':' bad')+
+      '" style="width:'+Math.max(1,r.e/mx*100)+'%"></span></span></div>';
+  }).join('');
+  ovRender();
+}
+$('#ovCV').onclick=ovCVRun;
+$('#ovK').onchange=ovCVRun;
+ovRender();
+
+/* =========================================================
+   第 20 章 · 学习概率模型（面板 ⑦–⑪）
+   ========================================================= */
+/* ---------------- ⑦ 贝叶斯糖果袋 ---------------- */
+var CB={h:[1,0.75,0.5,0.25,0],pri:[0.1,0.2,0.4,0.2,0.1],d:[]};
+function cbPost(){
+  var w=CB.h.map(function(h,i){
+    var l=1;
+    CB.d.forEach(function(c){l*=(c==='cherry'?h:1-h);});
+    return CB.pri[i]*l;
+  });
+  var s=w.reduce(function(a,b){return a+b;},0);
+  return s>0?w.map(function(x){return x/s;}):CB.pri.map(function(){return 0;});
+}
+function cbRender(){
+  var P=cbPost(),mx=Math.max.apply(null,P.concat([1e-9]));
+  $('#cbBars').innerHTML=CB.h.map(function(h,i){
+    return '<div class="bar"><span class="nm">h'+(i+1)+'：'+Math.round(h*100)+'% 樱桃　后验 '+
+      (P[i]*100).toFixed(1)+'%</span><span class="tr"><span class="fl'+(i===0?' bad':'')+
+      '" style="width:'+Math.max(0.5,P[i]/mx*100)+'%"></span></span></div>';
+  }).join('');
+  var pl=0;P.forEach(function(p,i){pl+=p*(1-CB.h[i]);});
+  var mi=0;P.forEach(function(p,i){if(p>P[mi])mi=i;});
+  $('#cbBayes').textContent=pl.toFixed(4);
+  $('#cbMap').textContent='h'+(mi+1)+'（'+Math.round(CB.h[mi]*100)+'% 樱桃）';
+  $('#cbMapP').textContent=(1-CB.h[mi]).toFixed(4);
+  $('#cbSeq').innerHTML='<span class="kw">已经打开的糖</span>：'+
+    (CB.d.length?CB.d.map(function(c){return c==='cherry'?'🍒':'🍋';}).join(' '):'（还没有）')+
+    '　共 '+CB.d.length+' 颗';
+  $('#cbWhy').innerHTML='<span class="kw">贝叶斯预测</span> = Σᵢ P(下一颗=柠檬 | hᵢ)·P(hᵢ|d)\n'+
+    '<span class="kw">MAP 预测</span> = P(下一颗=柠檬 | h_MAP)\n\n'+
+    '<span class="dim">两者的差 = '+(Math.abs(pl-(1-CB.h[mi]))).toFixed(4)+
+    ' —— 这就是"只信最可能的假设"丢掉的信息。</span>';
+  var v=$('#cbVerdict');
+  if(CB.d.length===0){
+    v.className='verdict mid';
+    v.innerHTML='先验是 ⟨0.1, 0.2, 0.4, 0.2, 0.1⟩ —— 最看好"一半一半"。开始打开糖吧。';
+  }else{
+    v.className='verdict '+(Math.abs(pl-(1-CB.h[mi]))>0.15?'no':'yes');
+    v.innerHTML='<b>'+CB.d.length+' 颗糖之后：</b>贝叶斯说下一颗是柠檬的概率 <b>'+pl.toFixed(3)+
+      '</b>，MAP（'+'h'+(mi+1)+'）说 <b>'+(1-CB.h[mi]).toFixed(3)+'</b>。'+
+      (Math.abs(pl-(1-CB.h[mi]))>0.15
+        ? '<br><b>MAP 明显更极端</b>：它把其它假设的概率直接丢掉了。'
+        : '<br>证据够多，两者已经基本一致了。');
+  }
+}
+$$('[data-candy]').forEach(function(b){
+  b.onclick=function(){CB.d.push(b.dataset.candy);cbRender();};
+});
+$('#cb10').onclick=function(){for(var i=0;i<10;i++)CB.d.push('lime');cbRender();};
+$('#cbReset').onclick=function(){CB.d=[];cbRender();};
+cbRender();
+
+/* ---------------- ⑧ MLE vs Beta 后验 ---------------- */
+function betaRaw(x,a,b){
+  if(x<=0){return a<1?Infinity:(a===1?(b>=1?1:Infinity):0);}
+  if(x>=1){return b<1?Infinity:(b===1?1:0);}
+  return Math.exp((a-1)*Math.log(x)+(b-1)*Math.log(1-x));
+}
+function betaGrid(a,b){
+  var G=400,raw=[],mx=0,s=0;
+  for(var i=0;i<=G;i++){
+    var x=i/G,v=betaRaw(x,a,b);
+    if(!isFinite(v))v=betaRaw(Math.min(0.9999,Math.max(0.0001,x)),a,b);
+    raw.push(v);if(v>mx)mx=v;
+  }
+  for(var i2=0;i2<=G;i2++)s+=raw[i2]/G;
+  return {x:raw.map(function(v,i){return i/G;}),y:raw.map(function(v){return v/s;}),area:s,mx:mx/s};
+}
+function betaQuant(g,p){
+  var c=0;
+  for(var i=0;i<g.y.length;i++){
+    c+=g.y[i]/g.y.length;
+    if(c>=p)return g.x[i];
+  }
+  return 1;
+}
+function beRender(){
+  var N=+$('#beN').value,c=+$('#beC').value,a=+$('#beA').value,b=+$('#beB').value;
+  if(c>N){c=N;$('#beC').value=c;}
+  $('#beNv').textContent=N;$('#beCv').textContent=c;$('#beAv').textContent=a;$('#beBv').textContent=b;
+  var A=a+c,B=b+(N-c);
+  var mle=N?c/N:0,mean=A/(A+B);
+  var varr=A*B/((A+B)*(A+B)*(A+B+1)),sd=Math.sqrt(varr);
+  $('#beMle').textContent=fx(mle,4);
+  $('#bePost').textContent='Beta('+A+', '+B+')';
+  $('#beMean').textContent=fx(mean,4);
+  $('#beSd').textContent=fx(sd,4);
+  var g=betaGrid(A,B),q1=betaQuant(g,0.025),q2=betaQuant(g,0.975);
+  $('#beCi').textContent='['+fx(q1,3)+' , '+fx(q2,3)+']';
+  $('#beFx').innerHTML='<span class="kw">贝叶斯更新</span>\n'+
+    '先验 Beta('+a+', '+b+')　+　'+c+' 正 / '+(N-c)+' 反\n'+
+    '后验 Beta('+A+', '+B+')　（先验就是"虚拟计数"）\n\n'+
+    '<span class="kw">后验均值</span>\n('+A+') / ('+A+'+'+B+') = '+fx(mean,4)+'\n\n'+
+    '<span class="kw">MLE</span>\n'+c+' / '+N+' = '+fx(mle,4);
+  var W=520,H=200,pad=26,mx=Math.max(g.mx,0.001),pts=[];
+  g.x.forEach(function(x,i){
+    var xx=pad+x*(W-2*pad),yy=H-pad-Math.min(1,g.y[i]/mx)*(H-2*pad-16);
+    pts.push(xx.toFixed(1)+','+yy.toFixed(1));
+  });
+  var s='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>';
+  s+='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" style="stroke:var(--dim)"/>';
+  var mx0=pad+mle*(W-2*pad),mm=pad+mean*(W-2*pad);
+  s+='<line x1="'+mx0.toFixed(1)+'" y1="'+pad+'" x2="'+mx0.toFixed(1)+'" y2="'+(H-pad)+
+     '" style="stroke:var(--bad);stroke-width:1.5;stroke-dasharray:4 3"/>'+
+     '<text x="'+(mx0+4).toFixed(1)+'" y="'+(pad+12)+'" class="sigtxt" style="fill:var(--bad)">MLE '+fx(mle,3)+'</text>'+
+     '<line x1="'+mm.toFixed(1)+'" y1="'+pad+'" x2="'+mm.toFixed(1)+'" y2="'+(H-pad)+
+     '" style="stroke:var(--ok);stroke-width:2"/>'+
+     '<text x="'+(mm+4).toFixed(1)+'" y="'+(pad+28)+'" class="sigtxt" style="fill:var(--ok)">后验均值 '+fx(mean,3)+'</text>'+
+     '<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">θ</text>';
+  $('#beSvg').innerHTML=s;
+  var v=$('#beVerdict');
+  v.className='verdict '+(N<=3?'no':(N>=30?'yes':'mid'));
+  v.innerHTML=(N<=3
+    ? '<b>只有 '+N+' 个样本：</b>MLE 一口咬定 θ = '+fx(mle,3)+
+      '，后验均值却只有 '+fx(mean,3)+' —— 先验把极端结论<b>拉了回来</b>。'
+    : 'N = '+N+'：后验均值 '+fx(mean,3)+'，MLE '+fx(mle,3)+'，两者差 '+fx(Math.abs(mean-mle),4)+'。')+
+    '<br><span class="dim">95% 可信区间 ['+fx(q1,3)+', '+fx(q2,3)+']，宽度 '+fx(q2-q1,3)+
+    ' —— 把 N 拉大，看这个区间怎么收窄。</span>';
+}
+['#beN','#beC','#beA','#beB'].forEach(function(i){$(i).oninput=beRender;});
+beRender();
+
+/* ---------------- ⑨ 朴素贝叶斯 ---------------- */
+var NBC=[
+  {id:'x1',n:'x₁（训练集第 1 条，真值 Yes）',v:['Y','N','N','Y','Some','$$$','N','Y','French','0–10'],y:1},
+  {id:'x7',n:'x₇（训练集第 7 条，真值 No）',v:['N','Y','N','N','None','$','Y','N','Burger','0–10'],y:0},
+  {id:'x12',n:'x₁₂（训练集第 12 条，真值 Yes）',v:['Y','Y','Y','Y','Full','$','N','N','Burger','30–60'],y:1},
+  {id:'n1',n:'新样例 ①：周五、坐满、饿（合理组合）',v:['Y','N','Y','Y','Full','$','N','N','Burger','10–30'],y:null},
+  {id:'n2',n:'新样例 ②：坐满却"没人"（训练集里 Yes 从未出现过的组合）',v:['Y','N','N','Y','None','$','N','N','Thai','0–10'],y:null}
+];
+var NBINIT=false;
+function nbCounts(C){
+  var nC={1:0,0:0};
+  REST.forEach(function(r){nC[r[10]]++;});
+  var cnt={};
+  RATTR.forEach(function(a,i){
+    cnt[a.k]={};
+    a.v.forEach(function(v){cnt[a.k][v]={1:0,0:0};});
+    REST.forEach(function(r){cnt[a.k][r[i]][r[10]]++;});
+  });
+  return {nC:nC,cnt:cnt};
+}
+function nbProbs(sm){
+  var c=nbCounts(),out={prior:{},cond:{}};
+  [1,0].forEach(function(k){out.prior[k]=(c.nC[k]+sm)/(12+2*sm);});
+  RATTR.forEach(function(a){
+    out.cond[a.k]={};
+    a.v.forEach(function(v){
+      out.cond[a.k][v]={};
+      [1,0].forEach(function(k){
+        out.cond[a.k][v][k]=(c.cnt[a.k][v][k]+sm)/(c.nC[k]+sm*a.v.length);
+      });
+    });
+  });
+  return out;
+}
+function nbClassify(x,sm){
+  var P=nbProbs(sm),L={};
+  [1,0].forEach(function(k){
+    var l=P.prior[k];
+    RATTR.forEach(function(a,i){l*=P.cond[a.k][x[i]][k];});
+    L[k]=l;
+  });
+  var s=L[1]+L[0];
+  return s>0?{yes:L[1]/s,no:L[0]/s,pred:L[1]>=L[0]?1:0,L:L,P:P}:{yes:0,no:0,pred:0,L:L,P:P,nan:true};
+}
+function nbRender(){
+  if(!NBINIT){
+    NBINIT=true;
+    $('#nbCase').innerHTML=NBC.map(function(c){return '<option value="'+c.id+'">'+esc(c.n)+'</option>';}).join('');
+    $('#nbCase').value='n2';
+  }
+  var id=$('#nbCase').value,cs=NBC.filter(function(c){return c.id===id;})[0];
+  var sm=$('#nbSmooth').value==='none'?0:parseFloat($('#nbSmooth').value);
+  var r=nbClassify(cs.v,sm);
+  var t='<tr><th class="m">属性</th><th class="m">取值</th><th class="m">P(·|Yes)</th><th class="m">P(·|No)</th></tr>';
+  RATTR.forEach(function(a,i){
+    var py=r.P.cond[a.k][cs.v[i]][1],pn=r.P.cond[a.k][cs.v[i]][0];
+    t+='<tr'+(py===0||pn===0?' class="kbtrue"':'')+'><td class="mono">'+esc(a.k)+'</td><td class="mono">'+
+      esc(cs.v[i])+'</td><td class="m mono'+(py===0?' trbad':'')+'">'+fx(py,4)+'</td><td class="m mono'+
+      (pn===0?' trbad':'')+'">'+fx(pn,4)+'</td></tr>';
+  });
+  $('#nbTab').innerHTML=t;
+  var mul='<span class="kw">P(Yes)·Π P(xᵢ|Yes)</span> = '+fx(r.P.prior[1],4);
+  RATTR.forEach(function(a,i){mul+=' × '+fx(r.P.cond[a.k][cs.v[i]][1],4);});
+  mul+='\n= '+(r.L[1]===0?'0':r.L[1].toExponential(3));
+  mul+='\n\n<span class="kw">P(No)·Π P(xᵢ|No)</span> = '+fx(r.P.prior[0],4);
+  RATTR.forEach(function(a,i){mul+=' × '+fx(r.P.cond[a.k][cs.v[i]][0],4);});
+  mul+='\n= '+(r.L[0]===0?'0':r.L[0].toExponential(3));
+  $('#nbMul').innerHTML=mul;
+  $('#nbYes').textContent=r.nan?'0 / 0（无意义）':fx(r.yes,6);
+  $('#nbNo').textContent=r.nan?'0 / 0（无意义）':fx(r.no,6);
+  var acc=0,accSm=0;
+  REST.forEach(function(row){
+    var v=row.slice(0,10);
+    if(nbClassify(v,1).pred===row[10])accSm++;
+    if(nbClassify(v,0).pred===row[10])acc++;
+  });
+  $('#nbAcc').textContent=accSm+'/12（平滑）　'+acc+'/12（不平滑）';
+  var v=$('#nbVerdict');
+  if(r.nan){
+    v.className='verdict no';
+    v.innerHTML='<b>不做平滑，这个样例直接崩了：</b>两边的似然<b>都是 0</b>（0/0 无意义）。'+
+      '原因见上表标红的行 —— 这个属性值在某个类别里<b>一次都没出现过</b>。'+
+      '<br>切到"拉普拉斯平滑"看看它怎么被救回来。';
+  }else{
+    v.className='verdict '+(r.yes>0.95||r.no>0.95?'mid':'yes');
+    v.innerHTML='分类结果：<b>'+(r.pred?'愿意等 (Yes)':'不等 (No)')+'</b>　P(Yes|x) = '+fx(r.yes,4)+
+      '，P(No|x) = '+fx(r.no,4)+
+      (cs.y!==null?'　（真值：'+(cs.y?'Yes':'No')+'）':'')+
+      '<br><span class="dim">注意这个概率有多"极端" —— 10 个条件概率连乘，'+
+      '条件独立假设会把结果推向 0 或 1。</span>';
+  }
+}
+$('#nbCase').onchange=nbRender;
+$('#nbSmooth').onchange=nbRender;
+nbRender();
+
+/* ---------------- ⑩ EM 两袋糖 ---------------- */
+var EMCEL=[
+  {n:'红纸 · 有孔',red:1,hole:1},
+  {n:'红纸 · 无孔',red:1,hole:0},
+  {n:'绿纸 · 有孔',red:0,hole:1},
+  {n:'绿纸 · 无孔',red:0,hole:0}
+];
+var EMN={cherry:[273,93,104,90],lime:[79,100,94,167]};
+var EM={th:0.6,f1:0.6,w1:0.6,h1:0.6,f2:0.4,w2:0.4,h2:0.4,r:0,log:[]};
+function emPx(cell,fl,i){
+  var F=i===1?EM.f1:EM.f2,W=i===1?EM.w1:EM.w2,H=i===1?EM.h1:EM.h2;
+  var pf=(cell.red?F:1-F)*(cell.hole?W:1-W)*(fl==='cherry'?H:1-H);
+  return pf;
+}
+function emLL(){
+  var s=0;
+  ['cherry','lime'].forEach(function(fl){
+    EMCEL.forEach(function(c,i){
+      var n=EMN[fl][i];
+      if(!n)return;
+      s+=n*Math.log(EM.th*emPx(c,fl,1)+(1-EM.th)*emPx(c,fl,2));
+    });
+  });
+  return s;
+}
+function emReset(){
+  EM.th=+$('#emT').value/100;
+  var a=+$('#emA').value/100,b=+$('#emB').value/100;
+  EM.f1=a;EM.w1=a;EM.h1=a;EM.f2=b;EM.w2=b;EM.h2=b;EM.r=0;
+  EM.log=[emLL()];
+  emRender();
+}
+function emStep(){
+  var N=0,p1=[],S={n1:0,r1:0,ho1:0,ch1:0,n2:0,r2:0,ho2:0,ch2:0};
+  ['cherry','lime'].forEach(function(fl){
+    EMCEL.forEach(function(c,i){
+      var n=EMN[fl][i];
+      if(!n)return;
+      var a=EM.th*emPx(c,fl,1),b2=(1-EM.th)*emPx(c,fl,2);
+      var p=a/(a+b2);
+      N+=n;p1.push({n:n,p:p,c:c,fl:fl});
+      S.n1+=n*p;S.n2+=n*(1-p);
+      if(c.red){S.r1+=n*p;S.r2+=n*(1-p);}
+      if(c.hole){S.ho1+=n*p;S.ho2+=n*(1-p);}
+      if(fl==='cherry'){S.ch1+=n*p;S.ch2+=n*(1-p);}
+    });
+  });
+  EM.th=S.n1/N;
+  EM.f1=S.r1/S.n1;EM.w1=S.ho1/S.n1;EM.h1=S.ch1/S.n1;
+  EM.f2=S.r2/S.n2;EM.w2=S.ho2/S.n2;EM.h2=S.ch2/S.n2;
+  EM.r++;
+  EM.log.push(emLL());
+  emRender();
+}
+function emRender(){
+  $('#emTv').textContent=fx(+$('#emT').value/100,2);
+  $('#emAv').textContent=fx(+$('#emA').value/100,2);
+  $('#emBv').textContent=fx(+$('#emB').value/100,2);
+  var t='<tr><th class="m">味道</th>';
+  EMCEL.forEach(function(c){t+='<th class="m">'+c.n+'</th>';});
+  t+='</tr>';
+  ['cherry','lime'].forEach(function(fl){
+    t+='<tr><td class="mono">'+(fl==='cherry'?'🍒 cherry':'🍋 lime')+'</td>';
+    EMN[fl].forEach(function(n){
+      var c=EMCEL[EMN[fl].indexOf(n)];
+      var a=EM.th*emPx(c,fl,1),b2=(1-EM.th)*emPx(c,fl,2);
+      t+='<td class="m mono">'+n+'<span class="dim">（袋1 概率 '+(a/(a+b2)).toFixed(3)+'）</span></td>';
+    });
+    t+='</tr>';
+  });
+  $('#emTab').innerHTML=t;
+  $('#emL').textContent=fx(EM.log[EM.log.length-1],4);
+  $('#emR').textContent=EM.r;
+  $('#emLog').innerHTML='<span class="kw">第 '+EM.r+' 轮的参数</span>\n'+
+    'θ = '+fx(EM.th,4)+'　（袋 1 的比例）\n'+
+    '袋 1：F（红纸）= '+fx(EM.f1,4)+'　W（有孔）= '+fx(EM.w1,4)+'　H（樱桃）= '+fx(EM.h1,4)+'\n'+
+    '袋 2：F（红纸）= '+fx(EM.f2,4)+'　W（有孔）= '+fx(EM.w2,4)+'　H（樱桃）= '+fx(EM.h2,4)+'\n\n'+
+    '<span class="dim">对数似然轨迹：'+EM.log.map(function(v){return fx(v,1);}).join(' → ')+'</span>';
+  var L=EM.log,W=520,H=170,pad=26;
+  var mn=Math.min.apply(null,L),mx=Math.max.apply(null,L);
+  var pts=L.map(function(v,i){
+    var xx=pad+(L.length<2?0:i/(L.length-1))*(W-2*pad);
+    var yy=pad+(1-(v-mn)/(mx-mn||1))*(H-2*pad-14);
+    return xx.toFixed(1)+','+yy.toFixed(1);
+  });
+  $('#emSvg').innerHTML='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--ok);stroke-width:2.5"/>'+
+    '<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--ok)">ℓ 单调上升</text>'+
+    '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">'+fx(L[0],1)+' → '+
+    fx(L[L.length-1],1)+'</text>';
+  var v=$('#emVerdict');
+  var up=EM.log.length<2||EM.log[EM.log.length-1]>=EM.log[EM.log.length-2]-1e-9;
+  v.className='verdict '+(up?'yes':'no');
+  v.innerHTML='<b>第 '+EM.r+' 轮：</b>对数似然 '+fx(EM.log[EM.log.length-1],3)+
+    (EM.log.length>1?'（上一轮 '+fx(EM.log[EM.log.length-2],3)+'，'+
+      (up?'<b>上升 ✓</b>':'下降 ✗')+'）':'')+
+    '<br><span class="dim">EM 只保证<b>似然不下降</b>，不保证找到全局最优 —— '+
+    '把三个初值滑块拉到别处再跑一次，看它收敛到哪儿。</span>';
+}
+$('#emStep').onclick=emStep;
+$('#em10').onclick=function(){for(var i=0;i<10;i++)emStep();};
+$('#emReset').onclick=emReset;
+['#emT','#emA','#emB'].forEach(function(i){$(i).oninput=emReset;});
+emReset();
+
+/* ---------------- ⑪ 贝叶斯线性回归 + MDL ---------------- */
+var BRD={
+  near:[[0.1,0.25],[0.2,0.42],[0.5,0.95]],
+  far:[[0.1,0.25],[0.2,0.42],[0.5,0.95],[1.5,3.10],[2.0,3.80]]
+};
+function brRender(){
+  var d=BRD[$('#brData').value];
+  var t0=+$('#brT0').value/10,s0=+$('#brS0').value/10,sg=+$('#brS').value/10;
+  $('#brT0v').textContent=fx(t0,1);$('#brS0v').textContent=fx(s0,1);$('#brSv').textContent=fx(sg,1);
+  var s2=sg*sg,s02=s0*s0,SX=0,SXY=0;
+  d.forEach(function(p){SX+=p[0]*p[0];SXY+=p[0]*p[1];});
+  var tN=(s2*t0+s02*SXY)/(s2+s02*SX);
+  var sN2=s2*s02/(s2+s02*SX);
+  $('#brT').textContent=fx(tN,4);
+  $('#brS2').textContent=fx(sN2,4);
+  $('#brPv').textContent=fx(s2+sN2*16,4)+'（σ² + σ_N²·4²）';
+  var W=520,H=260,pad=26,xmax=3,ymax=4.5;
+  var px=function(x){return pad+x/xmax*(W-2*pad);};
+  var py=function(y){return H-pad-(y+0.5)/(ymax+0.5)*(H-2*pad);};
+  var s='<line x1="'+pad+'" y1="'+py(0)+'" x2="'+(W-pad)+'" y2="'+py(0)+'" style="stroke:var(--line)"/>';
+  function band(k,op){
+    var up=[],dn=[];
+    for(var i=0;i<=60;i++){
+      var x=i/60*xmax,sd=Math.sqrt(s2+sN2*x*x);
+      up.push(px(x).toFixed(1)+','+py(tN*x+k*sd).toFixed(1));
+      dn.push(px(x).toFixed(1)+','+py(tN*x-k*sd).toFixed(1));
+    }
+    return '<polygon points="'+up.concat(dn.reverse()).join(' ')+'" style="fill:var(--accent);opacity:'+op+'"/>';
+  }
+  s+=band(2,0.08)+band(1,0.16);
+  s+='<line x1="'+px(0)+'" y1="'+py(0)+'" x2="'+px(xmax)+'" y2="'+py(tN*xmax)+
+     '" style="stroke:var(--accent);stroke-width:2.5"/>';
+  d.forEach(function(p){
+    s+='<circle cx="'+px(p[0]).toFixed(1)+'" cy="'+py(p[1]).toFixed(1)+'" r="4.5" style="fill:var(--gold)"/>';
+  });
+  s+='<text x="'+(W-pad)+'" y="'+(H-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:end">'+
+     '深色 = ±1σ，浅色 = ±2σ 预测带</text>';
+  $('#brSvg').innerHTML=s;
+  /* --- MDL 结构学习：3 个二元变量的真算 --- */
+  var CNT=[20,5,5,10,3,12,12,33],N=0;
+  CNT.forEach(function(n){N+=n;});
+  function marg(idx,val){
+    var s3=0;
+    for(var m=0;m<8;m++)if(((m>>idx)&1)===val)s3+=CNT[m];
+    return s3/N;
+  }
+  function cond(ci,cv,pi,pv){
+    var num=0,den=0;
+    for(var m=0;m<8;m++){
+      if(((m>>pi)&1)!==pv)continue;
+      den+=CNT[m];
+      if(((m>>ci)&1)===cv)num+=CNT[m];
+    }
+    return den?num/den:0.5;
+  }
+  var P={A:[marg(2,0),marg(2,1)],B:[marg(1,0),marg(1,1)],C:[marg(0,0),marg(0,1)]};
+  function llInd(){
+    var s4=0;
+    for(var m=0;m<8;m++){
+      if(!CNT[m])continue;
+      var a=(m>>2)&1,b=(m>>1)&1,c=m&1;
+      s4+=CNT[m]*Math.log(P.A[a]*P.B[b]*P.C[c]);
+    }
+    return s4;
+  }
+  function pCAB(a,b,c){
+    var num=0,den=0;
+    for(var m2=0;m2<8;m2++){
+      if(((m2>>2)&1)!==a||((m2>>1)&1)!==b)continue;
+      den+=CNT[m2];
+      if((m2&1)===c)num+=CNT[m2];
+    }
+    return den?num/den:0.5;
+  }
+  function ll(mode){
+    var s5=0;
+    for(var m=0;m<8;m++){
+      if(!CNT[m])continue;
+      var a=(m>>2)&1,b=(m>>1)&1,c=m&1;
+      var pA=P.A[a];
+      var pB=(mode==='full')?cond(1,b,2,a):P.B[b];
+      var pC=(mode==='ind')?P.C[c]:((mode==='ac')?cond(0,c,2,a):pCAB(a,b,c));
+      s5+=CNT[m]*Math.log(pA*pB*pC);
+    }
+    return s5;
+  }
+  var lam=+$('#brL').value/2;
+  $('#brLv').textContent=fx(lam,1);
+  var cands=[
+    {n:'A、B、C 全独立',k:3,ll:ll('ind')},
+    {n:'A → C',k:4,ll:ll('ac')},
+    {n:'A → C，B → C',k:6,ll:ll('acbc')},
+    {n:'A → B，A → C，B → C（全连接）',k:7,ll:ll('full')}
+  ];
+  cands.forEach(function(c){c.bits=-c.ll/Math.LN2;c.mdl=c.bits+lam*c.k;});
+  var best=cands.reduce(function(a,b){return b.mdl<a.mdl?b:a;});
+  $('#brMdl').innerHTML='<tr><th>候选结构</th><th class="m">自由参数 k</th><th class="m">−log₂P(d|h)</th>'+
+    '<th class="m">MDL = 描述长度 + λ·k</th></tr>'+
+    cands.map(function(c){
+      return '<tr'+(c===best?' class="kbtrue"':'')+'><td>'+esc(c.n)+'</td><td class="m mono">'+c.k+
+        '</td><td class="m mono">'+fx(c.bits,1)+'</td><td class="m mono"><b>'+fx(c.mdl,1)+'</b>'+
+        (c===best?'　← 最省':'')+'</td></tr>';
+    }).join('');
+  var v=$('#brVerdict');
+  v.className='verdict '+(lam===0?'no':'yes');
+  v.innerHTML='当前数据集：θ_N = '+fx(tN,3)+'，σ_N² = '+fx(sN2,4)+'。'+
+    ($('#brData').value==='near'
+      ? '数据都挤在原点附近 → 斜率<b>很不确定</b>（σ_N² 大），预测带张得很开。切到"加 2 个远点"对比一下。'
+      : '加了 2 个远点 → σ_N² 从 '+
+        fx((function(){var SX2=0,SXY2=0;BRD.near.forEach(function(p){SX2+=p[0]*p[0];SXY2+=p[0]*p[1];});
+          return s2*s02/(s2+s02*SX2);})(),4)+' 降到 '+fx(sN2,4)+' —— <b>远处的点最能定住斜率</b>。')+
+    (lam===0?'<br><b>λ = 0 时最复杂的结构直接胜出</b>（多一条边，似然只会升不会降）→ 这就是纯 MLE 结构学习的病。':'');
+}
+['#brData','#brT0','#brS0','#brS','#brL'].forEach(function(i){$(i).oninput=brRender;});
+$('#brData').onchange=brRender;
+brRender();
+
+/* =========================================================
+   第 21 章 · 深度学习（面板 ⑫–⑯）
+   ========================================================= */
+/* ---------------- ⑫ 激活函数 ---------------- */
+var AF={
+  logistic:{n:'logistic',f:function(x){return 1/(1+Math.exp(-x));},
+    d:function(x){var s=1/(1+Math.exp(-x));return s*(1-s);},r:'[0, 1]',fx:'g(x) = 1 / (1 + e^(−x))\ng′(x) = g(x)·(1 − g(x))'},
+  tanh:{n:'tanh',f:Math.tanh,d:function(x){var t=Math.tanh(x);return 1-t*t;},r:'[−1, 1]',
+    fx:'g(x) = (e^x − e^(−x)) / (e^x + e^(−x))\ng′(x) = 1 − g(x)²'},
+  relu:{n:'ReLU',f:function(x){return Math.max(0,x);},d:function(x){return x>0?1:0;},r:'[0, +∞)',
+    fx:'g(x) = max(0, x)\ng′(x) = 1 (x>0) / 0 (x≤0)　← 负半轴直接死掉'},
+  lrelu:{n:'Leaky ReLU',f:function(x){return x>0?x:0.01*x;},d:function(x){return x>0?1:0.01;},r:'(−∞, +∞)',
+    fx:'g(x) = max(0.01x, x)\ng′(x) = 1 (x>0) / 0.01 (x≤0)　← 留一条小缝，不会永久死亡'},
+  softplus:{n:'softplus',f:function(x){return Math.log(1+Math.exp(x));},
+    d:function(x){return 1/(1+Math.exp(-x));},r:'[0, +∞)',
+    fx:'g(x) = ln(1 + e^x)　（ReLU 的光滑版）\ng′(x) = σ(x)'},
+  silu:{n:'SiLU / swish',f:function(x){return x/(1+Math.exp(-x));},
+    d:function(x){var s=1/(1+Math.exp(-x));return s+x*s*(1-s);},r:'[≈−0.28, +∞)',
+    fx:'g(x) = x·σ(x)\ng′(x) = σ(x) + x·σ(x)(1−σ(x))'}
+};
+function afRender(){
+  var k=$('#afF').value,a=AF[k],x=+$('#afX').value/10;
+  $('#afXv').textContent=fx(x,1);
+  $('#afFx').innerHTML='<span class="kw">'+a.n+'</span>\n'+a.fx;
+  $('#afG').textContent=fx(a.f(x),4);
+  $('#afD').textContent=fx(a.d(x),4);
+  $('#afRange').textContent=a.r;
+  var W=520,H=240,pad=24,X0=-6,X1=6;
+  var lo=Infinity,hi=-Infinity,pts=[],dpts=[];
+  for(var i=0;i<=240;i++){
+    var xx=X0+(X1-X0)*i/240,v=a.f(xx),dv=a.d(xx);
+    if(v<lo)lo=v;if(v>hi)hi=v;
+    if(dv<lo)lo=dv;if(dv>hi)hi=dv;
+  }
+  if(hi-lo<1e-6)hi=lo+1;
+  var px=function(t){return pad+(t-X0)/(X1-X0)*(W-2*pad);};
+  var py=function(t){return H-pad-(t-lo)/(hi-lo)*(H-2*pad);};
+  for(var i2=0;i2<=240;i2++){
+    var x2=X0+(X1-X0)*i2/240;
+    pts.push(px(x2).toFixed(1)+','+py(a.f(x2)).toFixed(1));
+    dpts.push(px(x2).toFixed(1)+','+py(a.d(x2)).toFixed(1));
+  }
+  var s='<line x1="'+px(0)+'" y1="'+pad+'" x2="'+px(0)+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>'+
+    '<line x1="'+pad+'" y1="'+py(0)+'" x2="'+(W-pad)+'" y2="'+py(0)+'" style="stroke:var(--line)"/>'+
+    '<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>'+
+    '<polyline points="'+dpts.join(' ')+'" style="fill:none;stroke:var(--warn);stroke-width:2;stroke-dasharray:5 3"/>'+
+    '<circle cx="'+px(x).toFixed(1)+'" cy="'+py(a.f(x)).toFixed(1)+'" r="5" style="fill:var(--gold)"/>'+
+    '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--accent);text-anchor:end">g(x)</text>'+
+    '<text x="'+(W-pad)+'" y="30" class="sigtxt" style="fill:var(--warn);text-anchor:end">g′(x)</text>';
+  $('#afSvg').innerHTML=s;
+  var T=+$('#afT').value/100;
+  $('#afTv').textContent=fx(T,2);
+  var z=[+$('#afL1').value/10,+$('#afL2').value/10,+$('#afL3').value/10];
+  var mz=Math.max.apply(null,z),ex=z.map(function(v){return Math.exp((v-mz)/T);});
+  var se=ex.reduce(function(p,q){return p+q;},0);
+  var p=ex.map(function(v){return v/se;});
+  var H2=-p.reduce(function(acc,q){return acc+(q>1e-12?q*Math.log(q):0);},0)/Math.LN2;
+  $('#afSoft').innerHTML=p.map(function(q,i){
+    return '<div class="bar"><span class="nm">logit '+fx(z[i],1)+'　→　'+fx(q,4)+'</span>'+
+      '<span class="tr"><span class="fl" style="width:'+(q*100)+'%"></span></span></div>';
+  }).join('')+'<div class="bar"><span class="vv" style="grid-column:1/-1">logits = ⟨'+
+    z.map(function(v){return fx(v,1);}).join(', ')+'⟩　T = '+fx(T,2)+'</span></div>';
+  $('#afH').textContent=fx(H2,4)+' 比特（满熵 '+fx(Math.log(3)/Math.LN2,4)+'）';
+  var v=$('#afVerdict');
+  v.className='verdict '+(k==='relu'?'mid':(k==='logistic'||k==='tanh'?'mid':'yes'));
+  v.innerHTML='在 x = '+fx(x,1)+' 处：g = '+fx(a.f(x),4)+'，g′ = '+fx(a.d(x),4)+'。'+
+    (k==='logistic'?'<br><b>导数的上限只有 0.25</b>：连乘 10 层就是 0.25¹⁰ ≈ 1e−6 —— 这就是梯度消失。':'')+
+    (k==='relu'?(x<0?'<br><b>x < 0 → 导数 0</b>：这个神经元现在"死了"，梯度传不过去。':
+      '<br>正半轴导数恒为 <b>1</b>：梯度可以无损穿过很多层 —— 这是 ReLU 胜出的关键。'):'')+
+    '<br><span class="dim">softmax：T = '+fx(T,2)+'，熵 '+fx(H2,3)+' 比特。'+
+    (T<0.5?'（降温 → 逼近 one-hot）':(T>2?'（升温 → 逼近均匀）':''))+'</span>';
+}
+['#afF','#afX','#afT','#afL1','#afL2','#afL3'].forEach(function(i){$(i).oninput=afRender;});
+$('#afF').onchange=afRender;
+afRender();
+
+/* ---------------- ⑬ 卷积 ---------------- */
+var CVIN=[[1,1,1,0,0],[1,1,1,0,0],[1,1,1,0,1],[1,1,1,0,0],[1,1,1,0,0]];
+var CVK={
+  edge:{n:'边缘检测',3:[[1,0,-1],[1,0,-1],[1,0,-1]],2:[[1,0],[0,-1]]},
+  blur:{n:'模糊',3:[[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]],2:[[.25,.25],[.25,.25]]},
+  sharp:{n:'锐化',3:[[0,-1,0],[-1,5,-1],[0,-1,0]],2:[[2,-1],[-1,2]]},
+  sobel:{n:'Sobel',3:[[1,0,-1],[2,0,-2],[1,0,-1]],2:[[1,-1],[1,-1]]}
+};
+function cvRender(){
+  var K=CVK[$('#cvK').value],k=+$('#cvS').value,st=+$('#cvStr').value,pd=+$('#cvPad').value;
+  var ker=K[k],n=5,m=n+2*pd;
+  var img=[];
+  for(var r=0;r<m;r++){
+    var row=[];
+    for(var c=0;c<m;c++){
+      var rr=r-pd,cc=c-pd;
+      row.push((rr>=0&&rr<n&&cc>=0&&cc<n)?CVIN[rr][cc]:0);
+    }
+    img.push(row);
+  }
+  var os=Math.floor((m-k)/st)+1,out=[];
+  for(var oi=0;oi<os;oi++){
+    var row2=[];
+    for(var oj=0;oj<os;oj++){
+      var s=0;
+      for(var a=0;a<k;a++)for(var b=0;b<k;b++)s+=img[oi*st+a][oj*st+b]*ker[a][b];
+      row2.push(s);
+    }
+    out.push(row2);
+  }
+  function grid(M,hi){
+    var t='<table>';
+    M.forEach(function(rw){
+      t+='<tr>';
+      rw.forEach(function(v){
+        var cls = hi ? (v>0.05?'t':(v<-0.05?'f':'dim')) : (v>0.5?'t':'dim');
+        t+='<td class="m mono '+cls+'">'+fx(v,2)+'</td>';
+      });
+      t+='</tr>';
+    });
+    return t+'</table>';
+  }
+  $('#cvIn').innerHTML=grid(CVIN,false);
+  $('#cvKer').innerHTML=grid(ker,true);
+  $('#cvOut').innerHTML=grid(out,true);
+  $('#cvOutSize').textContent='（'+os+'×'+os+'，步长 '+st+'，填充 '+pd+'　⌊(5+2·'+pd+'−'+k+')/'+st+'⌋+1 = '+os+'）';
+  var pc=k*k+1,fc=25*os*os+os*os;
+  $('#cvP').textContent=pc+' 个（核 '+k+'×'+k+' + 1 偏置）';
+  $('#cvFull').textContent=num(fc)+' 个（25 → '+os*os+' 全连接）';
+  var v=$('#cvVerdict');
+  v.className='verdict yes';
+  v.innerHTML='<b>'+K.n+'</b>（'+k+'×'+k+'）扫过 5×5 输入 → 输出 '+os+'×'+os+'。'+
+    '参数 <b>'+pc+'</b> 个 vs 全连接 <b>'+num(fc)+'</b> 个，省了 <b>'+fx(fc/pc,1)+' 倍</b>。'+
+    '<br><span class="dim">输出里绝对值大的地方 = 核在这里"匹配上了"。'+
+    '换成 Sobel 看边缘在哪，换成模糊看数值怎么被抹平。</span>';
+}
+['#cvK','#cvS','#cvStr','#cvPad'].forEach(function(i){$(i).onchange=cvRender;});
+cvRender();
+
+/* ---------------- ⑭ 反向传播 ---------------- */
+var BP0={w1:0.15,w2:0.20,w3:0.25,w4:0.30,b1:0.35,w5:0.40,w6:0.45,w7:0.50,w8:0.55,b2:0.60};
+var BP={w:Object.assign({},BP0),i1:0.05,i2:0.10,t1:0.01,t2:0.99,t:0,hist:[]};
+function sig(x){return 1/(1+Math.exp(-x));}
+function bpFwd(){
+  var w=BP.w;
+  var nh1=w.w1*BP.i1+w.w2*BP.i2+w.b1,nh2=w.w3*BP.i1+w.w4*BP.i2+w.b1;
+  var oh1=sig(nh1),oh2=sig(nh2);
+  var no1=w.w5*oh1+w.w6*oh2+w.b2,no2=w.w7*oh1+w.w8*oh2+w.b2;
+  var oo1=sig(no1),oo2=sig(no2);
+  var e1=0.5*Math.pow(BP.t1-oo1,2),e2=0.5*Math.pow(BP.t2-oo2,2);
+  return {nh1:nh1,nh2:nh2,oh1:oh1,oh2:oh2,no1:no1,no2:no2,oo1:oo1,oo2:oo2,e1:e1,e2:e2,E:e1+e2};
+}
+function bpBwd(f){
+  var w=BP.w;
+  var d1=-(BP.t1-f.oo1)*f.oo1*(1-f.oo1),d2=-(BP.t2-f.oo2)*f.oo2*(1-f.oo2);
+  var g5=d1*f.oh1,g6=d1*f.oh2,g7=d2*f.oh1,g8=d2*f.oh2;
+  var dh1=(d1*w.w5+d2*w.w7)*f.oh1*(1-f.oh1),dh2=(d1*w.w6+d2*w.w8)*f.oh2*(1-f.oh2);
+  var g1=dh1*BP.i1,g2=dh1*BP.i2,g3=dh2*BP.i1,g4=dh2*BP.i2;
+  return {d1:d1,d2:d2,g1:g1,g2:g2,g3:g3,g4:g4,g5:g5,g6:g6,g7:g7,g8:g8,dh1:dh1,dh2:dh2};
+}
+function bpRender(){
+  var a=+$('#bpA').value/100;
+  $('#bpAv').textContent=fx(a,2);
+  var f=bpFwd(),g=bpBwd(f);
+  $('#bpFwd').innerHTML='<span class="kw">输入</span>　i₁ = '+BP.i1+'　i₂ = '+BP.i2+'\n'+
+    'net h₁ = w₁i₁ + w₂i₂ + b₁ = '+fx(BP.w.w1*BP.i1,4)+' + '+fx(BP.w.w2*BP.i2,4)+' + '+BP.w.b1+' = <b>'+fx(f.nh1,4)+'</b>\n'+
+    'out h₁ = σ(net h₁) = <b>'+fx(f.oh1,6)+'</b>\n'+
+    'net h₂ = '+fx(BP.w.w3*BP.i1,4)+' + '+fx(BP.w.w4*BP.i2,4)+' + '+BP.w.b1+' = <b>'+fx(f.nh2,4)+'</b>\n'+
+    'out h₂ = <b>'+fx(f.oh2,6)+'</b>\n\n'+
+    'net o₁ = w₅h₁ + w₆h₂ + b₂ = <b>'+fx(f.no1,6)+'</b>　→　out o₁ = <b>'+fx(f.oo1,6)+'</b>\n'+
+    'net o₂ = w₇h₁ + w₈h₂ + b₂ = <b>'+fx(f.no2,6)+'</b>　→　out o₂ = <b>'+fx(f.oo2,6)+'</b>\n\n'+
+    'E₁ = ½('+BP.t1+' − '+fx(f.oo1,4)+')² = '+fx(f.e1,6)+'\n'+
+    'E₂ = ½('+BP.t2+' − '+fx(f.oo2,4)+')² = '+fx(f.e2,6);
+  $('#bpBwd').innerHTML='<span class="kw">输出层</span>\n'+
+    '∂E/∂net o₁ = −(t₁−o₁)·o₁(1−o₁) = <b>'+fx(g.d1,6)+'</b>\n'+
+    '∂E/∂w₅ = δ₁·out h₁ = <b>'+fx(g.g5,6)+'</b>\n'+
+    '∂E/∂w₆ = '+fx(g.g6,6)+'　∂E/∂w₇ = '+fx(g.g7,6)+'　∂E/∂w₈ = '+fx(g.g8,6)+'\n\n'+
+    '<span class="kw">隐藏层（误差往回分摊）</span>\n'+
+    '∂E/∂out h₁ = δ₁w₅ + δ₂w₇ = '+fx(g.dh1/(f.oh1*(1-f.oh1)),6)+'\n'+
+    'δh₁ = × out h₁(1−out h₁) = <b>'+fx(g.dh1,6)+'</b>\n'+
+    '∂E/∂w₁ = δh₁·i₁ = <b>'+fx(g.g1,8)+'</b>\n'+
+    '∂E/∂w₂ = '+fx(g.g2,8)+'　∂E/∂w₃ = '+fx(g.g3,8)+'　∂E/∂w₄ = '+fx(g.g4,8)+'\n\n'+
+    '<span class="dim">更新：wᵢ ← wᵢ − α·∂E/∂wᵢ　（α = '+fx(a,2)+'）</span>';
+  $('#bpE').textContent=fx(f.E,6);
+  $('#bpT').textContent=BP.t;
+  var W=520,H=150,pad=24,L=BP.hist.length?BP.hist:[f.E];
+  var mx=Math.max.apply(null,L),mn=Math.min.apply(null,L);
+  var pts=L.map(function(v,i){
+    var xx=pad+(L.length<2?0:i/(L.length-1))*(W-2*pad);
+    var yy=pad+(1-(v-mn)/(mx-mn||1))*(H-2*pad-14);
+    return xx.toFixed(1)+','+yy.toFixed(1);
+  });
+  $('#bpSvg').innerHTML='<polyline points="'+pts.join(' ')+'" style="fill:none;stroke:var(--ok);stroke-width:2.5"/>'+
+    '<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--ok)">E</text>'+
+    '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">'+
+    fx(L[0],6)+' → '+fx(L[L.length-1],6)+'</text>';
+  var v=$('#bpVerdict');
+  v.className='verdict '+(BP.hist.length>1&&f.E<BP.hist[BP.hist.length-2]?'yes':'mid');
+  v.innerHTML='当前 E = <b>'+fx(f.E,6)+'</b>'+
+    (BP.hist.length>1?'（上一轮 '+fx(BP.hist[BP.hist.length-2],6)+'）':'')+
+    '<br><span class="dim">这个网络和数值取自经典的手算反向传播例子：'+
+    '初始 E = 0.298371，第一步 ∂E/∂w₅ = 0.082167、∂E/∂w₁ = 0.000438568 —— '+
+    '对着上面核对一下。</span>';
+}
+function bpStep(n){
+  for(var s=0;s<n;s++){
+    var f=bpFwd(),g=bpBwd(f),a=+$('#bpA').value/100;
+    BP.hist.push(f.E);
+    BP.w.w1-=a*g.g1;BP.w.w2-=a*g.g2;BP.w.w3-=a*g.g3;BP.w.w4-=a*g.g4;
+    BP.w.w5-=a*g.g5;BP.w.w6-=a*g.g6;BP.w.w7-=a*g.g7;BP.w.w8-=a*g.g8;
+    BP.t++;
+  }
+  bpRender();
+}
+$('#bpStep').onclick=function(){bpStep(1);};
+$('#bp10').onclick=function(){bpStep(10);};
+$('#bpReset').onclick=function(){BP.w=Object.assign({},BP0);BP.t=0;BP.hist=[];bpRender();};
+$('#bpA').oninput=bpRender;
+bpRender();
+
+/* ---------------- ⑮ 优化器 ---------------- */
+var OP={w:[-4,0.8],v:[0,0],m:[0,0],v2:[0,0],t:0,hit:-1,path:[]};
+function opL(w){return 0.1*w[0]*w[0]+5*w[1]*w[1];}
+function opG(w){return [0.2*w[0],10*w[1]];}
+function opReset(){
+  OP.w=[-4,0.8];OP.v=[0,0];OP.m=[0,0];OP.v2=[0,0];OP.t=0;OP.hit=-1;OP.path=[[-4,0.8]];
+  opRender();
+}
+function opStep(n){
+  var a=+$('#opA').value/400,mu=0.9,mode=$('#opM').value;
+  for(var s=0;s<n;s++){
+    OP.t++;
+    var g=opG(OP.w);
+    if(mode==='sgd'){
+      OP.w[0]-=a*g[0];OP.w[1]-=a*g[1];
+    }else if(mode==='mom'){
+      OP.v[0]=mu*OP.v[0]-a*g[0];OP.v[1]=mu*OP.v[1]-a*g[1];
+      OP.w[0]+=OP.v[0];OP.w[1]+=OP.v[1];
+    }else{
+      for(var i=0;i<2;i++){
+        OP.m[i]=0.9*OP.m[i]+0.1*g[i];
+        OP.v2[i]=0.999*OP.v2[i]+0.001*g[i]*g[i];
+        var mh=OP.m[i]/(1-Math.pow(0.9,OP.t)),vh=OP.v2[i]/(1-Math.pow(0.999,OP.t));
+        OP.w[i]-=a*mh/(Math.sqrt(vh)+1e-8);
+      }
+    }
+    OP.path.push([OP.w[0],OP.w[1]]);
+    if(OP.hit<0&&opL(OP.w)<0.1)OP.hit=OP.path.length-1;
+    if(OP.path.length>4000)OP.path.shift();
+  }
+  opRender();
+}
+function opRender(){
+  var a=+$('#opA').value/400;
+  $('#opAv').textContent=fx(a,3);
+  $('#opW').textContent='w = ⟨'+fx(OP.w[0],4)+', '+fx(OP.w[1],4)+'⟩　L = '+fx(opL(OP.w),6);
+  $('#opN').textContent=OP.hit>=0?(OP.hit+' 步'):('还没到（已走 '+(OP.path.length-1)+' 步）');
+  var W=520,H=280,pad=22,sc=52;
+  var px=function(x){return W/2+x*sc;},py=function(y){return H/2-y*sc;};
+  var s='';
+  [0.5,2,5,10].forEach(function(c){
+    s+='<ellipse cx="'+(W/2)+'" cy="'+(H/2)+'" rx="'+(Math.sqrt(c/0.1)*sc).toFixed(1)+
+       '" ry="'+(Math.sqrt(c/5)*sc).toFixed(1)+'" style="fill:none;stroke:var(--line);stroke-width:1"/>';
+  });
+  var P=OP.path.slice(-600);
+  s+='<polyline points="'+P.map(function(p){return px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1);}).join(' ')+
+     '" style="fill:none;stroke:var(--accent);stroke-width:2"/>';
+  s+='<circle cx="'+px(OP.w[0]).toFixed(1)+'" cy="'+py(OP.w[1]).toFixed(1)+'" r="5" style="fill:var(--gold)"/>'+
+     '<circle cx="'+px(0)+'" cy="'+py(0)+'" r="4" style="fill:var(--ok)"/>'+
+     '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">等值线 L = 0.5 / 2 / 5 / 10</text>';
+  $('#opSvg').innerHTML=s;
+  var mode=$('#opM').value;
+  $('#opFx').innerHTML=(mode==='sgd'
+    ? '<span class="kw">SGD</span>\nw ← w − α·∇L(w)\n\n<span class="dim">两个方向的曲率差 50 倍：'+
+      'α 小 → w₁ 方向慢得要命；α 大 → w₂ 方向直接飞出去。</span>'
+    : (mode==='mom'
+      ? '<span class="kw">SGD + 动量（μ = 0.9）</span>\nv ← μ·v − α·∇L(w)\nw ← w + v\n\n'+
+        '<span class="dim">震荡方向的速度互相抵消，平坦方向不断累积 —— 有效学习率变成 α/(1−μ)。</span>'
+      : '<span class="kw">Adam（β₁=0.9, β₂=0.999）</span>\nm ← β₁m + (1−β₁)g\nv ← β₂v + (1−β₂)g²\n'+
+        'ŵ = m/(1−β₁ᵗ) / (√(v/(1−β₂ᵗ)) + ε)\nw ← w − α·ŵ\n\n'+
+        '<span class="dim">每个参数各自除以梯度二阶矩的平方根 → 步长在各方向都一样大，峡谷被"拉圆"。</span>'));
+  var v=$('#opVerdict');
+  v.className='verdict '+(OP.hit>=0?'yes':'mid');
+  v.innerHTML=(OP.hit>=0
+    ? '<b>用了 '+OP.hit+' 步走到 L < 0.1。</b>'
+    : '还没走到 L < 0.1（已走 '+(OP.path.length-1)+' 步）。点"走 200 步"继续。')+
+    '<br><span class="dim">同一个 α = '+fx(a,3)+' 下，换个优化器对比"用了几步" —— 差距很容易到 10 倍。</span>';
+}
+['#opM','#opA'].forEach(function(i){$(i).onchange=function(){opReset();};});
+$('#opA').oninput=function(){opReset();};
+$('#opStep').onclick=function(){opStep(10);};
+$('#opRun').onclick=function(){opStep(200);};
+$('#opReset').onclick=opReset;
+opReset();
+
+/* ---------------- ⑯ 注意力 + RNN 梯度 ---------------- */
+var ATS=[
+  {w:['猫','追','老鼠'],X:[[1,0,0.5,0.2],[0.2,1,0,0.6],[0.4,0.3,1,0]],d:4},
+  {w:['我','爱','机器学习','。'],X:[[1,0.2,0,0.1],[0.3,1,0.4,0],[0,0.2,1,0.5],[0.1,0,0.2,1]],d:4}
+];
+var ATW={
+  0:{Q:[[1,0.5,0,0.2],[0.2,1,0.3,0]],K:[[0.5,1,0,0.3],[0,0.4,1,0.2]],V:[[1,0.2,0.4,0],[0.3,0,1,0.5]]},
+  1:{Q:[[0,1,0.4,0.6],[1,0,0.2,0.1]],K:[[0.7,0,1,0.2],[0.2,0.8,0,1]],V:[[0,1,0.3,0.2],[0.6,0.2,0,1]]}
+};
+function atMM(X,W){return X.map(function(x){
+  return W.map(function(w){var s=0;for(var i=0;i<x.length;i++)s+=x[i]*w[i];return s;});
+});}
+function atRender(){
+  var si=+$('#atS').value,S=ATS[si],hi=+$('#atH').value,W=ATW[hi],sc=+$('#atScale').value;
+  var dk=W.Q.length;
+  var Q=atMM(S.X,W.Q),K=atMM(S.X,W.K),V=atMM(S.X,W.V);
+  var n=S.X.length,sc2=Math.sqrt(dk);
+  var rows=[],out=[];
+  for(var i=0;i<n;i++){
+    var sco=[];
+    for(var j=0;j<n;j++){
+      var s=0;for(var t=0;t<Q[i].length;t++)s+=Q[i][t]*K[j][t];
+      sco.push(sc?s/sc2:s);
+    }
+    var mx=Math.max.apply(null,sco),ex=sco.map(function(v){return Math.exp(v-mx);});
+    var se=ex.reduce(function(p,q){return p+q;},0);
+    rows.push(ex.map(function(v){return v/se;}));
+    var o=new Array(V[0].length).fill(0);
+    for(var j2=0;j2<n;j2++)for(var t2=0;t2<o.length;t2++)o[t2]+=rows[i][j2]*V[j2][t2];
+    out.push(o);
+  }
+  var t='<tr><th class="m">query ↓ / key →</th>';
+  S.w.forEach(function(w){t+='<th class="m">'+esc(w)+'</th>';});
+  t+='</tr>';
+  rows.forEach(function(r,i){
+    t+='<tr><td class="mono">'+esc(S.w[i])+'</td>';
+    r.forEach(function(v){
+      var op=Math.min(0.85,0.06+v*0.8);
+      t+='<td class="m mono" style="background:rgba(99,102,241,'+op.toFixed(2)+')">'+fx(v,3)+'</td>';
+    });
+    t+='</tr>';
+  });
+  $('#atTab').innerHTML=t;
+  $('#atOut').innerHTML='<span class="kw">'+S.w.join(' ')+'　（头 '+(hi+1)+'，dₖ = '+dk+'）</span>\n'+
+    out.map(function(o,i){return S.w[i]+' 的输出 = ⟨'+o.map(function(v){return fx(v,3);}).join(', ')+'⟩';}).join('\n')+
+    '\n\n<span class="dim">缩放：'+(sc?'除以 √'+dk+' = '+fx(sc2,3):'不除（点积量级会随 √d 变大）')+'</span>';
+  $('#atCost').textContent=num(n*n*S.d)+' 次乘加（n²·d，n = '+n+'）';
+  var mxp=Math.max.apply(null,rows.map(function(r){return Math.max.apply(null,r);}));
+  var v=$('#atVerdict');
+  v.className='verdict '+(sc?'yes':'no');
+  v.innerHTML='最大注意力权重 <b>'+fx(mxp,3)+'</b>'+
+    (sc?'　（缩放后分布比较"软"，梯度还能流动）':
+       '　<b>不除 √dₖ → softmax 饱和，权重塌成 one-hot，梯度几乎为 0</b>')+
+    '<br><span class="dim">每个位置都能<b>一步直达</b>所有位置，路径长度 O(1) —— '+
+    '这正是 RNN（O(n) 步传递）做不到的。代价是 O(n²)。</span>';
+}
+['#atS','#atH','#atScale'].forEach(function(i){$(i).onchange=atRender;});
+atRender();
+function rnRender(){
+  var T=+$('#rnT').value,w=+$('#rnW').value/100,lstm=$('#rnL').value==='1';
+  $('#rnTv').textContent=T;$('#rnWv').textContent=fx(w,2);
+  var f=lstm?0.95:w*0.25;
+  var g=Math.pow(f,T);
+  $('#rnG').textContent=sci(g)+'　（每步衰减因子 '+fx(f,3)+'^'+T+'）';
+  var W=520,H=120,pad=22,s='';
+  for(var i=0;i<10;i++){
+    var lv=Math.pow(f,i*3);
+    var ww=Math.max(1,lv*(W-2*pad));
+    s+='<text x="'+pad+'" y="'+(pad+12+i*10)+'" class="sigtxt" style="fill:var(--dim)">t−'+(i*3)+'</text>'+
+       '<rect x="'+(pad+34)+'" y="'+(pad+4+i*10)+'" width="'+ww.toFixed(1)+'" height="6" rx="3" style="fill:'+
+       (lv>0.1?'var(--ok)':(lv>1e-3?'var(--warn)':'var(--bad)'))+'"/>';
+  }
+  $('#rnSvg').innerHTML=s;
+  var v=$('#rnVerdict');
+  v.className='verdict '+(g>0.1?'yes':'no');
+  v.innerHTML=(lstm
+    ? '<b>有了 LSTM 的加性通路：</b>∂c_t/∂c_{t−1} = f_t ≈ 0.95，传 '+T+' 步还剩 <b>'+sci(g)+'</b> —— 信息能走很远。'
+    : '<b>普通 RNN：</b>每一步要乘 w·σ′，σ′ ≤ 0.25 → 传 '+T+' 步只剩 <b>'+sci(g)+'</b>。'+
+      '远处的信息根本传不回来，所以它学不会长程依赖。')+
+    '<br><span class="dim">Transformer 的解法更彻底：<b>不传了</b>，直接让每个位置 attend 到所有位置（路径长度 1）。</span>';
+}
+['#rnT','#rnW','#rnL'].forEach(function(i){$(i).oninput=rnRender;});
+rnRender();
+
+
+/* =========================================================
+   第 22 章 · 强化学习（面板 ⑰–㉑）
+   ========================================================= */
+/* ---------- 共用：4×3 网格世界 ---------- */
+var GW={W:4,H:3,wall:'2,2',goal:'4,3',pit:'4,2',start:[1,1]};
+function gwKey(x,y){return x+','+y;}
+function gwTerm(x,y){return gwKey(x,y)===GW.goal||gwKey(x,y)===GW.pit;}
+function gwCells(){
+  var out=[];
+  for(var y=GW.H;y>=1;y--)for(var x=1;x<=GW.W;x++){
+    if(gwKey(x,y)===GW.wall)continue;
+    out.push([x,y]);
+  }
+  return out;
+}
+var GWACT=[['U',0,1],['D',0,-1],['L',-1,0],['R',1,0]];
+var GWPERP={U:['L','R'],D:['L','R'],L:['D','U'],R:['D','U']};
+function gwMove(x,y,a){
+  var d=GWACT.filter(function(v){return v[0]===a;})[0];
+  var nx=x+d[1],ny=y+d[2];
+  if(nx<1||nx>GW.W||ny<1||ny>GW.H||gwKey(nx,ny)===GW.wall)return [x,y];
+  return [nx,ny];
+}
+function gwP(x,y,a){
+  var out={},int=gwMove(x,y,a),per=GWPERP[a];
+  function add(p,cell){var k=gwKey(cell[0],cell[1]);out[k]=(out[k]||0)+p;}
+  add(0.8,int);
+  GWACT.forEach(function(v){if(v[0]===per[0])add(0.1,gwMove(x,y,v[0]));});
+  GWACT.forEach(function(v){if(v[0]===per[1])add(0.1,gwMove(x,y,v[0]));});
+  return out;
+}
+function gwR(x,y,stepR){
+  var k=gwKey(x,y);
+  if(k===GW.goal)return 1;
+  if(k===GW.pit)return -1;
+  return stepR;
+}
+
+/* ---------------- ⑰ 价值迭代 / 策略迭代 ---------------- */
+var VI={U:{},n:0,mode:'vi'};
+function viReset(){
+  VI.U={};VI.n=0;
+  gwCells().forEach(function(c){VI.U[gwKey(c[0],c[1])]=gwTerm(c[0],c[1])?gwR(c[0],c[1],0):0;});
+  viRender();
+}
+function viBellman(x,y,U,g,stepR){
+  var k=gwKey(x,y);
+  if(gwTerm(x,y))return gwR(x,y,stepR);
+  var best=-Infinity;
+  GWACT.forEach(function(a){
+    var p=gwP(x,y,a[0]),s=0;
+    Object.keys(p).forEach(function(k2){
+      var cc=k2.split(','),u=U[k2]===undefined?0:U[k2];
+      if(gwTerm(+cc[0],+cc[1]))u=gwR(+cc[0],+cc[1],stepR);
+      s+=p[k2]*u;
+    });
+    if(s>best)best=s;
+  });
+  return stepR+g*best;
+}
+function viIter(){
+  var g=+$('#viG').value/100,stepR=+$('#viR').value/100,nu={},d=0;
+  gwCells().forEach(function(c){
+    var k=gwKey(c[0],c[1]);
+    nu[k]=viBellman(c[0],c[1],VI.U,g,stepR);
+    d=Math.max(d,Math.abs(nu[k]-VI.U[k]));
+  });
+  VI.U=nu;VI.n++;VI.delta=d;
+  return d;
+}
+function viPolicyAt(x,y,U,g,stepR){
+  var best=null;
+  GWACT.forEach(function(a){
+    var p=gwP(x,y,a[0]),s=0;
+    Object.keys(p).forEach(function(k2){
+      var cc=k2.split(','),u=U[k2]===undefined?0:U[k2];
+      if(gwTerm(+cc[0],+cc[1]))u=gwR(+cc[0],+cc[1],stepR);
+      s+=p[k2]*u;
+    });
+    if(!best||s>best.s)best={a:a[0],s:s};
+  });
+  return best.a;
+}
+function viRender(){
+  var g=+$('#viG').value/100,stepR=+$('#viR').value/100;
+  $('#viGv').textContent=fx(g,2);$('#viRv').textContent=fx(stepR,2);
+  var W=520,H=300,pad=20,cw=(W-2*pad)/GW.W,ch=(H-2*pad)/GW.H;
+  var px=function(x){return pad+(x-1)*cw;},py=function(y){return pad+(GW.H-y)*ch;};
+  var s='';
+  gwCells().forEach(function(c){
+    var k=gwKey(c[0],c[1]),t=gwTerm(c[0],c[1]);
+    var fill = k===GW.goal?'rgba(16,185,129,.25)':(k===GW.pit?'rgba(239,68,68,.25)':'var(--panel2)');
+    s+='<rect x="'+(px(c[0])+2)+'" y="'+(py(c[1])+2)+'" width="'+(cw-4)+'" height="'+(ch-4)+
+       '" rx="6" style="fill:'+fill+';stroke:var(--line)"/>';
+    s+='<text x="'+(px(c[0])+cw/2)+'" y="'+(py(c[1])+ch/2+6)+'" class="sigtxt" style="fill:var(--accent);text-anchor:middle">'+
+       fx(VI.U[k]||0,3)+'</text>';
+    if(!t){
+      var a=viPolicyAt(c[0],c[1],VI.U,g,stepR),ar={U:'↑',D:'↓',L:'←',R:'→'}[a];
+      s+='<text x="'+(px(c[0])+cw/2)+'" y="'+(py(c[1])+ch-6)+'" class="sigtxt" style="fill:var(--dim);text-anchor:middle">'+ar+'</text>';
+    }else{
+      s+='<text x="'+(px(c[0])+cw/2)+'" y="'+(py(c[1])+ch/2+20)+'" class="sigtxt" style="fill:'+
+         (k===GW.goal?'var(--ok)':'var(--bad)')+';text-anchor:middle">'+(k===GW.goal?'+1':'−1')+'</text>';
+    }
+  });
+  var wx=GW.wall.split(',');
+  s+='<rect x="'+(px(+wx[0])+2)+'" y="'+(py(+wx[1])+2)+'" width="'+(cw-4)+'" height="'+(ch-4)+
+     '" rx="6" style="fill:var(--line)"/>';
+  $('#viSvg').innerHTML=s;
+  var t='<tr><th class="m">状态</th><th class="m">U(s)</th><th class="m">策略</th></tr>';
+  gwCells().forEach(function(c){
+    var k=gwKey(c[0],c[1]);
+    t+='<tr'+(k===GW.goal?' class="cex"':'')+'><td class="mono">('+c[0]+','+c[1]+')'+
+      (k===GW.goal?' 终点':(k===GW.pit?' 陷阱':''))+'</td><td class="m mono">'+fx(VI.U[k]||0,4)+
+      '</td><td class="m mono">'+(gwTerm(c[0],c[1])?'—':viPolicyAt(c[0],c[1],VI.U,g,stepR))+'</td></tr>';
+  });
+  $('#viTab').innerHTML=t;
+  $('#viN').textContent=VI.n;
+  var eps=g<1?0.001*(1-g)/g:0.001;
+  $('#viEps').textContent='max|ΔU| < '+fx(eps,5)+'　当前 '+fx(VI.delta||0,5);
+  var v=$('#viVerdict');
+  var done=VI.delta!==undefined&&VI.delta<eps&&VI.n>0;
+  v.className='verdict '+(done?'yes':'mid');
+  v.innerHTML=(done?'<b>收敛了！</b>用了 '+VI.n+' 次迭代。'
+    :'已迭代 <b>'+VI.n+'</b> 次，最大变化 '+fx(VI.delta||0,5)+'。')+
+    '<br><span class="dim">γ = '+fx(g,2)+'，每步奖励 '+fx(stepR,2)+
+    '。把 γ 调小看看策略怎么变"短视"；把每步奖励调成 −0.4，看它变得多着急。</span>';
+}
+$('#viStep').onclick=function(){viIter();viRender();};
+$('#viRun').onclick=function(){
+  var g=+$('#viG').value/100,eps=g<1?0.001*(1-g)/g:0.001,guard=0;
+  do{viIter();}while(VI.delta>=eps&&guard++<2000);
+  viRender();
+};
+$('#viReset').onclick=viReset;
+['#viG','#viR'].forEach(function(i){$(i).oninput=viReset;});
+$('#viPolicy').onclick=function(){
+  var g=+$('#viG').value/100,stepR=+$('#viR').value/100;
+  var pol={};gwCells().forEach(function(c){if(!gwTerm(c[0],c[1]))pol[gwKey(c[0],c[1])]='U';});
+  var outer=0;
+  for(var it=0;it<50;it++){
+    var U={};gwCells().forEach(function(c){U[gwKey(c[0],c[1])]=gwTerm(c[0],c[1])?gwR(c[0],c[1],stepR):0;});
+    for(var k2=0;k2<100;k2++){
+      var nu={};
+      gwCells().forEach(function(c){
+        var k3=gwKey(c[0],c[1]);
+        if(gwTerm(c[0],c[1])){nu[k3]=gwR(c[0],c[1],stepR);return;}
+        var p=gwP(c[0],c[1],pol[k3]),s2=0;
+        Object.keys(p).forEach(function(k4){
+          var cc=k4.split(','),u=U[k4]===undefined?0:U[k4];
+          if(gwTerm(+cc[0],+cc[1]))u=gwR(+cc[0],+cc[1],stepR);
+          s2+=p[k4]*u;
+        });
+        nu[k3]=stepR+g*s2;
+      });
+      U=nu;
+    }
+    var changed=0;
+    gwCells().forEach(function(c){
+      var k3=gwKey(c[0],c[1]);
+      if(gwTerm(c[0],c[1]))return;
+      var na=viPolicyAt(c[0],c[1],U,g,stepR);
+      if(na!==pol[k3]){pol[k3]=na;changed++;}
+    });
+    outer++;VI.U=U;VI.n=outer;VI.delta=0;
+    if(!changed)break;
+  }
+  viRender();
+  $('#viVerdict').className='verdict yes';
+  $('#viVerdict').innerHTML='<b>策略迭代：只用了 '+outer+' 轮外循环</b>（每轮内部做 100 次策略评估）。'+
+    '<br><span class="dim">对比价值迭代的轮数 —— 这就是"贵但轮数少"。</span>';
+};
+viReset();
+
+/* ---------------- ⑱ 被动学习：ADP / TD / MC ---------------- */
+var PBS={U:{},n:{},ret:{},T:{},trials:0,alpha:0.1,hist:[]};
+function pbTrueU(stepR){
+  var g=1,U={};
+  gwCells().forEach(function(c){U[gwKey(c[0],c[1])]=gwTerm(c[0],c[1])?gwR(c[0],c[1],stepR):0;});
+  var pol={};
+  gwCells().forEach(function(c){
+    if(gwTerm(c[0],c[1]))return;
+    pol[gwKey(c[0],c[1])]=pbPolicy(c[0],c[1]);
+  });
+  for(var i=0;i<3000;i++){
+    var nu={};
+    gwCells().forEach(function(c){
+      var k=gwKey(c[0],c[1]);
+      if(gwTerm(c[0],c[1])){nu[k]=gwR(c[0],c[1],stepR);return;}
+      var p=gwP(c[0],c[1],pol[k]),s=0;
+      Object.keys(p).forEach(function(k2){
+        var cc=k2.split(','),u=U[k2]===undefined?0:U[k2];
+        if(gwTerm(+cc[0],+cc[1]))u=gwR(+cc[0],+cc[1],stepR);
+        s+=p[k2]*u;
+      });
+      nu[k]=stepR+g*s;
+    });
+    U=nu;
+  }
+  return U;
+}
+var PBSEED=7;
+function pbRnd(){PBSEED=(PBSEED*1103515245+12345)%2147483648;return PBSEED/2147483648;}
+function pbReset(){
+  PBSEED=7;
+  gwCells().forEach(function(c){
+    var k=gwKey(c[0],c[1]);
+    PBS.U[k]=gwTerm(c[0],c[1])?gwR(c[0],c[1],-0.04):0;
+    PBS.n[k]=0;PBS.ret[k]=[];PBS.T[k]={};
+  });
+  PBS.trials=0;PBS.hist=[];PBS.trueU=pbTrueU(-0.04);
+  pbRender();
+}
+/* 固定策略 = 上一面板价值迭代算出来的那个最优策略（原样抄过来，一个字没改） */
+var PBPOL={'1,1':'U','2,1':'L','3,1':'L','4,1':'L','1,2':'U','3,2':'U','1,3':'R','2,3':'R','3,3':'R'};
+function pbPolicy(x,y){return PBPOL[gwKey(x,y)]||'U';}
+function pbSample(x,y,a){
+  var p=gwP(x,y,a),r=pbRnd(),acc=0;
+  var ks=Object.keys(p);
+  for(var i=0;i<ks.length;i++){
+    acc+=p[ks[i]];
+    if(r<=acc){var cc=ks[i].split(',');return [+cc[0],+cc[1]];}
+  }
+  var cc2=ks[ks.length-1].split(',');return [+cc2[0],+cc2[1]];
+}
+function pbTrial(){
+  var x=1,y=1,path=[],stepR=-0.04;
+  while(!gwTerm(x,y)&&path.length<200){
+    var k=gwKey(x,y),a=pbPolicy(x,y);
+    var nx=pbSample(x,y,a);
+    path.push([k,gwR(x,y,stepR),gwKey(nx[0],nx[1])]);
+    PBS.T[k]=PBS.T[k]||{};
+    PBS.T[k][a]=PBS.T[k][a]||{};
+    PBS.T[k][a][gwKey(nx[0],nx[1])]=(PBS.T[k][a][gwKey(nx[0],nx[1])]||0)+1;
+    x=nx[0];y=nx[1];
+  }
+  path.push([gwKey(x,y),gwR(x,y,stepR),null]);
+  /* --- 蒙特卡洛：从末尾往前累计回报 --- */
+  var G=0;
+  for(var i=path.length-2;i>=0;i--){
+    G=G+path[i+1][1];
+    var k2=path[i][0];
+    PBS.ret[k2]=PBS.ret[k2]||[];
+    PBS.n[k2]=(PBS.n[k2]||0)+1;
+    PBS.ret[k2].push(G);
+  }
+  /* --- TD(0)：边走边更新 --- */
+  var a2=+$('#plA').value/100;
+  for(var j=0;j<path.length-1;j++){
+    var ks2=path[j][0],ns=path[j][2];
+    var un=PBS.TD[ns]===undefined?(gwTerm(+ns.split(',')[0],+ns.split(',')[1])?gwR(+ns.split(',')[0],+ns.split(',')[1],-0.04):0):PBS.TD[ns];
+    if(gwTerm(+ns.split(',')[0],+ns.split(',')[1]))un=gwR(+ns.split(',')[0],+ns.split(',')[1],-0.04);
+    PBS.TD[ks2]=(PBS.TD[ks2]||0)+a2*(path[j][1]+un-(PBS.TD[ks2]||0));
+  }
+  PBS.trials++;
+}
+function pbADP(){
+  var U={};
+  gwCells().forEach(function(c){U[gwKey(c[0],c[1])]=gwTerm(c[0],c[1])?gwR(c[0],c[1],-0.04):0;});
+  for(var it=0;it<300;it++){
+    var nu={};
+    gwCells().forEach(function(c){
+      var k=gwKey(c[0],c[1]);
+      if(gwTerm(c[0],c[1])){nu[k]=gwR(c[0],c[1],-0.04);return;}
+      var cnt=PBS.T[k]&&PBS.T[k][pbPolicy(c[0],c[1])];
+      if(!cnt){nu[k]=U[k];return;}
+      var tot=0;Object.keys(cnt).forEach(function(k2){tot+=cnt[k2];});
+      var s=0;
+      Object.keys(cnt).forEach(function(k2){
+        var cc=k2.split(','),u=U[k2]===undefined?0:U[k2];
+        if(gwTerm(+cc[0],+cc[1]))u=gwR(+cc[0],+cc[1],-0.04);
+        s+=cnt[k2]/tot*u;
+      });
+      nu[k]=-0.04+s;
+    });
+    U=nu;
+  }
+  return U;
+}
+/* RMS 误差按状态被访问的次数加权：从没去过的格子三种方法都只能给出初始值，
+   把它们算进来只会稀释差别，所以我们只统计"真跑到的地方"。 */
+function pbRMS(U){
+  var s=0,n=0;
+  gwCells().forEach(function(c){
+    var k=gwKey(c[0],c[1]);
+    if(gwTerm(c[0],c[1]))return;
+    var w=PBS.n[k]||0;
+    var e=(U[k]||0)-(PBS.trueU[k]||0);
+    s+=w*e*e;n+=w;
+  });
+  return n?Math.sqrt(s/n):0;
+}
+function pbRun(n){
+  for(var i=0;i<n;i++){
+    pbTrial();
+    if(PBS.trials%1===0||PBS.trials===n){
+      var mc={};
+      gwCells().forEach(function(c){
+        var k=gwKey(c[0],c[1]);
+        var arr=PBS.ret[k]||[];
+        mc[k]=arr.length?arr.reduce(function(a,b){return a+b;},0)/arr.length:0;
+      });
+      PBS.hist.push({t:PBS.trials,mc:pbRMS(mc),td:pbRMS(PBS.TD),adp:pbRMS(pbADP())});
+    }
+  }
+  pbRender();
+}
+function pbRender(){
+  var a=+$('#plA').value/100;
+  $('#plAv').textContent=fx(a,2);
+  $('#plN').textContent=PBS.trials;
+  var h=PBS.hist,W=520,H=190,pad=24;
+  var mx=Math.max(0.001,Math.max.apply(null,h.map(function(v){return Math.max(v.mc,v.td,v.adp);}).concat([0.001])));
+  function line(f,col){
+    return '<polyline points="'+h.map(function(v,i){
+      var xx=pad+(h.length<2?0:i/(h.length-1))*(W-2*pad);
+      var yy=pad+(1-f(v)/mx)*(H-2*pad-14);
+      return xx.toFixed(1)+','+yy.toFixed(1);
+    }).join(' ')+'" style="fill:none;stroke:'+col+';stroke-width:2"/>';
+  }
+  $('#plSvg').innerHTML=line(function(v){return v.mc;},'var(--bad)')+
+    line(function(v){return v.td;},'var(--warn)')+
+    line(function(v){return v.adp;},'var(--ok)')+
+    '<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--bad)">蒙特卡洛</text>'+
+    '<text x="'+(pad+70)+'" y="16" class="sigtxt" style="fill:var(--warn)">TD(0)</text>'+
+    '<text x="'+(pad+130)+'" y="16" class="sigtxt" style="fill:var(--ok)">ADP</text>'+
+    '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">RMS 误差</text>';
+  var last=h.length?h[h.length-1]:{mc:0,td:0,adp:0};
+  var t='<tr><th class="m">方法</th><th class="m">用了什么信息</th><th class="m">当前 RMS 误差</th></tr>'+
+    '<tr><td>ADP</td><td>学到的转移模型 + 奖励</td><td class="m mono">'+fx(last.adp,4)+'</td></tr>'+
+    '<tr><td>TD(0)</td><td>下一步的实际后果（自举）</td><td class="m mono">'+fx(last.td,4)+'</td></tr>'+
+    '<tr><td>蒙特卡洛</td><td>整条轨迹的最终回报</td><td class="m mono">'+fx(last.mc,4)+'</td></tr>';
+  $('#plTab').innerHTML=t;
+  var v=$('#plVerdict');
+  v.className='verdict '+(PBS.trials?'yes':'mid');
+  var rank=[['ADP',last.adp],['TD(0)',last.td],['蒙特卡洛',last.mc]].sort(function(a,b){return a[1]-b[1];});
+  v.className='verdict '+(PBS.trials>=100?'yes':'mid');
+  v.innerHTML=PBS.trials?('跑了 <b>'+PBS.trials+'</b> 轮（误差越小越好）：<b>'+
+    rank.map(function(r){return r[0]+' '+fx(r[1],4);}).join(' < ')+'</b>。'+
+    '<br><span class="dim">ADP 用学到的模型做动态规划 → 最省样本；TD 自举一步 → 次之；'+
+    '蒙特卡洛把整条轨迹的随机性灌回每个状态 → 方差最大。跑满 500 轮三条线会拉得更开。</span>')
+    :'点"跑 10 轮"或"跑 100 轮"，看三条误差曲线怎么分开。';
+}
+PBS.TD={};
+$('#pl10').onclick=function(){pbRun(10);};
+$('#pl100').onclick=function(){pbRun(100);};
+$('#pl500').onclick=function(){pbRun(500-PBS.trials>0?500-PBS.trials:0);};
+$('#plReset').onclick=function(){PBS.TD={};pbReset();};
+$('#plA').oninput=pbRender;
+pbReset();
+
+/* ---------------- ⑲ Q-learning vs SARSA（悬崖） ---------------- */
+var CL={W:12,H:4};
+var QS={seed:1,episodes:0,q:[],s:[],rq:[],rs:[],fall:[0,0]};
+function qsRnd(){QS.seed=(QS.seed*1103515245+12345)%2147483648;return QS.seed/2147483648;}
+function qsReset(){
+  QS.seed=1;QS.episodes=0;QS.q=[];QS.s=[];QS.rq=[];QS.rs=[];QS.fall=[0,0];
+  var n=CL.W*CL.H;
+  for(var i=0;i<n;i++){QS.q.push([0,0,0,0]);QS.s.push([0,0,0,0]);}
+  qsRender();
+}
+function qsIdx(x,y){return (y-1)*CL.W+(x-1);}
+function qsStep(x,y,a){
+  var d=[[0,1],[0,-1],[-1,0],[1,0]][a];
+  var nx=x+d[0],ny=y+d[1];
+  if(nx<1||nx>CL.W||ny<1||ny>CL.H)return [x,y,-1,false];
+  var cliff=(ny===1&&nx>=2&&nx<=CL.W-1);
+  if(cliff)return [1,1,-100,true];
+  if(nx===CL.W&&ny===1)return [nx,ny,-1,'goal'];
+  return [nx,ny,-1,false];
+}
+function qsEps(Q,x,y,eps){
+  if(qsRnd()<eps)return Math.floor(qsRnd()*4);
+  var i=qsIdx(x,y),b=0;
+  for(var a=1;a<4;a++)if(Q[i][a]>Q[i][b])b=a;
+  return b;
+}
+function qsRun(n,eps,alpha){
+  for(var e=0;e<n;e++){
+    /* Q-learning */
+    var x=1,y=1,tr=0,tot=0;
+    while(!(x===CL.W&&y===1)&&tr<200){
+      var a=qsEps(QS.q,x,y,eps),i=qsIdx(x,y);
+      var r=qsStep(x,y,a),nx=r[0],ny=r[1];
+      if(r[3]===true){QS.fall[0]++;tot+=r[2];QS.q[i][a]+=alpha*(r[2]-QS.q[i][a]);x=nx;y=ny;tr++;continue;}
+      var j=qsIdx(nx,ny),mx=Math.max.apply(null,QS.q[j]);
+      QS.q[i][a]+=alpha*(r[2]+mx-QS.q[i][a]);
+      tot+=r[2];x=nx;y=ny;tr++;
+    }
+    QS.rq.push(tot);
+    /* SARSA */
+    var x2=1,y2=1,tr2=0,tot2=0;
+    var a2=qsEps(QS.s,x2,y2,eps);
+    while(!(x2===CL.W&&y2===1)&&tr2<200){
+      var r2=qsStep(x2,y2,a2),nx2=r2[0],ny2=r2[1],i2=qsIdx(x2,y2);
+      if(r2[3]===true){QS.fall[1]++;tot2+=r2[2];QS.s[i2][a2]+=alpha*(r2[2]-QS.s[i2][a2]);x2=nx2;y2=ny2;tr2++;a2=qsEps(QS.s,x2,y2,eps);continue;}
+      var j2=qsIdx(nx2,ny2),a3=qsEps(QS.s,nx2,ny2,eps);
+      QS.s[i2][a2]+=alpha*(r2[2]+QS.s[j2][a3]-QS.s[i2][a2]);
+      tot2+=r2[2];x2=nx2;y2=ny2;tr2++;a2=a3;
+    }
+    QS.rs.push(tot2);
+    QS.episodes++;
+  }
+  qsRender();
+}
+function qsPath(Q){
+  var x=1,y=1,p=['起点 (1,1)'],tr=0;
+  while(!(x===CL.W&&y===1)&&tr<40){
+    var i=qsIdx(x,y),b=0;
+    for(var a=1;a<4;a++)if(Q[i][a]>Q[i][b])b=a;
+    var r=qsStep(x,y,b);
+    x=r[0];y=r[1];tr++;
+    p.push('→ ('+x+','+y+')'+(r[3]===true?' 掉崖!':''));
+    if(r[3]==='goal')break;
+    if(r[3]===true){x=1;y=1;}
+  }
+  return p.join(' ') + '　共 '+tr+' 步';
+}
+function qsRender(){
+  var eps=+$('#qlE').value/100,a=+$('#qlA').value/100;
+  $('#qlEv').textContent=fx(eps,2);$('#qlAv').textContent=fx(a,2);
+  var W=520,H=200,pad=18,cw=(W-2*pad)/CL.W,ch=(H-2*pad)/CL.H;
+  var s='',L=QS.rq;
+  if(L.length){
+    var mnr=Math.min.apply(null,L.concat(QS.rs)),mxr=Math.max.apply(null,L.concat(QS.rs));
+    function sm(arr){
+      var out=[];
+      for(var i=0;i<arr.length;i++){
+        var win=arr.slice(Math.max(0,i-19),i+1);
+        out.push(win.reduce(function(p,q){return p+q;},0)/win.length);
+      }
+      return out;
+    }
+    [['var(--accent)',sm(QS.rq),'Q-learning'],['var(--ok)',sm(QS.rs),'SARSA']].forEach(function(cc){
+      var arr=cc[1];
+      s+='<polyline points="'+arr.map(function(v,i){
+        var xx=pad+(arr.length<2?0:i/(arr.length-1))*(W-2*pad);
+        var yy=pad+(1-(v-mnr)/(mxr-mnr||1))*(H-2*pad-14);
+        return xx.toFixed(1)+','+yy.toFixed(1);
+      }).join(' ')+'" style="fill:none;stroke:'+cc[0]+';stroke-width:2"/>'+
+      '<text x="'+(W-pad)+'" y="'+(16+ (cc[2]==='SARSA'?14:0))+'" class="sigtxt" style="fill:'+cc[0]+
+      ';text-anchor:end">'+cc[2]+'</text>';
+    });
+    s+='<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--dim)">每轮总奖励（20 轮滑动平均）</text>';
+  }
+  $('#qlSvg').innerHTML=s;
+  $('#qlQ').innerHTML=QS.episodes?qsPath(QS.q):'（还没跑）';
+  $('#qlS').innerHTML=QS.episodes?qsPath(QS.s):'（还没跑）';
+  function avg(arr){
+    var w=arr.slice(Math.max(0,arr.length-100));
+    return w.length?w.reduce(function(p,q){return p+q;},0)/w.length:0;
+  }
+  $('#qlQr').textContent=QS.episodes?fx(avg(QS.rq),2):'—';
+  $('#qlSr').textContent=QS.episodes?fx(avg(QS.rs),2):'—';
+  $('#qlFall').textContent='Q-learning '+QS.fall[0]+' 次　/　SARSA '+QS.fall[1]+' 次';
+  var v=$('#qlVerdict');
+  v.className='verdict '+(QS.episodes?'yes':'mid');
+  v.innerHTML=QS.episodes?('跑了 <b>'+QS.episodes+'</b> 轮（ε = '+fx(eps,2)+'）：'+
+    '平均奖励 Q-learning '+fx(avg(QS.rq),2)+' vs SARSA '+fx(avg(QS.rs),2)+'。'+
+    '<br><b>Q-learning 走悬崖边（更短），SARSA 绕开（更安全）</b>'+
+    ' —— 因为 SARSA 的更新里把"探索时会掉下去"也算进去了。')
+    :'点"各跑 200 轮"。两条曲线是<b>每轮总奖励的滑动平均</b>，越高越好（越接近 −13 越短）。';
+}
+$('#ql100').onclick=function(){qsRun(200,+$('#qlE').value/100,+$('#qlA').value/100);};
+$('#qlReset').onclick=qsReset;
+['#qlE','#qlA'].forEach(function(i){$(i).oninput=qsRender;});
+qsReset();
+
+/* ---------------- ⑳ 多臂赌博机 ---------------- */
+var BB={means:[0.2,0.5,0.8],N:1000};
+var BBSEED=99;
+function bbRnd(){BBSEED=(BBSEED*1103515245+12345)%2147483648;return BBSEED/2147483648;}
+/* 回报是伯努利的：以概率 p 给 1，否则给 0 —— 这正是"真实回报率"的字面意思 */
+function bbArm(i){return bbRnd()<BB.means[i]?1:0;}
+function bbOnce(mode,eps,c,N,seed){
+  BBSEED=seed;
+  var k=BB.means.length,Q=[],n=[],reg=[],cum=0,best=Math.max.apply(null,BB.means),bestCnt=0;
+  for(var i=0;i<k;i++){Q.push(mode==='opt'?5:0);n.push(0);}
+  var log=[];
+  for(var t=1;t<=N;t++){
+    var a=0;
+    if(mode==='greedy'){
+      for(var j=1;j<k;j++)if(Q[j]>Q[a])a=j;
+    }else if(mode==='eps'){
+      if(bbRnd()<eps)a=Math.floor(bbRnd()*k);
+      else{for(var j2=1;j2<k;j2++)if(Q[j2]>Q[a])a=j2;}
+    }else if(mode==='ucb'){
+      for(var j3=0;j3<k;j3++)if(!n[j3]){a=j3;break;}
+      if(n[a]){
+        var bestv=-Infinity;
+        for(var j4=0;j4<k;j4++){
+          var v=Q[j4]+c*Math.sqrt(Math.log(t)/n[j4]);
+          if(v>bestv){bestv=v;a=j4;}
+        }
+      }
+    }else{
+      for(var j5=1;j5<k;j5++)if(Q[j5]>Q[a])a=j5;
+    }
+    var r=bbArm(a);
+    n[a]++;
+    /* 乐观初始化必须用固定步长：用 1/n 的话，拉一次 Q 就崩到那一次的采样值了 */
+    Q[a]+=(mode==='opt'?0.1:1/n[a])*(r-Q[a]);
+    cum+=best-BB.means[a];
+    if(a===BB.means.indexOf(best))bestCnt++;
+    if(t%Math.max(1,Math.floor(N/100))===0)log.push({t:t,reg:cum});
+  }
+  var fin=0;for(var j6=1;j6<k;j6++)if(Q[j6]>Q[fin])fin=j6;
+  return {Q:Q,n:n,regret:cum,log:log,bestRate:bestCnt/N,
+          locked:fin!==BB.means.indexOf(best)?1:0};
+}
+/* 单次实验运气成分太大 —— 面板上的数字一律是 20 次独立重复实验的平均 */
+function bbRun(mode,eps,c,N){
+  var R=20,acc={regret:0,bestRate:0,locked:0},n=[0,0,0],Q=[0,0,0],first=null;
+  for(var s=0;s<R;s++){
+    var r=bbOnce(mode,eps,c,N,99+s*7919);
+    acc.regret+=r.regret/R;acc.bestRate+=r.bestRate/R;acc.locked+=r.locked/R;
+    for(var i=0;i<r.n.length;i++){n[i]+=r.n[i]/R;Q[i]+=r.Q[i]/R;}
+    if(!first)first=r;
+  }
+  return {Q:Q,n:n,regret:acc.regret,log:first.log,bestRate:acc.bestRate,locked:acc.locked};
+}
+function bbRender(){
+  var mode=$('#bbM').value,eps=+$('#bbE').value/100,c=+$('#bbC').value/10,N=+$('#bbN').value;
+  $('#bbEv').textContent=fx(eps,2);$('#bbCv').textContent=fx(c,1);$('#bbNv').textContent=N;
+  var r=bbRun(mode,eps,c,N);
+  var W=520,H=190,pad=24,mx=Math.max(0.001,r.regret);
+  $('#bbSvg').innerHTML='<polyline points="'+r.log.map(function(v,i){
+    var xx=pad+(r.log.length<2?0:i/(r.log.length-1))*(W-2*pad);
+    var yy=pad+(v.reg/mx)*(H-2*pad-14);
+    return xx.toFixed(1)+','+yy.toFixed(1);
+  }).join(' ')+'" style="fill:none;stroke:var(--bad);stroke-width:2"/>'+
+   '<text x="'+pad+'" y="16" class="sigtxt" style="fill:var(--bad)">累计后悔（越低越好）</text>'+
+   '<text x="'+(W-pad)+'" y="16" class="sigtxt" style="fill:var(--dim);text-anchor:end">'+N+' 次 → '+
+   fx(r.regret,1)+'</text>';
+  var t='<tr><th class="m">摇臂</th><th class="m">真实回报率</th><th class="m">被拉次数</th><th class="m">估计 Q</th></tr>';
+  BB.means.forEach(function(m,i){
+    t+='<tr'+(m===Math.max.apply(null,BB.means)?' class="cex"':'')+'><td class="mono">臂 '+(i+1)+
+      (m===Math.max.apply(null,BB.means)?' ★':'')+'</td><td class="m mono">'+fx(m,2)+
+      '</td><td class="m mono">'+r.n[i]+'</td><td class="m mono">'+fx(r.Q[i],3)+'</td></tr>';
+  });
+  $('#bbTab').innerHTML=t;
+  $('#bbR').textContent=fx(r.regret,2);
+  $('#bbBest').textContent=fx(r.bestRate*100,1)+'%';
+  $('#bbLock').textContent=fx(r.locked*100,0)+'%';
+  $('#bbFx').innerHTML=(mode==='eps'
+    ? '<span class="kw">ε-greedy</span>\n以 1−ε 选当前最优，以 ε 随机。\n后悔<b>线性增长</b>（ε 是常数，永远在乱试）。'
+    : (mode==='ucb'
+      ? '<span class="kw">UCB</span>\na = argmax [ Q(a) + c·√(ln t / N(a)) ]\n'+
+        '第二项是<b>置信半径</b>：试得少的臂半径大 → 被优先尝试。后悔 O(log N)。'
+      : (mode==='opt'
+        ? '<span class="kw">乐观初始化</span>\nQ₀ = 5（远高于任何真实回报）\n'+
+          '没试过的臂"看起来很好" → 被挨个试遍，之后回归真实。'
+        : '<span class="kw">纯贪心</span>\n永远选当前估计最高的臂。\n'+
+          '运气不好就会<b>永远锁死</b>在次优臂上 —— 后悔线性增长。')));
+  var v=$('#bbVerdict');
+  v.className='verdict '+(r.bestRate>0.7?'yes':(r.bestRate>0.4?'mid':'no'));
+  v.innerHTML='<b>'+N+' 次之后（20 次独立重复的平均）：</b>累计后悔 '+fx(r.regret,2)+
+    '，选中最优臂的比例 '+fx(r.bestRate*100,1)+'%，最后仍锁死在次优臂的实验占 '+fx(r.locked*100,0)+'%。'+
+    '<br><span class="dim">试试把策略切到"纯贪心" —— 它有相当高的概率一头扎进次优臂就再也不出来。</span>';
+}
+['#bbM','#bbE','#bbC','#bbN'].forEach(function(i){$(i).onchange=bbRender;});
+$('#bbGo').onclick=bbRender;
+['#bbE','#bbC','#bbN'].forEach(function(i){$(i).oninput=bbRender;});
+bbRender();
+
+/* ---------------- ㉑ 奖励黑客 ---------------- */
+var RH={W:3,H:3,can:'2,2',goal:'3,3'};
+function rhCells(){
+  var out=[];
+  for(var y=1;y<=RH.H;y++)for(var x=1;x<=RH.W;x++)out.push([x,y]);
+  return out;
+}
+function rhRender(){
+  var r=+$('#rhR').value/100,c=+$('#rhC').value/100,g=+$('#rhG').value/100;
+  $('#rhRv').textContent=fx(r,2);$('#rhCv').textContent=fx(c,2);$('#rhGv').textContent=fx(g,2);
+  function rew(x,y){
+    var k=x+','+y;
+    if(k===RH.goal)return 1;
+    if(k===RH.can)return r;
+    return c;
+  }
+  function mv(x,y,a){
+    var d={U:[0,1],D:[0,-1],L:[-1,0],R:[1,0]}[a];
+    var nx=x+d[0],ny=y+d[1];
+    if(nx<1||nx>RH.W||ny<1||ny>RH.H)return [x,y];
+    return [nx,ny];
+  }
+  var U={},pol={};
+  rhCells().forEach(function(cc){U[cc[0]+','+cc[1]]=0;});
+  for(var it=0;it<500;it++){
+    var nu={};
+    rhCells().forEach(function(cc){
+      var k=cc[0]+','+cc[1];
+      if(k===RH.goal){nu[k]=1;return;}
+      var best=-Infinity,ba=null;
+      ['U','D','L','R'].forEach(function(a){
+        var nx=mv(cc[0],cc[1],a),nk=nx[0]+','+nx[1];
+        var v=rew(nx[0],nx[1])+g*(nk===RH.goal?1:U[nk]);
+        if(v>best){best=v;ba=a;}
+      });
+      nu[k]=best;pol[k]=ba;
+    });
+    U=nu;
+  }
+  var W=520,H=280,pad=20,cw=(W-2*pad)/RH.W,ch=(H-2*pad)/RH.H;
+  var px=function(x){return pad+(x-1)*cw;},py=function(y){return pad+(RH.H-y)*ch;};
+  var ar={U:'↑',D:'↓',L:'←',R:'→'};
+  var s='';
+  rhCells().forEach(function(cc){
+    var k=cc[0]+','+cc[1];
+    s+='<rect x="'+(px(cc[0])+2)+'" y="'+(py(cc[1])+2)+'" width="'+(cw-4)+'" height="'+(ch-4)+
+       '" rx="6" style="fill:'+(k===RH.goal?'rgba(16,185,129,.22)':(k===RH.can?'rgba(245,158,11,.22)':'var(--panel2)'))+
+       ';stroke:var(--line)"/>'+
+       '<text x="'+(px(cc[0])+cw/2)+'" y="'+(py(cc[1])+ch/2)+'" class="sigtxt" style="fill:var(--accent);text-anchor:middle">'+
+       fx(U[k],2)+'</text>'+
+       '<text x="'+(px(cc[0])+cw/2)+'" y="'+(py(cc[1])+ch-8)+'" class="sigtxt" style="fill:var(--dim);text-anchor:middle">'+
+       (k===RH.goal?'终点':ar[pol[k]])+'</text>';
+  });
+  $('#rhSvg').innerHTML=s;
+  var t='<tr><th class="m">格子</th><th class="m">奖励</th><th class="m">V(s)</th><th class="m">最优动作</th></tr>';
+  rhCells().forEach(function(cc){
+    var k=cc[0]+','+cc[1];
+    t+='<tr'+(k===RH.goal?' class="cex"':'')+'><td class="mono">('+cc[0]+','+cc[1]+')'+
+      (k===RH.goal?' 终点':(k===RH.can?' 罐子':''))+'</td><td class="m mono">'+fx(rew(cc[0],cc[1]),2)+
+      '</td><td class="m mono">'+fx(U[k],3)+'</td><td class="m mono">'+(k===RH.goal?'—':ar[pol[k]])+'</td></tr>';
+  });
+  $('#rhTab').innerHTML=t;
+  var loops=false;
+  var seen={},cx=1,cy=1,steps=0;
+  while(steps++<50){
+    var k2=cx+','+cy;
+    if(k2===RH.goal)break;
+    if(seen[k2]){loops=true;break;}
+    seen[k2]=1;
+    var nx=mv(cx,cy,pol[k2]);cx=nx[0];cy=nx[1];
+  }
+  $('#rhFx').innerHTML='<span class="kw">从 (1,1) 出发，跟着最优策略走</span>\n'+
+    (loops?'<span class="neg">它开始绕圈了 —— 永远到不了终点。</span>':
+      '它会走到终点。')+
+    '\n\n每步代价 c = '+fx(c,2)+'，罐子奖励 r = '+fx(r,2)+'，γ = '+fx(g,2);
+  var v=$('#rhVerdict');
+  v.className='verdict '+(loops?'no':'yes');
+  v.innerHTML=(loops
+    ? '<b>奖励黑客发生了：</b>r = '+fx(r,2)+' 的罐子<b>每次进去都能再拿一次</b>，'+
+      '反复刷的收益超过了终点的 +1 → 最优策略就是<b>永远绕圈捡罐子</b>。'+
+      '<br>把"每步代价 c"拉到 −0.2 以下，或者把 r 调到 0.05 附近，看它什么时候重新想起终点。'
+    : '当前设置下它还是会去终点（每步代价 '+fx(c,2)+' 让绕圈变得不划算）。'+
+      '<br><span class="dim">把罐子奖励 r 拉大试试。</span>');
+}
+['#rhR','#rhC','#rhG'].forEach(function(i){$(i).oninput=rhRender;});
+$('#rhReset').onclick=rhRender;
+rhRender();
+
+
+
+/* ---------------- ㉒ 全卷速查（带过滤） ---------------- */
+function qcRender(){
+  var q=($('#qcQ').value||'').trim().toLowerCase(),ch=$('#qcC').value;
+  var rows=$$('#qcTab tr[data-ch]'),shown=0;
+  rows.forEach(function(tr){
+    var ok=(ch==='all'||tr.dataset.ch===ch)&&
+      (q===''||tr.textContent.toLowerCase().indexOf(q)>=0);
+    tr.style.display=ok?'':'none';
+    if(ok)shown++;
+  });
+  $('#qcN').textContent=shown+' / '+rows.length+' 条';
+}
+$('#qcQ').oninput=qcRender;
+$('#qcC').onchange=qcRender;
+qcRender();
+})();
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
