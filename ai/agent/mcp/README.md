@@ -6,6 +6,8 @@
 
 配套 MVP：[mvp.py](./mvp.py)（stdio JSON-RPC 风格的最小 client/server，无外部依赖）。
 
+理解向补充：[理解指南.md](./理解指南.md)（图解角色模型与调用时序、mvp.py 代码走读、选型决策树、常见误解）。
+
 ---
 
 ## 一、技术讲解
@@ -54,7 +56,7 @@ Server 三类能力：
 | 运维 | 日志、指标、工单 | 危险写操作走 Host 确认 |
 | 多产品入口 | 同一套 server 给桌面端 + 服务端 Agent | 避免重复对接 |
 
-不适合：两个独立 Agent 互相委派任务（那是 [A2A](../a2a/)）；纯单次 JSON 输出（[structured-output](../../reliability/structured-output/) 就够）。
+不适合：两个独立 Agent 互相委派任务（那是 [A2A](../a2a/)）；编辑器与 Agent 之间的界面接缝（那是 [ACP](../acp/)）；纯单次 JSON 输出（[structured-output](../../reliability/structured-output/) 就够）。
 
 ---
 
@@ -84,6 +86,7 @@ Host                Client                 Server
 |---|---|
 | Function Calling | MCP 的 tools 在模型侧就是 function calling；MCP 多了发现、传输、鉴权 |
 | [A2A](../a2a/) | MCP = Agent→工具；A2A = Agent→Agent。生产栈通常两层都要 |
+| [ACP](../acp/) | MCP = Agent→工具；ACP = 编辑器 / 客户端→Agent。同一个 Agent 常同时是 MCP client + ACP agent |
 | LangChain Tools | 框架内抽象；可用适配器把 MCP server 映射成框架 tool |
 | [Guardrails](../../reliability/guardrails/) | MCP 不管策略；危险 tool 必须在 Host / 护栏层拦 |
 | [Agent Skills](../agent-skills/) | Skills 描述「怎么做事」；MCP 提供「能调用什么」 |
@@ -105,10 +108,32 @@ Host                Client                 Server
 - 规范与 SDK：https://modelcontextprotocol.io
 - 协议版本演进：[版本演进.md](./版本演进.md)（2024-11 → 2026-07 五个修订版的变更特性与迁移建议）
 - Anthropic 公告与 Cursor / Claude Desktop 接入文档
-- 对比：[A2A](../a2a/)、[structured-output](../../reliability/structured-output/)、[guardrails](../../reliability/guardrails/)
+- 对比：[A2A](../a2a/)、[ACP](../acp/)、[structured-output](../../reliability/structured-output/)、[guardrails](../../reliability/guardrails/)
 
 ---
 
 ## 八、本目录 MVP
 
 `mvp.py` 用标准库模拟 stdio 上的 JSON-RPC：一个 `DocsServer` 暴露 `search_docs` / `get_doc`，`Host` 完成 initialize → list → 按「用户问题」选工具 → call。不依赖真实 LLM，用来看清协议形状。
+
+### Go 版：[go/](./go/)
+
+`go/` 是**真实跨进程 stdio** 的实现（仅标准库，消息格式与真实 MCP 一致：一行一个 JSON-RPC 消息）：
+
+```bash
+cd go
+go run . -mode client                          # 自动拉起 server 子进程，走完 initialize → tools/list → tools/call
+go run . -mode client -question "RAG 是什么？"
+
+# 手动分两个终端（更接近真实部署形态）
+go build -o /tmp/mcp-server . && /tmp/mcp-server -mode server
+go run . -mode client -server /tmp/mcp-server
+```
+
+| 文件 | 角色 |
+|---|---|
+| `jsonrpc.go` | JSON-RPC 2.0 信封 + stdio 分帧（`Conn.Call` / `Notify`） |
+| `server.go` | Server：暴露 tools，`isError` 让模型能自我纠错；日志只写 stderr |
+| `client.go` | Host/Client：`exec` 拉起子进程，握手 → 发现 → 调工具 |
+
+协议版本取 2025-03-26（含 `initialize` 握手），与 Python 版一致；2026-07-28 起的无状态化差异见 [理解指南.md](./理解指南.md) 第 5 节。

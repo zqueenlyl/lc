@@ -23,7 +23,7 @@ Claude Code / Codex / Cursor Agent / DeepSeek Harness 比的往往不是「谁�
 | **Tool** | 模型可点的一个 schema 函数 | `Read`、`Bash`、`WebSearch` |
 | **Action** | 一次环境副作用，可能由 Tool 组合出来 | 改文件、跑测试、发消息 |
 | **Subagent** | 带着缩小工具集去跑一段子循环 | `explore` / `plan` / `coder` |
-| **Runtime Primitive** | 运行时自己提供的能力，不一定出现在 tool 列表里 | 权限沙箱、ACP、插件加载、会话恢复 |
+| **Runtime Primitive** | 运行时自己提供的能力，不一定出现在 tool 列表里 | 权限沙箱、[ACP](../acp/)、插件加载、会话恢复 |
 
 所以 **Tool 数量 ≠ Harness 强弱**。Pi 只公开 4 个核心工具，Claude Code 工具很全，DeepSeek 走「一切皆插件」——比的是取向，不是个数。
 
@@ -58,7 +58,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 | 大重构 / 修测试 | 完整文件工具 + 长循环 + 子 Agent（Claude Code / Codex 取向） |
 | 自托管、审计、改内核 | 开源 + 最小工具集或插件化（Pi / DeepSeek） |
 | 从 IM / 聊天里派活 | 网关 + 消息工具（OpenClaw） |
-| IDE 里改当前文件 | 产品把 Harness 嵌进编辑器（ACP、VS Code 扩展） |
+| IDE 里改当前文件 | 产品把 Harness 嵌进编辑器（[ACP](../acp/)、VS Code 扩展） |
 | 「一切皆插件」实验 | 默认工具极瘦，能力全走插件注册（DeepSeek 定位） |
 
 不适合：把 Harness 当聊天窗口用（浪费循环）；也别用「工具个数」给六家排座次。
@@ -74,7 +74,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 | **DeepSeek Harness**（Developer Preview） | Web + Terminal（CLI）运行时 | 开源，MIT | Everything is a plugin / 一切皆插件 | 无官方统一工具数；最小预设 `bash`、`str_replace_editor`，其它预设可配出完整编码能力 |
 | **Claude Code**（Anthropic） | Terminal（CLI）+ IDE + Web | 闭源商业 | Work with Claude directly in your codebase | 完整编码工具：`Bash`、`Read`、`Write`、`Edit`、`Glob`、`Grep`、`WebFetch`、`WebSearch`、`Agent` 等 |
 | **Codex**（OpenAI） | Terminal（CLI）+ Cloud / ChatGPT 入口 | CLI 开源，Apache-2.0 | Inspect, edit, and run code from your terminal | 核心执行：`Shell`、`patch-edit`、`Web Search` 等，并提供规划 / 运行时原语 |
-| **Kimi Code**（Moonshot） | Terminal（CLI），经 ACP 进 IDE | 开源，MIT | The Starting Point for Next-Gen Agents | 无官方统一工具数；覆盖文件读写、`Shell`、搜索与 Web；提供 `coder` / `explore` / `plan` 等 Agent / 子 Agent |
+| **Kimi Code**（Moonshot） | Terminal（CLI），经 [ACP](../acp/) 进 IDE | 开源，MIT | The Starting Point for Next-Gen Agents | 无官方统一工具数；覆盖文件读写、`Shell`、搜索与 Web；提供 `coder` / `explore` / `plan` 等 Agent / 子 Agent |
 | **Pi**（Mario Zechner） | Terminal（CLI） | 开源 | A minimal terminal coding harness | 明确 4 个核心工具：`read`、`write`、`edit`、`bash` |
 | **OpenClaw**（社区） | 本地 IM 网关 + Terminal（CLI） | 开源 | Your assistant, on your devices, in your chats | 约 12 类内置：`exec`、`read`、`write`、`edit`、`web_search`、`browser`、`message` 等 |
 
@@ -102,6 +102,7 @@ Cursor 是 IDE 产品，里面可以跑某家 Harness；Claude Code 本身就是
 |---|---|
 | [循环与图工程](../loop-graph/) | 设计：一条工作何时停、多条怎么接线、事实怎么共享；Harness 是运行时 |
 | [MCP](../mcp/) | 很多 Harness 用 MCP 扩工具；有的用私有 tool schema |
+| [ACP](../acp/) | Harness 进编辑器 / 终端 UI 的接缝：把循环投影成 plan / tool_call / 消息流，权限弹窗与 cancel 由客户端裁决 |
 | [Agent Skills](../agent-skills/) | 菜谱；Harness 决定何时加载、能否跑脚本 |
 | [Computer Use](../computer-use/) | 无 API 时用键鼠；有仓库时优先文件工具 + `bash` |
 | [Guardrails](../../reliability/guardrails/) | 命令白名单、目录沙箱、联网开关 |

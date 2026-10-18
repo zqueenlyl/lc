@@ -6,6 +6,8 @@ Google 与多家厂商推动，IBM ACP 于 2025 年并入 A2A；2026 年 A2A 1.0
 
 配套 MVP：[mvp.py](./mvp.py)。
 
+理解向补充：[理解指南.md](./理解指南.md)（MCP+A2A 合体全景图、委托时序与 Task 状态机、隔离如何发生、什么时候别上 A2A）。
+
 ---
 
 ## 一、技术讲解
@@ -74,6 +76,7 @@ Card 示例字段：`name`、`description`、`url`、`skills[]`（id / 输入输
 | 技术 | 关系 |
 |---|---|
 | [MCP](../mcp/) | 互补：MCP 连工具，A2A 连 Agent |
+| [ACP](../acp/) | 别混：A2A 的对端是另一个大脑；ACP 的对端是一个**界面**（编辑器 / 客户端）。IBM 早期的 ACP（Agent Communication Protocol）已并入 A2A，与今天的 Agent Client Protocol 同名不同物 |
 | 多智能体（LangGraph） | 同进程图编排不必上 A2A；跨进程 / 跨组织才需要 |
 | [Guardrails](../../reliability/guardrails/) | 发出去的 Task 入参、收回来的 Artifact 都要校验 |
 | [Eval](../../reliability/eval/) | 按 hop 做 TaskCompletion，而不是只评最终一句回复 |
@@ -94,10 +97,35 @@ Card 示例字段：`name`、`description`、`url`、`skills[]`（id / 输入输
 
 - A2A 规范与 Agent Card：Google A2A / a2a-protocol
 - 2026 协议栈综述：MCP + A2A + OAuth + OTel GenAI
-- 对比：[mcp](../mcp/)、[agent-skills](../agent-skills/)、[langgraph](../case-studies/langgraph/)
+- 对比：[mcp](../mcp/)、[acp](../acp/)、[agent-skills](../agent-skills/)、[langgraph](../case-studies/langgraph/)
 
 ---
 
 ## 八、本目录 MVP
 
 `mvp.py` 实现内存版 Agent Card 发现、Task 状态机、客服 → 账务委托。账务 Agent 内部有「假数据库」，对外只回 Artifact。
+
+### Go 版：[go/](./go/)
+
+`go/` 是**真实两个进程**走 HTTP 的实现（仅标准库）：JSON-RPC 2.0 over HTTP + SSE 流式推送。
+进程边界即权限边界——隔离不再靠约定，而是天然成立。
+
+```bash
+cd go
+go run . -mode client                          # 自动拉起 server 子进程：发现 Card → tasks/send → 等终态 → 取 Artifact
+go run . -mode client -transport poll          # 用 tasks/get 轮询代替 SSE
+go run . -mode client -skill unknown_skill     # 看 failed 分支
+go run . -mode client -bill B-9999             # 看「账单不存在」分支
+
+# 手动分两个终端
+go build -o /tmp/a2a-server . && /tmp/a2a-server -mode server -addr 127.0.0.1:8899
+go run . -mode client -server /tmp/a2a-server
+```
+
+| 文件 | 角色 |
+|---|---|
+| `types.go` | AgentCard / Skill / Task 模型与状态常量 |
+| `server.go` | 被委托方：`/.well-known/agent.json`、`POST /`（tasks/send / get）、`GET /tasks/{id}/stream`（SSE） |
+| `client.go` | 委托方：读 Card 校验技能 → 提交 Task → SSE 或轮询 → 只用 Artifact |
+
+Card 的 `signature` 字段留空并标注 `demo-unsigned`：生产里必须是 JWS，否则任何人都能冒充「你们财务 Agent」。
