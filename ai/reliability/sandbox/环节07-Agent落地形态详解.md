@@ -5,7 +5,7 @@
 > 相邻环节：上一站 [环节 06 · 凭证与密钥管理](./环节06-凭证与密钥管理详解.md)；下一站 [环节 08 · 逃逸攻击面与加固](./环节08-逃逸攻击面与加固详解.md)。
 > 适合人群：要选型或自建 Agent 执行环境的工程师。
 > 配套 Notebook：[环节07-Agent落地形态演示.ipynb](./环节07-Agent落地形态演示.ipynb)——纯 Python 对五种形态做"最小隔离要求"打分矩阵与越界动作拦截演练。
-> **版本口径（2026-09-12）**：本篇所有产品细节都是**带日期的快照**（Claude Code / Codex 迭代极快，仓库与文档随时变），引用前**务必回官网核一遍**；机制层描述相对稳定。
+> **版本口径（2026-10-28）**：本篇所有产品细节都是**带日期的快照**（Claude Code / Codex / Cursor 迭代极快，仓库与文档随时变），引用前**务必回官网核一遍**；机制层描述相对稳定。
 
 ---
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 1. 编码 Agent：Claude Code 与 Codex（两种同源设计）
+## 1. 编码 Agent：Claude Code、Codex 与 Cursor
 
 ### 1.1 Claude Code：**沙箱 + 权限系统，两层正交**
 
@@ -64,7 +64,23 @@
 
 > **两家共同的设计要点**：① **默认只读 + 白名单可写**（fail-safe，新增路径默认安全）；② **敏感路径在可写目录内仍单独保护**；③ **网络默认关，要开走代理白名单**；④ **平台原语优先**（Seatbelt / bubblewrap），不自造内核机制。
 
-### 1.3 Pi 的三种隔离路径
+### 1.3 Cursor：Seatbelt / Landlock，Windows 把隔离放回 Linux
+
+Cursor 是第三种本机编码沙箱（2026-10 快照，见 [sandbox.json](https://cursor.com/docs/reference/sandbox)、[运行模式](https://cursor.com/docs/agent/security/run-modes)、[实现说明](https://cursor.com/blog/agent-sandboxing)）。macOS 与前两家同源；Linux 和 Windows 的选型不同。
+
+| 维度 | Cursor 的做法 |
+|---|---|
+| **macOS** | `sandbox-exec` 生成 Seatbelt profile，限制盖住整个子进程树。Cursor 2.0 起，无额外安装 |
+| **Linux** | **Landlock + seccomp**，不用 bubblewrap。Landlock 限文件系统，seccomp 拦不安全 syscall。工作区映射进 overlay，`.cursorignore` 被换成 Landlock 下不可读的副本。需要内核 6.2+、Landlock v3、非特权 user namespace；不满足则退回逐条批准 |
+| **Windows** | 把上面的 Linux 沙箱放进 **WSL2**。官方说明现有 Windows 原语偏浏览器，撑不住通用开发工具，因此不在原生 Windows 上自造一套 |
+| **两层** | `permissions.json` 管哪些调用自动放行、哪些要审；`sandbox.json` 管沙箱里能碰到的域名和路径 |
+| **文件系统** | 默认工作区可读写。保护路径含 `.git/config`、`.git/hooks`、`.vscode`、`.cursorignore` 和 Cursor 自身的敏感配置。`readBoundary: "workspace"`（3.23 起）让工作区外的读取先问人，并收紧沙箱命令的读范围；缺省是 `"system"` |
+| **网络** | 默认拒绝。私网、回环和云元数据 `169.254.169.254` 默认挡住。deny 优先于 allow。出口三档：只用 `sandbox.json`、`sandbox.json` 加内置默认、全部允许 |
+| **策略合并** | 用户配置 < 仓库配置 < 团队管理 < 硬编码。硬编码和团队策略不能被仓库文件放宽 |
+
+和前两家的差别在 Linux 与 Windows：Linux 用非特权的自我限制，而不是 bubblewrap 搭视图；Windows 把隔离放回 Linux，而不是像 Codex 那样用受限令牌。读边界则接上本系列反复讲的「默认读整机」：Claude Code 仍默认整机可读，Cursor 用 `readBoundary` 把这一档做成开关。
+
+### 1.4 Pi 的三种隔离路径
 
 开源 Harness Pi 把"安全交给运行环境"做到极致（详见 [case-studies/pi.md](../../agent/case-studies/pi.md)）：**Gondolin / Docker / OpenShell** 三条路径任选，`pi` 内核保持最小。与 commerce-agents 的"代码强制门禁"形成两种哲学对比：
 
@@ -75,20 +91,20 @@ Pi：            安全交给运行环境（极简内核 + 强隔离沙箱）
 
 ---
 
-## 2. 代码解释器：E2B 与 Modal（微 VM vs gVisor）
+## 2. 代码解释器：E2B 与 Modal（微 VM vs gVisor / VM）
 
 代码解释器的核心需求：**任意代码 + 有状态会话 + 秒级创建**。
 
 | | **E2B** | **Modal** |
 |---|---|---|
-| 隔离原语 | **Firecracker 微 VM**（独立内核） | **gVisor**（共享内核 + 用户态内核翻译） |
-| 安全叙事 | 硬件级隔离（KVM），租户间不共享内核 | 高密度 + syscall 收窄；兼容性有代价 |
+| 隔离原语 | **Firecracker 微 VM**（独立内核） | **gVisor** 或 **VM**（`runtime="gvisor"` / `"vm"`）。不指定时由 Modal 选择。VM 档有自己的 Linux 内核（KVM）。**GPU 沙箱只支持 gVisor** |
+| 安全叙事 | 硬件级隔离（KVM），租户间不共享内核 | gVisor：高密度 + syscall 收窄，兼容性有代价。VM：跨到独立内核，用来跑 Docker / FUSE / 嵌套 cgroup |
 | 会话模型 | 会话型（时长上限、空闲回收、快照保存/恢复） | 空闲超时 + 快照，面向突发并发 |
 | 典型定位 | Agent 代码执行沙箱（长会话、可编程 SDK） | 数据/AI 工作负载平台，沙箱是其中一个能力 |
 
 **选型要点**：
 
-- **"独立内核"是不是硬要求**？多租户 + 完全不可信 → 微 VM 更稳；单租户 + 主要是"防误操作" → gVisor 或容器够用。
+- **"独立内核"是不是硬要求**？多租户 + 完全不可信 → 微 VM 更稳；单租户 + 主要是"防误操作" → gVisor 或容器够用。Modal 现在两档都有，GPU 工作负载仍锁在 gVisor。
 - **会话型 vs 一次性**决定冷启动是否关键：会话型只在开始时付一次冷启动（[环节 05](./环节05-资源限制与生命周期详解.md)）。
 - **注意兼容性**：gVisor 的 `ENOSYS` 是真实上线风险，**必须用你的实际负载验证**。
 
@@ -167,7 +183,8 @@ Computer Use 让模型操作**真实的浏览器 / 桌面**，风险与前面几
 | Claude Code 的沙箱和它的权限弹窗是什么关系？ | **两层正交**：权限管"要不要批准"，沙箱管"批准后能碰什么"。沙箱化了就可以自动批准，但没沙箱化时必须走权限 |
 | 为什么编码 Agent 的沙箱只隔离 Bash？ | 内置文件工具走权限系统（有独立的 Edit/Write 审批）；Computer Use 在真实桌面，不在沙箱内。**边界要说清楚，别以为"整个 Agent 都被沙箱了"** |
 | Codex 三档网络策略是哪三档？ | `Isolated` / `ProxyOnly` / `FullAccess`；Windows 上还体现为两个沙箱身份（Offline / Online） |
-| gVisor 与 Firecracker 你能各举一个产品？ | Modal（gVisor）与 E2B（Firecracker）——**同是"AI 沙箱"，选了完全不同的隔离哲学** |
+| Cursor 的 Linux / Windows 为什么和前两家不同？ | Linux 用 Landlock + seccomp（非特权自我限制），不用 bubblewrap。Windows 把这套 Linux 沙箱放进 WSL2，不在原生 Windows 上做受限令牌。`readBoundary: "workspace"` 用来收紧「默认读整机」 |
+| gVisor 与 Firecracker 你能各举一个产品？ | E2B 是 Firecracker。Modal 可指定 gVisor 或 VM（独立内核）；GPU 沙箱只支持 gVisor |
 | 评测沙箱和代码解释器最大的差别？ | **防作弊 + 离线 + 答案不可读 + 一次性**；解释器关心"能跑"，评测关心"结果可信" |
 | Computer Use 的隔离目标是什么？ | **账号与界面**，不是文件路径；核心是"别让它用真实高权限账号操作生产" |
 | 为什么"用 Docker 跑用户代码"不够？ | 共享内核 + 常见配置错误（特权、挂 docker.sock、capabilities 过多）+ 无配额；多租户不可信场景要独立内核档 |
@@ -176,7 +193,7 @@ Computer Use 让模型操作**真实的浏览器 / 桌面**，风险与前面几
 
 ## 8. 坑清单
 
-1. **以为"沙箱 = 全部隔离"**：Claude Code 只隔离 Bash，Codex 也一样——**内置工具、MCP、Computer Use 各有自己的边界**。
+1. **以为"沙箱 = 全部隔离"**：Claude Code 只隔离 Bash，Codex 与 Cursor 也只沙箱终端命令——**内置文件工具、MCP、Computer Use 各有自己的边界**。
 2. **默认"读整机"不留心**：多个实现默认允许读全盘，`~/.ssh`、`~/.aws` 是明确写进文档的风险。
 3. **开 `dangerouslyDisableSandbox`**：逃生舱被模型自动触发时，等于沙箱形同虚设；严格模式要显式打开。
 4. **关"文件系统隔离"图省事**：可能让命令改写 shell rc，实现"下次运行时自我提权"。
@@ -185,6 +202,7 @@ Computer Use 让模型操作**真实的浏览器 / 桌面**，风险与前面几
 7. **评测沙箱里能读到测试/答案**：评测结果直接失真（这是评测系统最经典的漏洞）。
 8. **对 gVisor 不做真实负载验证**：`ENOSYS` 上线才炸。
 9. **把"云沙箱"当成"零运维"**：SDK 锁定、网络模型、镜像仓库都会进架构，退出成本要提前算。
+10. **在 Linux 上打开 `allowNestedUserNamespaces`**（Claude Code v2.1.304 / v2.1.305 起，默认关闭）：嵌套 user namespace 可以拆掉沙箱的写拒绝。打开之后，保护路径和 `credentials.files` 的 deny 都不要再当成边界。仓库里的 `.claude/settings.json` 开不了这个开关。
 
 ---
 

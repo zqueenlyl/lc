@@ -1,11 +1,11 @@
 # 环节 12 · 非 Linux 平台的原生机制（macOS / Windows）
 
-> [环节 01](./环节01-隔离原语详解.md) 讲的全是 Linux（namespace / cgroup / seccomp）。**macOS 和 Windows 上一个都没有**——它们各有自己的原语，而且**能力明显不对等**。做跨平台 Agent 沙箱（Claude Code 双平台、Codex 三平台）时，这张差异表是绕不开的。
+> [环节 01](./环节01-隔离原语详解.md) 讲的全是 Linux（namespace / cgroup / seccomp）。**macOS 和 Windows 上一个都没有**——它们各有自己的原语，而且**能力明显不对等**。做跨平台 Agent 沙箱（Claude Code 的 macOS / Linux / WSL2、Codex 三平台、Cursor 的 macOS / Linux 加 Windows 上的 WSL2）时，这张差异表是绕不开的。
 > 所属总揽：[环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md) 环节 12。
 > 相邻环节：机制对照见 [环节 01](./环节01-隔离原语详解.md)；产品差异见 [环节 07](./环节07-Agent落地形态详解.md)；开销见 [环节 13](./环节13-开销实测与量级校准详解.md)。
 > 适合人群：要做跨平台 Agent 沙箱、或要理解"为什么这些工具都优先 Linux"的工程师。
 > 配套 Notebook：[环节12-非Linux机制演示.ipynb](./环节12-非Linux机制演示.ipynb)——纯 Python 手搓三平台能力对照矩阵、SBPL / AppContainer 风格的能力判定器、"能力缺口"打分。
-> **版本口径（2026-09-12）**：`sandbox-exec` 自 macOS 10.15 起被 Apple 标记为 **deprecated**（仍随系统提供，Claude Code / Codex 都在用）；Windows 的隔离机制随版本演进较慢但策略（WDAC / AppContainer）会变。引用前回官方文档核。
+> **版本口径（2026-10-28）**：`sandbox-exec` 自 macOS 10.15 起被 Apple 标记为 **deprecated**（仍随系统提供，Claude Code / Codex / Cursor 都在用）；Windows 的隔离机制随版本演进较慢但策略（WDAC / AppContainer）会变。引用前回官方文档核。
 
 ---
 
@@ -24,7 +24,7 @@ Windows ：受限令牌 + ACL + Job Object（部分资源）+ AppContainer（能
           → 靠"身份降权 + 对象权限"，也没有 namespace
 ```
 
-**直接后果**：同一套 Agent 沙箱代码，在三个平台上的**强度与可配项完全不同**——这是"为什么 Claude Code 只支持 macOS / Linux / WSL2，而 Codex 为 Windows 单独实现了一套"的根本原因。
+**直接后果**：同一套 Agent 沙箱代码，在三个平台上的**强度与可配项完全不同**——所以 Claude Code 只支持 macOS / Linux / WSL2，Codex 为 Windows 单独做了一套受限令牌，Cursor 在 Windows 上把 Linux 沙箱放进 WSL2。
 
 ---
 
@@ -41,7 +41,7 @@ Windows ：受限令牌 + ACL + Job Object（部分资源）+ AppContainer（能
 | 网络 | 支持按规则禁止（`(deny network*)`），本机实测**生效**（见 [环节 13](./环节13-开销实测与量级校准详解.md) §3） |
 | 现状 | **Apple 已标记 deprecated**（10.15+），但仍随系统提供且被广泛使用 |
 
-**Claude Code / Codex 的做法**：不是从零写 SBPL，而是**基于系统预置的 Seatbelt 基线 profile**（`/System/Library/Sandbox/Profiles/*.sb`）+ 动态追加规则。Codex 的实现就是从 `PermissionProfile` 动态生成 SBPL 参数再 spawn `/usr/bin/sandbox-exec`。
+**Claude Code / Codex / Cursor 的做法**：不是从零写 SBPL，而是**基于系统预置的 Seatbelt 基线 profile**（`/System/Library/Sandbox/Profiles/*.sb`）+ 动态追加规则。Codex 从 `PermissionProfile` 动态生成 SBPL 再 spawn `/usr/bin/sandbox-exec`。Cursor 同样用 `sandbox-exec` 生成 profile，限制盖住整个子进程树。
 
 > **本机实测的一个重要发现（[环节 13](./环节13-开销实测与量级校准详解.md) §3）**：**SBPL 白名单极难手写**——把 `file-read*` 收紧到"只允许读几个目录"后，连 `/bin/ls` 都直接 `SIGABRT`（exit 134），不是优雅拒绝。这解释了为什么生产工具都用"系统基线 + 增量规则"而不是自造 profile。
 
@@ -78,6 +78,14 @@ Windows ：受限令牌 + ACL + Job Object（部分资源）+ AppContainer（能
 | **Windows Sandbox** | 基于 Hyper-V 的轻量 VM，面向交互式桌面 | 微 VM |
 
 **Codex 的 Windows 实现**就是这套的组合：受限令牌 + ACL，并且管理**两个沙箱身份** `CodexSandboxOffline` / `CodexSandboxOnline`——**用"不同用户身份"表达"有没有网"**，这是 Windows 上没有 network namespace 时的一种替代设计。
+
+**其余三条 Windows 路径要分开看**（2026-10 快照）：
+
+| 产品 | 在 Windows 上实际怎么隔离 |
+|---|---|
+| **Claude Code** | 原生 Windows 上命令**不进沙箱**。要用沙箱，把 Claude Code 跑在 WSL2 里 |
+| **Cursor** | 不实现原生 Windows 沙箱，把 Linux 的 Landlock + seccomp 放进 **WSL2** |
+| **`@anthropic-ai/sandbox-runtime`（`srt`）** | 独立包已有原生 Windows 路径：专用本地用户 `srt-sandbox`、按 SID 做 WFP 出站围栏、写受限令牌、工作树上的显式 ACE。这和 Codex 同族，**还不是 Claude Code 的产品行为** |
 
 ### 2.2 与 Linux 的关键差异
 
@@ -137,8 +145,8 @@ Windows ：受限令牌 + ACL + Job Object（部分资源）+ AppContainer（能
 | TCC 和沙箱是什么关系？ | 两层：沙箱（内核强制）管"能不能调 API"，TCC（用户授权）管"用户授不授权"，都要过 |
 | Windows 靠什么限制资源？ | **Job Object**（内存 / CPU / 进程数 / UI）；隔离靠受限令牌 + ACL + AppContainer |
 | Windows 为什么没有网络 namespace？ | 权限模型驱动，无"空网络栈"默认值；靠防火墙/能力/身份；所以身份成了表达"有没有网"的手段（Codex 的 Offline/Online） |
-| 为什么 Claude Code 不支持原生 Windows？ | 它的 Linux 侧依赖 bubblewrap（需 user ns 等内核特性），WSL1 与原生 Windows 都没有 → 只能 WSL2 |
-| `sandbox-exec` 被 deprecated 了还用？ | 是：已被标记多年但仍随系统提供；生产工具（Claude Code / Codex）都在用，属已知长期风险 |
+| 为什么 Claude Code 不支持原生 Windows？ | 它的 Linux 侧依赖 bubblewrap（需 user ns 等内核特性），WSL1 与原生 Windows 都没有 → 只能 WSL2。Cursor 同样把隔离放进 WSL2。Codex 则在原生 Windows 上用受限令牌 |
+| `sandbox-exec` 被 deprecated 了还用？ | 是：已被标记多年但仍随系统提供；生产工具（Claude Code / Codex / Cursor）都在用，属已知长期风险 |
 | 跨平台沙箱最难的是什么？ | **能力不对等**——不是"接口不同"，而是"某些维度在某个平台根本做不到"，必须设计降级路径 |
 
 ---
@@ -153,13 +161,14 @@ Windows ：受限令牌 + ACL + Job Object（部分资源）+ AppContainer（能
 6. **只测 WSL1**：bubblewrap 需要 WSL2 的内核特性，WSL1 上直接不可用。
 7. **忘记 deprecated 风险**：基于 `sandbox-exec` 的方案要评估长期维护成本。
 8. **把 Windows Sandbox 当容器用**：它是交互式桌面 VM，不适合"每任务一个实例"的高频调度。
+9. **把 `sandbox-runtime` 的 Windows 路径当成 Claude Code 已经沙箱了原生 Windows**：`srt` 有 `srt-sandbox` 用户和 WFP 出站围栏；Claude Code 产品文档仍写原生 Windows 上的命令不进沙箱。
 
 ---
 
 ## 7. 相关笔记
 
 - Linux 原语（对照基座）→ [环节01-隔离原语详解.md](./环节01-隔离原语详解.md)
-- 平台差异在产品上的体现（Claude Code / Codex / Pi）→ [环节07-Agent落地形态详解.md](./环节07-Agent落地形态详解.md) §1
+- 平台差异在产品上的体现（Claude Code / Codex / Cursor / Pi）→ [环节07-Agent落地形态详解.md](./环节07-Agent落地形态详解.md) §1
 - 各平台的实际开销（含本机 Seatbelt 实测）→ [环节13-开销实测与量级校准详解.md](./环节13-开销实测与量级校准详解.md)
 - 平台化加固配置（Linux 侧的 Docker / K8s）→ [环节11-平台化落地详解.md](./环节11-平台化落地详解.md)
 - 白名单为什么要"观察期 + 数据驱动"→ [环节09-可观测性与验收详解.md](./环节09-可观测性与验收详解.md) §2

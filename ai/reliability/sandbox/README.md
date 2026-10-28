@@ -1,13 +1,13 @@
 # Sandbox · 沙箱隔离执行
 
 > 让 Agent 生成的代码、命令和副作用被关进受控环境里跑：**碰不到宿主文件、上不了网、跑不超资源，越界就被拦。** 一句话：**Harness 给模型方向盘，Sandbox 是笼子 + 安全气囊。**
-> 编码 Agent（Claude Code / Codex / Pi）、代码评测（Judge0 / SWE-bench）、Computer Use、FaaS 多租户，底层都在用某种沙箱。
+> 编码 Agent（Claude Code / Codex / Cursor / Pi）、代码评测（Judge0 / SWE-bench）、Computer Use、FaaS 多租户，底层都在用某种沙箱。
 
 配套 MVP：[mvp.py](./mvp.py)（虚拟 FS + 命令白名单 + 资源配额 + 审计日志，不碰真实系统）。
 环节主线（01–13 关卡地图）：见 [环节00-总揽与环节导航.md](./环节00-总揽与环节导航.md)。**本页讲沙箱这门技术本身**（是什么 / 方法全景 / 怎么选），那边讲**一条主线 + 三大阶段怎么串**。
 横切总表：[沙箱选型与落地总表.md](./沙箱选型与落地总表.md)（威胁建模 / 场景映射 / 产品对比 / 成本模型 / 评审清单 / 排查顺序）。
 
-> 版本口径（2026-09-12）：内核机制（namespace / cgroup / seccomp / capabilities）多年稳定；**产品层（Claude Code / Codex / E2B / Modal）迭代极快**，环节 07 与总表里的产品细节是带日期的快照，**引用前回官网核一遍**。
+> 版本口径（2026-10-28）：内核机制（namespace / cgroup / seccomp / capabilities）多年稳定；**产品层（Claude Code / Codex / Cursor / E2B / Modal）迭代极快**，环节 07 与总表里的产品细节是带日期的快照，**引用前回官网核一遍**。
 
 ---
 
