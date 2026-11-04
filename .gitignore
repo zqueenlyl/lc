@@ -1,5 +1,8 @@
 .codebuddy/
 .DS_Store
+__pycache__/
+*.pyc
 
 # 版权图书，仅保留在本机
 artificial-intelligence-modern-approach/Artificial-Intelligence-A-Modern-Approach-4th.pdf
+information-theory-inference-and-learning-algorithms/Information-Theory-Inference-and-Learning-Algorithms.pdf

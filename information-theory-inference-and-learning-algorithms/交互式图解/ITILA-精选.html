@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ITILA 精选 · 从信息量到贝叶斯推断（MacKay 12 个可算面板） · 交互式图解</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1b2130; --line:#2b3444;
+  --fg:#e6edf3; --dim:#93a1b1; --faint:#6e7d8d;
+  --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --gold:#e3b341; --purple:#bc8cff; --cyan:#39c5cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#ffffff; --panel:#f6f8fa; --panel2:#eaeef2; --line:#d0d7de;
+    --fg:#1f2328; --dim:#57606a; --faint:#818b98;
+    --accent:#0969da; --ok:#1a7f37; --warn:#9a6700; --bad:#cf222e; --gold:#9a6700; --purple:#8250df; --cyan:#1b7c83;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:15px;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;line-height:1.3}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:16px 0 6px;color:var(--fg)}
+p{margin:8px 0}
+.lead{font-size:16.5px;color:var(--fg)}
+.dim{color:var(--dim)}
+.faint{color:var(--faint);font-size:13px}
+code,.mono{font-family:var(--mono)}
+.kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.hero .eq{font-family:var(--mono);font-size:13.5px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;margin-top:12px;display:block;color:var(--cyan)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;
+  padding:6px 13px;font-size:13px;cursor:pointer;user-select:none}
+.tab:hover{color:var(--fg)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card>h2{margin-bottom:2px}
+.sub{color:var(--dim);font-size:13px;margin:0 0 10px}
+button.btn{border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;
+  padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+button.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.btn.pri:hover{filter:brightness(1.1);color:#fff}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+input[type=range]{accent-color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);font-weight:600;color:var(--dim);font-size:12.5px}
+td.m,th.m{text-align:center}
+.t{color:var(--ok);font-weight:700}
+.f{color:var(--bad);font-weight:700}
+.u{color:var(--faint)}
+tr.kbtrue td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-size:13.5px}
+.kv b{font-family:var(--mono);color:var(--accent)}
+.verdict{border-radius:9px;padding:10px 13px;font-size:14px;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.yes{border-color:var(--ok);color:var(--ok)}
+.verdict.no{border-color:var(--bad);color:var(--bad)}
+.verdict.mid{border-color:var(--warn);color:var(--warn)}
+.note{border-left:3px solid var(--purple);padding:6px 12px;margin:12px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+.note b{color:var(--fg)}
+.mini{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--panel2)}
+.mini b{display:block;font-size:13px;margin-bottom:4px}
+.pddl{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:9px 11px;margin:8px 0;white-space:pre-wrap;line-height:1.7}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;
+  font-family:var(--mono);margin:2px 3px 2px 0;color:var(--dim)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+.bars{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.bar{display:grid;grid-template-columns:1fr 150px;font-size:12px;align-items:center;gap:10px}
+.bar .tr{border:1px solid var(--line);border-radius:4px;background:var(--panel2);height:14px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent)}
+.bar .fl.bad{background:var(--bad)}
+.bar .vv{font-family:var(--mono);text-align:right;font-size:12px}
+svg text{fill:var(--fg)}
+svg .ax{stroke:var(--line)}
+svg .gl{stroke:var(--line);stroke-dasharray:3 3}
+svg{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2);display:block;margin:8px 0}
+ul.tight{margin:6px 0;padding-left:20px}
+ul.tight li{margin:3px 0;font-size:13.5px}
+</style>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">MacKay《Information Theory, Inference, and Learning Algorithms》· 精选 12 面板 · 覆盖 Ch1–6, 9, 16, 28, 29, 33, 47</div>
+  <h1>信息论和机器学习，是同一件事的两种说法</h1>
+  <p class="lead">作者在原书序里说：两门学科在 1960 年代同属控制论，因为<b>大脑就是终极的压缩与通信系统</b>，
+  而今天最先进的数据压缩与纠错码，用的正是机器学习的工具。这一卷不铺开 50 章，只用 <b>12 个可以现场重算的面板</b>
+  把这条论证走完一遍：从「一个符号值多少比特」到「概率模型就是压缩器」，到「噪声下的容量上限」，
+  再到「证据、采样、变分、消息传递」，最后落回 LDPC 迭代译码与香农限。</p>
+  <div class="eq">−log₂ P(x) = 信息量 = 最优码长　|　H = E[−log₂ P]　|　C = max<sub>P(x)</sub> I(X;Y)　|　log P(D|M) = 拟合 − Occam 罚　|　和积算法 = BP 译码</div>
+  <p class="faint" style="margin-top:10px">每个数字都由本页 JS 现算，不硬编码；关键结果已用 node 冒烟测试断言回教材值（C(0.1)≃0.53、典型集 −46.9、R₃ p<sub>b</sub>、Huffman 界等）。控件改动即时重算。对应本库：<code>ai/foundation/transformer/环节08-输出头与训练目标详解.md</code>（CE/KL/困惑度）、<code>artificial-intelligence-modern-approach/交互式图解/第12-18章-不确定性与决策.html</code>（采样与消息传递）。</p>
+</header>
+
+<nav class="tabs">
+  <div class="tab on" data-panel="p1">① 信息量</div>
+  <div class="tab" data-panel="p2">② 典型集</div>
+  <div class="tab" data-panel="p3">③ 霍夫曼码</div>
+  <div class="tab" data-panel="p4">④ 算术编码</div>
+  <div class="tab" data-panel="p5">⑤ 噪声与冗余</div>
+  <div class="tab" data-panel="p6">⑥ 信道容量</div>
+  <div class="tab" data-panel="p7">⑦ 从码长到证据</div>
+  <div class="tab" data-panel="p8">⑧ Occam 因子</div>
+  <div class="tab" data-panel="p9">⑨ 蒙特卡洛四件套</div>
+  <div class="tab" data-panel="p10">⑩ 变分下界</div>
+  <div class="tab" data-panel="p11">⑪ 消息传递</div>
+  <div class="tab" data-panel="p12">⑫ LDPC 与香农限</div>
+  <div class="tab" data-panel="p13">⑬ 全卷速查</div>
+</nav>
+
+<!-- ============ 1 · 信息量 ============ -->
+<section class="panel on" id="p1">
+  <div class="card">
+    <h2>① 一个符号值多少比特：信息量、熵、交叉熵、KL</h2>
+    <p class="sub">教材 Ch2。若事件概率是 <code>p</code>，它的<b>信息量</b>是 <code>−log₂p</code> bits —— 这同时就是最优编码该给它分配的码长。
+    熵是信息量的期望；用分布 <code>q</code> 去编码真实分布 <code>p</code>，平均码长变成交叉熵，多付的那部分就是 KL 散度。</p>
+    <div class="controls">
+      <span class="faint">真实 P(x=1) = p</span><input type="range" id="icP" min="1" max="99" step="1" value="10"><b class="mono" id="icPv">0.10</b>
+      <span class="faint">编码用 Q(x=1) = q</span><input type="range" id="icQ" min="1" max="99" step="1" value="50"><b class="mono" id="icQv">0.50</b>
+      <span class="faint">均匀符号数 N</span><input type="range" id="icN" min="2" max="16" step="1" value="8"><b class="mono" id="icNv">8</b>
+    </div>
+    <div class="two">
+      <div><h3>现算结果</h3><table id="icTab"></table></div>
+      <div><h3>二元熵 H₂(p)</h3><svg id="icSvg" viewBox="0 0 520 220"></svg></div>
+    </div>
+    <div class="kv"><span>CE(p‖q) = −p·log₂q − (1−p)·log₂(1−q)</span><b id="icCE">—</b></div>
+    <div class="kv"><span>KL(p‖q) = CE − H</span><b id="icKL">—</b></div>
+    <div class="kv"><span>困惑度 2^CE（LLM 里那个 perplexity）</span><b id="icPPL">—</b></div>
+    <div class="kv"><span>N 个等概符号的熵 log₂N</span><b id="icUnif">—</b></div>
+    <div id="icVerdict" class="verdict"></div>
+    <div class="note"><b>连到本库：</b><code>环节08</code> 里 softmax + 交叉熵的 <code>p−y</code> 梯度、<code>perplexity = e^loss</code>，
+    用的就是这里的 CE；把 <code>q</code> 拖到 <code>p</code>，KL 归零 —— 这就是「模型分布等于真实分布时没有多余码长」。
+    <b>Jensen 不等式</b>保证 KL ≥ 0，所以任何 <code>q ≠ p</code> 都要多付比特；把滑块拖到两端看 KL 怎么爆。</div>
+  </div>
+</section>
+
+<!-- ============ 2 · 典型集 ============ -->
+<section class="panel" id="p2">
+  <div class="card">
+    <h2>② 信源编码定理：绝大多数字符串都挤在「典型集」里</h2>
+    <p class="sub">教材 Ch4.4。N 次独立伯努利试验里，含 r 个 1 的序列有 <code>C(N,r)</code> 条；
+    概率质量集中在 <code>r ≈ Np</code> 附近，且每条这样的序列都满足 <code>log₂P(x) ≈ −N·H₂(p)</code>。
+    于是只需给约 <code>2^(N·H)</code> 条序列分配码字，就能覆盖几乎全部概率 —— 这就是压缩的极限。</p>
+    <div class="controls">
+      <span class="faint">p₁ = P(1)</span><input type="range" id="tsP" min="5" max="50" step="1" value="10"><b class="mono" id="tsPv">0.10</b>
+      <span class="faint">序列长度 N</span>
+      <select id="tsN"><option value="20">20</option><option value="100" selected>100</option><option value="1000">1000</option></select>
+      <span class="faint">典型窗 β</span><input type="range" id="tsBeta" min="1" max="30" step="1" value="10"><b class="mono" id="tsBv">0.10</b>
+    </div>
+    <svg id="tsSvg" viewBox="0 0 520 230"></svg>
+    <div class="two">
+      <div><h3>逐项现算</h3><table id="tsTab"></table></div>
+      <div><div class="pddl" id="tsFx"></div></div>
+    </div>
+    <div class="kv"><span>N·H₂(p₁)（教材图 4.11：p₁=0.1, N=100 → 46.9 bits）</span><b id="tsNH">—</b></div>
+    <div class="kv"><span>最小 δ-充分子集 ≈ 2^(N·H)</span><b id="tsSize">—</b></div>
+    <div class="kv"><span>典型集实际覆盖的概率质量</span><b id="tsMass">—</b></div>
+    <div id="tsVerdict" class="verdict"></div>
+    <div class="note"><b>为什么这是「定理」而不是观察：</b>N 越大，<code>−(1/N)log₂P(x)</code> 越集中在 H 附近（大数定律），
+    典型集外的总质量可以任意小，而典型集的大小却只有 <code>2^(NH)</code>，远小于全部 <code>2^N</code> 条序列。
+    把 N 从 20 拉到 1000，看覆盖质量怎么趋近 1、而需要的码字数占比怎么塌下去。</div>
+  </div>
+</section>
+
+<!-- ============ 3 · 霍夫曼码 ============ -->
+<section class="panel" id="p3">
+  <div class="card">
+    <h2>③ 符号码：真建一棵霍夫曼树，量一量离熵还差多少</h2>
+    <p class="sub">教材 Ch5。给每个符号一个二进制码字，要求前缀无关（唯一可译）。
+    霍夫曼算法每次合并概率最小的两个节点，得到的平均码长 <code>L</code> 满足 <code>H ≤ L &lt; H+1</code>；
+    Kraft 和 <code>Σ2^(−lᵢ) = 1</code> 说明码树被用满了。</p>
+    <div class="controls">
+      <span class="faint">分布偏度 θ（pᵢ ∝ θⁱ）</span><input type="range" id="hfTheta" min="30" max="100" step="1" value="70"><b class="mono" id="hfTv">0.70</b>
+      <span class="faint">符号数</span>
+      <select id="hfK"><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="8">8</option></select>
+    </div>
+    <div class="two">
+      <div><h3>码表（现建树）</h3><table id="hfTab"></table></div>
+      <div><h3>合并过程</h3><div class="pddl" id="hfTree"></div></div>
+    </div>
+    <div class="kv"><span>熵 H</span><b id="hfH">—</b></div>
+    <div class="kv"><span>霍夫曼平均码长 L</span><b id="hfL">—</b></div>
+    <div class="kv"><span>冗余 L − H（必在 [0,1) 内）</span><b id="hfGap">—</b></div>
+    <div class="kv"><span>Kraft 和 Σ2^(−lᵢ)</span><b id="hfKraft">—</b></div>
+    <div id="hfVerdict" class="verdict"></div>
+    <div class="note"><b>把 θ 拖到 1.00 就是均匀分布：</b>此时 5 个符号 <code>H = log₂5 = 2.3219</code>，
+    而码长只能是整数，霍夫曼给出 2/2/2/3/3，<code>L = 2.4</code> —— 那 0.078 bit 就是「码长必须取整」的税。
+    偏度越大，符号概率越参差，<code>−log₂pᵢ</code> 越接近整数，冗余反而可能变小。这也是下一面板算术编码要解决的问题。</div>
+  </div>
+</section>
+
+<!-- ============ 4 · 算术编码 ============ -->
+<section class="panel" id="p4">
+  <div class="card">
+    <h2>④ 流码：算术编码把整条消息编成 [0,1) 里的一个区间</h2>
+    <p class="sub">教材 Ch6.2。符号码被迫给每个符号整数个比特；算术编码不给符号分码字，
+    而是按累积概率不断细分 [0,1) 区间，最后用区间里最短的二进制小数代表整条消息。
+    码长自动逼近 <code>−log₂P(消息)</code>，不再受「每符号取整」的税。</p>
+    <div class="controls">
+      <span class="faint">消息（限 A–D，≤10 字符）</span><input type="text" id="acMsg" value="ABCDDCBAAA" size="14">
+      <span class="faint">P(A)</span><input type="range" id="acPA" min="10" max="70" step="1" value="40"><b class="mono" id="acPAv">0.40</b>
+      <button class="btn pri" id="acGo">换一条示例消息</button>
+    </div>
+    <div class="two">
+      <div><h3>区间细分（逐步）</h3><div class="pddl" id="acTab"></div></div>
+      <div><h3>结果</h3><table id="acRes"></table></div>
+    </div>
+    <div class="kv"><span>最短码字</span><b id="acCode">—</b></div>
+    <div class="kv"><span>解码回原文</span><b id="acDec">—</b></div>
+    <div class="kv"><span>算术码长 vs 定长码长 N·log₂4</span><b id="acLen">—</b></div>
+    <div id="acVerdict" class="verdict"></div>
+    <div class="note"><b>这就是「概率模型即压缩器」：</b>消息越符合模型（<code>−log₂P</code> 越小），区间越宽，码字越短。
+    LLM 的下一 token 概率做的正是这件事 —— 对数似然不只是训练目标，它就是压缩后的码长。
+    把 P(A) 调到和消息里 A 的实际频率一致，看码长怎么变短。</div>
+  </div>
+</section>
+
+<!-- ============ 5 · 噪声与冗余 ============ -->
+<section class="panel" id="p5">
+  <div class="card">
+    <h2>⑤ 有噪信道：重复码、汉明码，与「加冗余」的真实收益</h2>
+    <p class="sub">教材 Ch1.2 / 1.35。二元对称信道 BSC 以概率 <code>f</code> 翻转每一位。
+    物理上把信道做可靠的代价越来越贵；香农的「系统解」是加结构化冗余。
+    下面三种方案的误码率都由真算法现算 —— 汉明码那一行是<b>枚举全部 128 种噪声模式做最近邻译码</b>，不是套公式。</p>
+    <div class="controls">
+      <span class="faint">翻转率 f</span><input type="range" id="ncF" min="1" max="30" step="1" value="10"><b class="mono" id="ncFv">0.10</b>
+      <span class="faint">对照码</span>
+      <select id="ncCode"><option value="all" selected>全部三条</option><option value="r3">仅 R₃</option><option value="ham">仅 (7,4) 汉明</option></select>
+    </div>
+    <svg id="ncSvg" viewBox="0 0 520 230"></svg>
+    <table id="ncTab"></table>
+    <div class="kv"><span>无编码 p<sub>b</sub> = f</span><b id="ncRaw">—</b></div>
+    <div class="kv"><span>R₃ 多数表决 p<sub>b</sub> = 3f² − 2f³</span><b id="ncR3">—</b></div>
+    <div class="kv"><span>(7,4) 汉明码位错率 p<sub>b</sub>（枚举译码）</span><b id="ncHam">—</b></div>
+    <div class="kv"><span>(7,4) 块错率 p<sub>B</sub>（枚举译码）</span><b id="ncHamB">—</b></div>
+    <div id="ncVerdict" class="verdict"></div>
+    <div class="note"><b>注意代价：</b>R₃ 的码率只有 1/3，汉明码 4/7 ≈ 0.57。误码率下降不是免费的 ——
+    横轴该画的其实是「每信源比特的错误率 vs 码率」。把 f 拖到 0.01，看冗余的收益如何被噪声变小而放大；
+    下一面板给出的 <code>C = 1 − H₂(f)</code> 就是这条曲线最终能逼近的极限。</div>
+  </div>
+</section>
+
+<!-- ============ 6 · 信道容量 ============ -->
+<section class="panel" id="p6">
+  <div class="card">
+    <h2>⑥ 香农容量：不是「能传多快」，而是「超过就不可能无错」</h2>
+    <p class="sub">教材 Ch9.5 / 式 1.35 / Ch10.6。互信息 <code>I(X;Y) = H(Y) − H(Y|X)</code>，
+    容量是对输入分布取最大。BSC 的闭式解 <code>C(f) = 1 − H₂(f)</code>；
+    右边对一般的非对称信道用 <b>Blahut–Arimoto 迭代真算</b>，再和闭式解对照。</p>
+    <div class="controls">
+      <span class="faint">翻转率 f</span><input type="range" id="ccF" min="1" max="40" step="1" value="10"><b class="mono" id="ccFv">0.10</b>
+      <span class="faint">输入 P(x=1) = q</span><input type="range" id="ccQ" min="1" max="99" step="1" value="50"><b class="mono" id="ccQv">0.50</b>
+      <span class="faint">信道</span>
+      <select id="ccCh"><option value="bsc" selected>BSC 对称</option><option value="z">Z 信道（非对称）</option></select>
+    </div>
+    <svg id="ccSvg" viewBox="0 0 520 230"></svg>
+    <div class="two">
+      <div><h3>现算</h3><table id="ccTab"></table></div>
+      <div><div class="pddl" id="ccFx"></div></div>
+    </div>
+    <div class="kv"><span>当前输入分布下的 I(X;Y)</span><b id="ccI">—</b></div>
+    <div class="kv"><span>Blahut–Arimoto 迭代算出的容量 C</span><b id="ccBA">—</b></div>
+    <div class="kv"><span>BSC 闭式解 1 − H₂(f)（教材 f=0.1 → ≃0.53）</span><b id="ccC">—</b></div>
+    <div class="kv"><span>码率 R=0.5 时的香农限 f<sub>max</sub>（解 1−H₂(f)=R）</span><b id="ccFmax">—</b></div>
+    <div id="ccVerdict" class="verdict"></div>
+    <div class="note"><b>这一行留给面板 ⑫：</b>码率固定为 R 时，只要 <code>C(f) &gt; R</code> 就<b>存在</b>某种码能任意可靠；
+    <code>C(f) &lt; R</code> 则任何码都不行。最后那个 <code>f_max</code> 是二分法真解出来的，
+    面板 ⑫ 的 LDPC 误码率瀑布会拿它当竖线 —— 这就是全卷的闭环。</div>
+  </div>
+</section>
+
+<!-- ============ 7 · 从码长到证据 ============ -->
+<section class="panel" id="p7">
+  <div class="card">
+    <h2>⑦ 从码长到证据：弯硬币的贝叶斯后验</h2>
+    <p class="sub">教材 Ch3.2 / Ch3.3。<code>−log₂P(D|M)</code> 既是「模型 M 给数据 D 的码长」，
+    也是模型比较里的<b>证据</b>。同一枚硬币，抛 N 次出 K 次正面：
+    频率派给一个点估计，贝叶斯给整条后验分布，还能顺手算出「硬币是公平的吗」这个模型的贝叶斯因子。</p>
+    <div class="controls">
+      <span class="faint">抛掷 N</span><input type="range" id="bcN" min="1" max="60" step="1" value="10"><b class="mono" id="bcNv">10</b>
+      <span class="faint">正面 K</span><input type="range" id="bcK" min="0" max="60" step="1" value="5"><b class="mono" id="bcKv">5</b>
+      <span class="faint">先验</span>
+      <select id="bcPrior"><option value="unif" selected>均匀 Beta(1,1)</option><option value="jeff">Jeffreys Beta(½,½)</option><option value="fair">偏公平 Beta(5,5)</option></select>
+    </div>
+    <svg id="bcSvg" viewBox="0 0 520 220"></svg>
+    <div class="two">
+      <div><h3>估计对照</h3><table id="bcTab"></table></div>
+      <div><div class="pddl" id="bcFx"></div></div>
+    </div>
+    <div class="kv"><span>MLE = K/N</span><b id="bcMLE">—</b></div>
+    <div class="kv"><span>后验均值 / MAP</span><b id="bcMean">—</b></div>
+    <div class="kv"><span>贝叶斯因子 BF = P(D|M<sub>弯</sub>) / P(D|M<sub>公平</sub>)</span><b id="bcBF">—</b></div>
+    <div class="kv"><span>两模型给数据的码长差（bits）</span><b id="bcBits">—</b></div>
+    <div id="bcVerdict" class="verdict"></div>
+    <div class="note"><b>和面板 ④ 是同一句话：</b>算术编码里「概率模型越准，码越短」；这里「模型越能解释数据，证据越大、码越短」。
+    但只比最大似然会永远偏向更复杂的模型 —— 下一面板把缺失的那一项（Occam 因子）补上。
+    把 K 拖到 N（全正面），看 Beta 后验怎么被数据推着走，以及公平模型怎么被 BF 否掉。</div>
+  </div>
+</section>
+
+<!-- ============ 8 · Occam 因子 ============ -->
+<section class="panel" id="p8">
+  <div class="card">
+    <h2>⑧ Occam 剃刀不是哲学偏好，是证据里的一项罚</h2>
+    <p class="sub">教材 Ch28.1–28.3。设模型 M 的假设空间里有 <code>K</code> 个等先验的候选参数（偏置 p 的网格），
+    证据 <code>P(D|M) = (1/K)·Σᵢ P(D|pᵢ)</code>。复杂模型 K 大，<b>能把最好的那个假设拟合得很好</b>，
+    但 <code>1/K</code> 把证据稀释了 —— 这就是 Occam 因子，也就是 MDL 里的「模型描述长度」。</p>
+    <div class="controls">
+      <span class="faint">样本数 N</span><input type="range" id="ocN" min="2" max="80" step="1" value="10"><b class="mono" id="ocNv">10</b>
+      <span class="faint">数据里正面比例</span><input type="range" id="ocK" min="10" max="90" step="1" value="50"><b class="mono" id="ocKv">0.50</b>
+      <span class="faint">对比</span>
+      <select id="ocModel"><option value="all" selected>三个模型全比</option><option value="2">仅 M₁ (K=2)</option><option value="10">仅 M₂ (K=10)</option><option value="100">仅 M₃ (K=100)</option></select>
+    </div>
+    <svg id="ocSvg" viewBox="0 0 520 230"></svg>
+    <table id="ocTab"></table>
+    <div class="kv"><span>胜出模型 / 后验模型概率</span><b id="ocBest">—</b></div>
+    <div class="kv"><span>最复杂模型的 Occam 因子（证据 ÷ 最优假设似然）</span><b id="ocFac">—</b></div>
+    <div id="ocVerdict" class="verdict"></div>
+    <div class="note"><b>把 N 从 2 拖到 80：</b>数据少时，M₃ 的 <code>1/100</code> 罚压过拟合优势，最简单的 M₁ 赢；
+    数据足够多时，似然峰的宽度收窄，复杂模型里那个「恰好对上」的假设把罚赚回来。
+    贝叶斯不喊「要简单」，它只是<b>把概率摊到整个假设空间上</b>。
+    这和本库 AIMA <code>第20章-学习概率模型.md</code> 的 MDL 是同一个式子的两种写法。</note>
+  </div>
+</section>
+
+<!-- ============ 9 · 蒙特卡洛四件套 ============ -->
+<section class="panel" id="p9">
+  <div class="card">
+    <h2>⑨ 蒙特卡洛四件套：同一个目标分布，四种采样器现场比</h2>
+    <p class="sub">教材 Ch29.2–29.7。目标是双峰混合 <code>p(x)=0.6·N(−2,0.7²)+0.4·N(2,0.9²)</code>，
+    解析矩 <code>E[x]=−0.4</code>、<code>E[x²]=4.618</code> 可直接算。
+    四种方法全部真跑：重要性采样、拒绝采样、Metropolis（随机游走 MH）、辅助变量 Gibbs（切片式）。
+    看谁跑偏、谁的 ESS 掉得最快。</p>
+    <div class="controls">
+      <span class="faint">样本数</span><input type="range" id="mcN" min="200" max="12000" step="200" value="3000"><b class="mono" id="mcNv">3000</b>
+      <span class="faint">提议宽度 σ</span><input type="range" id="mcSig" min="5" max="60" step="1" value="20"><b class="mono" id="mcSv">2.0</b>
+      <span class="faint">随机种子</span><input type="range" id="mcSeed" min="1" max="9" step="1" value="3"><b class="mono" id="mcSeedv">3</b>
+      <button class="btn pri" id="mcGo">重跑</button>
+    </div>
+    <svg id="mcSvg" viewBox="0 0 520 230"></svg>
+    <table id="mcTab"></table>
+    <div class="kv"><span>解析真值 E[x] / E[x²]</span><b id="mcTrue">—</b></div>
+    <div id="mcVerdict" class="verdict"></div>
+    <div class="note"><b>连到本库：</b><code>ai/foundation/rl/环节04-信赖域与PPO详解.md</code> 的重要性比 <code>ρ=πθ/πold</code>
+    就是这里的权重；<code>DSpark-…投机解码.md</code> 的验证用拒绝采样；AIMA <code>第3-6章-搜索.html</code> 的模拟退火借的正是 Metropolis。
+    把 σ 拖到 0.5，看重要性采样的 ESS 怎么塌掉；拖到 6，看 MH 的接受率怎么塌掉。</div>
+  </div>
+</section>
+
+<!-- ============ 10 · 变分下界 ============ -->
+<section class="panel" id="p10">
+  <div class="card">
+    <h2>⑩ 变分法：用一个高斯去近似双峰，代价是多少</h2>
+    <p class="sub">教材 Ch33.1–33.5。MCMC 用样本逼近后验，变分法改成<b>优化</b>：
+    在一族简单的 <code>q(x)=N(μ,s²)</code> 里最小化 <code>KL(q‖p)</code>，等价于最大化
+    <code>ELBO = E_q[log p(x)] + H(q)</code>。因为 <code>p</code> 已归一化，<code>log Z = 0</code>，
+    所以 ELBO ≤ 0，且缺口正好是 KL。</p>
+    <div class="controls">
+      <span class="faint">q 的均值 μ</span><input type="range" id="vbMu" min="-40" max="40" step="1" value="0"><b class="mono" id="vbMuv">0.0</b>
+      <span class="faint">q 的标准差 s</span><input type="range" id="vbS" min="3" max="40" step="1" value="15"><b class="mono" id="vbSv">1.5</b>
+      <button class="btn pri" id="vbOpt">网格搜索最优 q</button>
+    </div>
+    <svg id="vbSvg" viewBox="0 0 520 230"></svg>
+    <div class="two">
+      <div><h3>现算</h3><table id="vbTab"></table></div>
+      <div><div class="pddl" id="vbFx"></div></div>
+    </div>
+    <div class="kv"><span>ELBO(q)（≤ 0）</span><b id="vbELBO">—</b></div>
+    <div class="kv"><span>KL(q‖p) = −ELBO</span><b id="vbKL">—</b></div>
+    <div class="kv"><span>q 的方差 vs p 的真实方差</span><b id="vbVar">—</b></div>
+    <div id="vbVerdict" class="verdict"></div>
+    <div class="note"><b>点「网格搜索最优 q」：</b>最优单高斯只能盖住其中一个峰（或勉强横跨两峰但方差被压小），
+    算出来的方差<b>系统性地小于</b> 4.458 —— 这就是 <code>KL(q‖p)</code> 的「mode-seeking」偏向，
+    VAE 里后验坍缩、模糊预测都能追到这一项。同一个目标分布，面板 ⑨ 的 MCMC 能估出正确方差，变分不能：
+    两者不是谁更好，而是「采样 vs 优化」的交换。库里 AIMA <code>第21章-深度学习.md</code> 有 ELBO 术语，这里把它算出来。</div>
+  </div>
+</section>
+
+<!-- ============ 11 · 消息传递 ============ -->
+<section class="panel" id="p11">
+  <div class="card">
+    <h2>⑪ 消息传递：和积算法 = 前向–后向 = 因子图上的 BP</h2>
+    <p class="sub">教材 Ch16 / Ch26。二值隐状态链 <code>x₁…x_N</code>，每个状态被 BSC 噪声观测成 <code>y_t</code>。
+    精确算每个 <code>P(x_t|y)</code> 本来要枚举 <code>2^N</code> 条序列；和积算法用两条消息（α、β）线性时间算完。
+    下面<b>同时跑暴力枚举做对照</b>，误差应为 0；最小和（max-product）给出最可能序列，也与枚举 argmax 对照。</p>
+    <div class="controls">
+      <span class="faint">链长 N</span><input type="range" id="mpN" min="3" max="10" step="1" value="6"><b class="mono" id="mpNv">6</b>
+      <span class="faint">先验 P(x₁=1)</span><input type="range" id="mpP" min="10" max="90" step="1" value="50"><b class="mono" id="mpPv">0.50</b>
+      <span class="faint">转移翻转 g</span><input type="range" id="mpG" min="2" max="45" step="1" value="15"><b class="mono" id="mpGv">0.15</b>
+      <span class="faint">观测噪声 f</span><input type="range" id="mpF" min="2" max="45" step="1" value="20"><b class="mono" id="mpFv">0.20</b>
+      <button class="btn pri" id="mpGo">换一组观测</button>
+    </div>
+    <div class="two">
+      <div><h3>逐节点边缘</h3><table id="mpTab"></table></div>
+      <div><h3>观测与消息</h3><div class="pddl" id="mpFx"></div></div>
+    </div>
+    <div class="kv"><span>和积 vs 暴力枚举：最大绝对误差</span><b id="mpErr">—</b></div>
+    <div class="kv"><span>最小和（Viterbi）序列 vs 枚举 argmax</span><b id="mpVit">—</b></div>
+    <div class="kv"><span>枚举 2^N 条序列的代价</span><b id="mpCost">—</b></div>
+    <div id="mpVerdict" class="verdict"></div>
+    <div class="note"><b>记住这一句就够了：</b>α 是「到这里为止的所有过去」，β 是「从这儿往后的一切未来」，
+    乘起来就是当前状态的全部证据。下一面板的 LDPC 译码，只是把这条链换成一张有环的稀疏图、把「状态」换成「比特」——
+    算法一行都不用改。本库 AIMA <code>第12-18章-不确定性与决策.html</code> 的 HMM/Viterbi 面板是同一个算法的时序版本。</div>
+  </div>
+</section>
+
+<!-- ============ 12 · LDPC ============ -->
+<section class="panel" id="p12">
+  <div class="card">
+    <h2>⑫ 闭环：LDPC 迭代译码撞上香农限</h2>
+    <p class="sub">教材 Ch47 / Ch16。构造一个低密度校验矩阵 H（列重 2、行重 4，可复现随机生成），
+    用高斯消元真算它的秩得到码率 <code>R = (N−rank)/N</code>。发送全零码字过 BSC，
+    用 LLR 域的和积算法迭代译码（<code>2·atanh Π tanh(L/2)</code>），统计位错率 BER。
+    竖线是面板 ⑥ 解出的香农限 <code>C(f_max)=R</code>。</p>
+    <div class="controls">
+      <span class="faint">翻转率 f</span><input type="range" id="ldF" min="1" max="20" step="1" value="6"><b class="mono" id="ldFv">0.06</b>
+      <span class="faint">最大迭代</span><input type="range" id="ldIter" min="1" max="20" step="1" value="10"><b class="mono" id="ldIv">10</b>
+      <span class="faint">码长 N</span><select id="ldN"><option value="20" selected>20</option><option value="40">40</option><option value="60">60</option></select>
+      <button class="btn pri" id="ldGo">重跑蒙特卡洛</button>
+    </div>
+    <svg id="ldSvg" viewBox="0 0 520 240"></svg>
+    <div class="two">
+      <div><h3>BER 随迭代次数</h3><table id="ldTab"></table></div>
+      <div><h3>码与限</h3><table id="ldInfo"></table></div>
+    </div>
+    <div class="kv"><span>码率 R（由 rank(H) 真算）</span><b id="ldR">—</b></div>
+    <div class="kv"><span>香农限 f<sub>max</sub>（解 1−H₂(f)=R）</span><b id="ldFmax">—</b></div>
+    <div class="kv"><span>BER：1 次迭代 → 最大迭代</span><b id="ldBER">—</b></div>
+    <div id="ldVerdict" class="verdict"></div>
+    <div class="note"><b>全卷在这一格合上：</b>面板 ② 的 <code>2^(NH)</code> 给出压缩极限，
+    面板 ⑥ 的 <code>1−H₂(f)</code> 给出通信极限，面板 ⑪ 的和积算法给出在有噪证据下做推断的工具，
+    这里三者合成一条曲线 —— <b>迭代 BP 把实际码推到离香农限很近的地方</b>。
+    作者说「最先进的压缩与纠错码用的正是机器学习的工具」，指的就是这件事：概率图模型上的消息传递。
+    短码 N=20 的瀑布不陡是正常的，把 N 拉到 60 看它怎么变尖。</div>
+  </div>
+</section>
+
+<!-- ============ 13 · 全卷速查 ============ -->
+<section class="panel" id="p13">
+  <div class="card">
+    <h2>全卷速查</h2>
+    <p class="sub">12 个面板，每条一句话 + 一个最容易踩的坑。赶时间只读这张表即可；可按章过滤、关键词搜索。</p>
+    <div class="controls">
+      <span class="faint">关键词</span><input type="text" id="uqQ" placeholder="如 熵 / KL / 典型集 / Occam / BP / 香农">
+      <span class="faint">教材章</span>
+      <select id="uqC"><option value="">全部</option><option value="1">Ch1 噪声与码</option><option value="2">Ch2 概率与熵</option><option value="3">Ch3 推断</option><option value="4">Ch4 信源编码</option><option value="5">Ch5 符号码</option><option value="6">Ch6 流码</option><option value="9">Ch9 有噪信道</option><option value="16">Ch16 消息传递</option><option value="28">Ch28 模型比较</option><option value="29">Ch29 蒙特卡洛</option><option value="33">Ch33 变分</option><option value="47">Ch47 LDPC</option></select>
+      <b class="mono" id="uqN">12</b>
+    </div>
+    <table id="uqTab">
+      <tr><th class="m">章</th><th class="m">面板</th><th class="m">一句话</th><th class="m">最容易踩的坑</th></tr>
+      <tr data-ch="2"><td class="m">2</td><td class="m">① 信息量</td><td><code>−log₂p</code> 既是信息量也是最优码长；CE−H = KL ≥ 0，困惑度 = 2^CE。</td><td>把熵当成「不确定性」就停了；它其实是<b>平均要付的比特数</b>。</td></tr>
+      <tr data-ch="4"><td class="m">4</td><td class="m">② 典型集</td><td>概率质量集中在 <code>2^(NH)</code> 条典型序列上，压缩极限由此而来。</td><td>以为「典型」= 最常见的那一条；其实是 <code>−log₂P/N ≈ H</code> 的<b>一整层</b>。</td></tr>
+      <tr data-ch="5"><td class="m">5</td><td class="m">③ 霍夫曼码</td><td>合并最小两节点，得 <code>H ≤ L &lt; H+1</code>，Kraft 和 = 1。</td><td>把 L−H 归咎于算法不够好；那是<b>码长必须取整</b>的税。</td></tr>
+      <tr data-ch="6"><td class="m">6</td><td class="m">④ 算术编码</td><td>整条消息编成 [0,1) 的一个区间，码长逼近 <code>−log₂P(消息)</code>。</td><td>以为压缩是查表；其实<b>概率模型有多准</b>直接决定码长。</td></tr>
+      <tr data-ch="1"><td class="m">1</td><td class="m">⑤ 噪声与冗余</td><td>R₃ 与 (7,4) 汉明码用冗余换低误码率，代价是码率下降。</td><td>只看 p<sub>b</sub> 不看码率；R₃ 的 1/3 码率不是免费的。</td></tr>
+      <tr data-ch="9"><td class="m">9</td><td class="m">⑥ 信道容量</td><td><code>C = max I(X;Y)</code>；BSC 上 <code>1−H₂(f)</code>，超过 C 不可能无错。</td><td>把容量当「当前方案的速率」；它是<b>所有可能码</b>的上界。</td></tr>
+      <tr data-ch="3"><td class="m">3</td><td class="m">⑦ 弯硬币</td><td><code>−log₂P(D|M)</code> 既是码长也是证据；贝叶斯给整条后验而非点估计。</td><td>用 MLE 直接做模型比较 —— 复杂模型必胜，缺了 Occam 那一项。</td></tr>
+      <tr data-ch="28"><td class="m">28</td><td class="m">⑧ Occam 因子</td><td>证据把概率摊到整个假设空间，<code>1/K</code> 自动罚复杂模型。</td><td>以为「偏好简单」是外加的先验；它来自<b>归一化</b>。</td></tr>
+      <tr data-ch="29"><td class="m">29</td><td class="m">⑨ 蒙特卡洛</td><td>重要性 / 拒绝 / Metropolis / Gibbs 四种采样器估同一个矩，各有各的死法。</td><td>只看样本均值不看 ESS；重要性采样的权重塌了均值还挺像。</td></tr>
+      <tr data-ch="33"><td class="m">33</td><td class="m">⑩ 变分下界</td><td>优化 <code>ELBO ≤ log Z</code>，缺口 = KL；单高斯近似双峰会低估方差。</td><td>把变分后验当精确后验用；<code>KL(q‖p)</code> 是 mode-seeking 的。</td></tr>
+      <tr data-ch="16"><td class="m">16</td><td class="m">⑪ 消息传递</td><td>α·β 给出精确边缘，复杂度从 <code>2^N</code> 降到线性。</td><td>以为 BP 在有环图上还是精确的；只有<b>树</b>上才保证等于枚举。</td></tr>
+      <tr data-ch="47"><td class="m">47</td><td class="m">⑫ LDPC 译码</td><td>LLR 域迭代和积把实际码推近香农限，闭环压回面板 ⑥ 的 <code>C(f)</code>。</td><td>拿短码的瀑布说「离香农限很远」；有限长与度分布才是原因。</td></tr>
+    </table>
+    <div class="note"><b>被砍掉的 38 章去哪了：</b>Ch20–26 精确推断与边缘化已由 AIMA <code>第12-18章</code>、<code>第19-22章</code> 两卷覆盖；
+    Part III 其余（Ch12–15, 17–19）作者标注首读可跳；Ch38–43 是 Hopfield / 玻尔兹曼机等历史模型；
+    Ch48–50 是通信工程专门化码。需要时回 PDF 查，不占这一卷的阅读预算。</div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<script>
+/* 浮动「↑ 章节」按钮：JS 动态创建，不写死在 HTML 里；滚过 320px 才出现 */
+(function(){
+  function ini(){
+    if(!document.createElement||!document.body)return;
+    var tt=document.createElement('button');
+    tt.className='btn'; tt.type='button';
+    tt.textContent='↑ 章节'; tt.title='回到章节标签栏';
+    tt.style.cssText='position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:0 4px 16px rgba(0,0,0,.45)';
+    tt.onclick=function(){
+      var n=(document.querySelector&&document.querySelector('.tabs'));
+      if(n&&n.scrollIntoView)n.scrollIntoView({behavior:'smooth',block:'start'});
+      else if(window.scrollTo)window.scrollTo(0,0);
+    };
+    document.body.appendChild(tt);
+    if(window.addEventListener)window.addEventListener('scroll',function(){
+      tt.style.display=(window.scrollY>320)?'block':'none';},{passive:true});
+  }
+  if(document.readyState==='loading'&&document.addEventListener)document.addEventListener('DOMContentLoaded',ini);
+  else ini();
+})();
+
+(function(){
+'use strict';
+var Q=function(s,r){return (r||document).querySelector(s);};
+var QQ=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var $=Q, $$=QQ;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n;}
+function fx(n,d){if(!isFinite(n))return '∞';return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+function log2(x){return Math.log(x)/Math.LN2;}
+function safeLog2(x){return x<=0?-1e12:log2(x);}
+/* Lanczos log-gamma（Beta / 二项系数都要用） */
+var LG_C=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+  771.32342877765313,-176.61502916214059,12.507343278686905,
+  -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+function lgam(z){
+  if(z<0.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgam(1-z);
+  z-=1;var x=LG_C[0],i;
+  for(i=1;i<9;i++)x+=LG_C[i]/(z+i);
+  var t=z+7.5;
+  return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);
+}
+function lbeta(a,b){return lgam(a)+lgam(b)-lgam(a+b);}
+function lchoose(n,k){if(k<0||k>n)return -1e12;return lgam(n+1)-lgam(k+1)-lgam(n-k+1);}
+function H2(p){if(p<=0||p>=1)return 0;return -p*log2(p)-(1-p)*log2(1-p);}
+/* 可复现伪随机（LCG） */
+function mkRnd(seed){var s=(seed>>>0)||1;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function rnorm(rnd){var u=Math.max(1e-12,rnd()),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function normPdf(x,mu,s){var z=(x-mu)/s;return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));}
+/* 面板 ⑨⑩ 共用：双峰混合目标 */
+function mixPdf(x){return 0.6*normPdf(x,-2,0.7)+0.4*normPdf(x,2,0.9);}
+function mixMoments(){return {m1:0.6*(-2)+0.4*2, m2:0.6*(0.7*0.7+4)+0.4*(0.9*0.9+4)};}
+/* 通用折线图：series = [{pts:[[x,y]...],color,label,dash}] */
+function plot(svgId,series,opt){
+  opt=opt||{};
+  var W=520,H=opt.h||230,L=46,R=14,T=16,B=30;
+  var xs=[],ys=[];
+  series.forEach(function(s){s.pts.forEach(function(p){xs.push(p[0]);ys.push(p[1]);});});
+  if(opt.xmin!==undefined)xs.push(opt.xmin);if(opt.xmax!==undefined)xs.push(opt.xmax);
+  if(opt.ymin!==undefined)ys.push(opt.ymin);if(opt.ymax!==undefined)ys.push(opt.ymax);
+  var xmin=opt.xmin!==undefined?opt.xmin:Math.min.apply(null,xs),
+      xmax=opt.xmax!==undefined?opt.xmax:Math.max.apply(null,xs),
+      ymin=opt.ymin!==undefined?opt.ymin:Math.min.apply(null,ys),
+      ymax=opt.ymax!==undefined?opt.ymax:Math.max.apply(null,ys);
+  if(xmax-xmin<1e-9)xmax=xmin+1;
+  if(ymax-ymin<1e-9){ymax=ymin+1;ymin-=0.5;}
+  var pad=(ymax-ymin)*0.08;ymin-=pad;ymax+=pad;
+  function X(v){return L+(v-xmin)/(xmax-xmin)*(W-L-R);}
+  function Y(v){return H-B-(v-ymin)/(ymax-ymin)*(H-T-B);}
+  var o='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'">';
+  o+='<line class="ax" x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'"/>';
+  o+='<line class="ax" x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+(H-B)+'"/>';
+  for(var g=0;g<=4;g++){
+    var yy=ymin+(ymax-ymin)*g/4,py=Y(yy);
+    o+='<line class="gl" x1="'+L+'" y1="'+py+'" x2="'+(W-R)+'" y2="'+py+'"/>';
+    o+='<text x="'+(L-5)+'" y="'+(py+4)+'" text-anchor="end" font-size="10" fill="var(--faint)">'+fx(yy,opt.yd!==undefined?opt.yd:2)+'</text>';
+  }
+  for(var gx=0;gx<=4;gx++){
+    var xx=xmin+(xmax-xmin)*gx/4,px=X(xx);
+    o+='<text x="'+px+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="var(--faint)">'+fx(xx,opt.xd!==undefined?opt.xd:2)+'</text>';
+  }
+  series.forEach(function(s){
+    if(!s.pts.length)return;
+    var d=s.pts.map(function(p,i){return (i?'L':'M')+fx(X(p[0]),2)+' '+fx(Y(p[1]),2);}).join(' ');
+    o+='<path d="'+d+'" fill="none" stroke="'+(s.color||'var(--accent)')+'" stroke-width="'+(s.w||2)+'"'+(s.dash?' stroke-dasharray="5 4"':'')+'/>';
+  });
+  (opt.vlines||[]).forEach(function(v){
+    var px=X(v.x);
+    o+='<line x1="'+px+'" y1="'+T+'" x2="'+px+'" y2="'+(H-B)+'" stroke="'+(v.color||'var(--warn)')+'" stroke-width="1.5" stroke-dasharray="4 4"/>';
+    if(v.label)o+='<text x="'+(px+4)+'" y="'+(T+12)+'" font-size="10" fill="'+(v.color||'var(--warn)')+'">'+esc(v.label)+'</text>';
+  });
+  var ly=T+12;
+  series.forEach(function(s){
+    if(!s.label)return;
+    o+='<line x1="'+(W-R-92)+'" y1="'+(ly-4)+'" x2="'+(W-R-80)+'" y2="'+(ly-4)+'" stroke="'+(s.color||'var(--accent)')+'" stroke-width="2"/>';
+    o+='<text x="'+(W-R-76)+'" y="'+ly+'" font-size="10" fill="var(--dim)">'+esc(s.label)+'</text>';
+    ly+=14;
+  });
+  if(opt.xlabel)o+='<text x="'+(W/2)+'" y="'+(H-1)+'" text-anchor="middle" font-size="10" fill="var(--faint)">'+esc(opt.xlabel)+'</text>';
+  o+='</svg>';
+  var el=$('#'+svgId);if(el)el.innerHTML=o;
+}
+function barSvg(svgId,rows,opt){
+  opt=opt||{};
+  var W=520,H=opt.h||230,L=46,R=14,T=16,B=42;
+  var ymax=opt.ymax||Math.max.apply(null,rows.map(function(r){return r.v;}).concat([1e-9]));
+  var bw=(W-L-R)/rows.length;
+  var o='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'">';
+  o+='<line class="ax" x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'"/>';
+  rows.forEach(function(r,i){
+    var h=Math.max(0,r.v/ymax)*(H-T-B),x=L+i*bw+2,y=H-B-h;
+    o+='<rect x="'+fx(x,1)+'" y="'+fx(y,1)+'" width="'+fx(Math.max(1,bw-4),1)+'" height="'+fx(h,1)+'" fill="'+(r.color||'var(--accent)')+'" opacity="0.85"/>';
+    if(rows.length<=26)o+='<text x="'+fx(x+(bw-4)/2,1)+'" y="'+(H-B+13)+'" text-anchor="middle" font-size="9" fill="var(--faint)">'+esc(r.label||'')+'</text>';
+  });
+  o+='<text x="'+(L-5)+'" y="'+(T+8)+'" text-anchor="end" font-size="10" fill="var(--faint)">'+fx(ymax,2)+'</text>';
+  o+='<text x="'+(W/2)+'" y="'+(H-3)+'" text-anchor="middle" font-size="10" fill="var(--faint)">'+esc(opt.xlabel||'')+'</text>';
+  o+='</svg>';
+  var el=$('#'+svgId);if(el)el.innerHTML=o;
+}
+
+/* ---------- tabs ---------- */
+function goPanel(id,push){
+  var tab=$$('.tab').filter(function(x){return x.dataset.panel===id;})[0];
+  if(!tab)return;
+  $$('.tab').forEach(function(x){x.classList.remove('on');});
+  tab.classList.add('on');
+  $$('.panel').forEach(function(x){x.classList.remove('on');});
+  var p=Q('#'+id); if(p)p.classList.add('on');
+  if(push!==false&&history.replaceState)history.replaceState(null,'','#'+id);
+  /* 切换后把页面滚回标签栏，避免滚到下方再点标签时视口不动、看着像没切换 */
+  if(window.scrollTo&&(window.scrollY||0)>0)window.scrollTo(0,0);
+}
+$$('.tab').forEach(function(t){t.onclick=function(){goPanel(t.dataset.panel);};});
+if(location.hash){var hh=location.hash.slice(1);if(Q('#'+hh))goPanel(hh,false);}
+
+/* ================= ① 信息量（Ch2） ================= */
+function icPars(){return {p:num($('#icP').value)/100,q:num($('#icQ').value)/100,N:num($('#icN').value)};}
+function icCE(p,q){return -p*safeLog2(q)-(1-p)*safeLog2(1-q);}
+function icRender(){
+  var P=icPars(),p=P.p,q=P.q;
+  $('#icPv').textContent=fx(p,2);$('#icQv').textContent=fx(q,2);$('#icNv').textContent=P.N;
+  var h=H2(p),ce=icCE(p,q),kl=ce-h;
+  var rows=[
+    ['P(x=1)=p',fx(p,3),'−log₂p = '+fx(-safeLog2(p),4)+' bits'],
+    ['P(x=0)=1−p',fx(1-p,3),'−log₂(1−p) = '+fx(-safeLog2(1-p),4)+' bits'],
+    ['熵 H(p)',fx(h,4),'= E[−log₂P]，最短平均码长'],
+    ['编码用 Q(x=1)=q',fx(q,3),'Q 不是真实分布'],
+    ['交叉熵 CE(p‖q)',fx(ce,4),'实际平均码长'],
+    ['KL(p‖q)=CE−H',fx(kl,4),'多付的码长，恒 ≥ 0'],
+    ['困惑度 2^CE',fx(Math.pow(2,ce),4),'LLM 里的 perplexity'],
+    ['N 个等概符号',String(P.N),'log₂N = '+fx(log2(P.N),4)+' bits']
+  ];
+  $('#icTab').innerHTML='<tr><th>量</th><th class="m">值</th><th>含义</th></tr>'+
+    rows.map(function(r){return '<tr><td class="mono">'+r[0]+'</td><td class="m mono"><b>'+r[1]+'</b></td><td class="faint">'+r[2]+'</td></tr>';}).join('');
+  var ymax=Math.max(1.15,Math.min(6,ce+0.25)),ceY=Math.min(ce,ymax),hp=[],i,t;
+  for(i=1;i<=99;i++){t=i/100;hp.push([t,H2(t)]);}
+  plot('icSvg',[{pts:hp,color:'var(--accent)',label:'H₂(t)'},
+    {pts:[[0,ceY],[1,ceY]],color:'var(--warn)',label:'CE(p‖q)',dash:true}],
+    {xmin:0,xmax:1,ymin:0,ymax:ymax,xd:2,yd:2,xlabel:'t',
+     vlines:[{x:p,label:'p'},{x:q,label:'q',color:'var(--purple)'}]});
+  $('#icCE').textContent=fx(ce,4)+' bits/符号';
+  $('#icKL').textContent=fx(kl,4)+' bits/符号';
+  $('#icPPL').textContent=fx(Math.pow(2,ce),4);
+  $('#icUnif').textContent=fx(log2(P.N),4)+' bits';
+  var v=$('#icVerdict');
+  if(kl<1e-9){v.className='verdict yes';v.textContent='q = p：KL = 0，交叉熵正好等于熵 —— 这就是能达到的最短平均码长。';}
+  else{v.className='verdict mid';v.innerHTML='q ≠ p：平均每个符号多付 <b>'+fx(kl,4)+'</b> bits。KL ≥ 0 是 Jensen 不等式的直接结果，把 q 拖回 p 即可让 CE 与 H 相切。';}
+}
+['#icP','#icQ','#icN'].forEach(function(i){$(i).oninput=icRender;});
+icRender();
+
+/* ================= ② 典型集（Ch4.4） ================= */
+function tsPars(){return {p:num($('#tsP').value)/100,N:num($('#tsN').value),beta:num($('#tsBeta').value)/100};}
+function tsTypical(N,p,beta){
+  var H=H2(p),lp=Math.log(p),lq=Math.log(1-p),logC=[0],logP=[],P=[],r;
+  for(r=1;r<=N;r++)logC[r]=logC[r-1]+Math.log(N-r+1)-Math.log(r);
+  var mass=0,lo=-1,hi=-1,mx=-1e18,l2p=log2(p),l2q=log2(1-p);
+  for(r=0;r<=N;r++){
+    logP[r]=logC[r]+r*lp+(N-r)*lq;P[r]=Math.exp(logP[r]);
+    var avg=(-r*l2p-(N-r)*l2q)/N;
+    if(Math.abs(avg-H)<beta){mass+=P[r];if(lo<0)lo=r;hi=r;mx=Math.max(mx,logC[r]);}
+  }
+  var cnt=0;
+  if(mx>-1e17){for(r=lo;r<=hi;r++){var a2=(-r*l2p-(N-r)*l2q)/N;if(Math.abs(a2-H)<beta)cnt+=Math.exp(logC[r]-mx);}}
+  return {H:H,NH:N*H,P:P,mass:mass,lo:lo,hi:hi,
+    log10Count:cnt>0?(mx+Math.log(cnt))/Math.LN10:0};
+}
+function tsRender(){
+  var P=tsPars(),T=tsTypical(P.N,P.p,P.beta);
+  $('#tsPv').textContent=fx(P.p,2);$('#tsBv').textContent=fx(P.beta,2);
+  var l10=Math.log10?Math.log10(2):Math.LN2/Math.LN10;
+  var size10=T.NH*l10,all10=P.N*l10;
+  var step=Math.max(1,Math.ceil(P.N/160)),pts=[],r;
+  for(r=0;r<=P.N;r+=step)pts.push([r/P.N,T.P[r]]);
+  var pmax=0;for(r=0;r<=P.N;r++)pmax=Math.max(pmax,T.P[r]);
+  plot('tsSvg',[{pts:pts,color:'var(--accent)',label:'P(r)，r 个 1 的序列总概率'}],
+    {xmin:0,xmax:1,ymin:0,ymax:pmax*1.18,xd:2,yd:3,xlabel:'r / N',
+     vlines:[{x:P.p,label:'p₁',color:'var(--cyan)'},{x:T.lo/P.N,label:'窗左'},
+             {x:T.hi/P.N,label:'窗右',color:'var(--warn)'}]});
+  var rows=[
+    ['H₂(p₁)',fx(T.H,4)+' bits'],
+    ['N·H₂(p₁) = E[−log₂P(x)]',fx(T.NH,4)+' bits'],
+    ['典型窗 β',fx(P.beta,3)+' → r ∈ ['+T.lo+', '+T.hi+']'],
+    ['典型集覆盖的概率质量',fx(T.mass,6)],
+    ['典型集里的序列条数','10^'+fx(T.log10Count,2)],
+    ['全部序列条数 2^N','10^'+fx(all10,2)],
+    ['最小 δ-充分子集 ≈ 2^(N·H)','10^'+fx(size10,2)],
+    ['需要码字占全部序列','10^'+fx(size10-all10,2)]
+  ];
+  $('#tsTab').innerHTML='<tr><th>量</th><th class="m">现算值</th></tr>'+
+    rows.map(function(x){return '<tr><td>'+x[0]+'</td><td class="m mono"><b>'+x[1]+'</b></td></tr>';}).join('');
+  $('#tsFx').textContent=
+    '−log₂P(x) = −r·log₂p₁ − (N−r)·log₂(1−p₁)\n'+
+    '典型集 T(N,β) = { x : | −(1/N)log₂P(x) − H | < β }\n'+
+    'H = H₂('+fx(P.p,2)+') = '+fx(T.H,4)+' bits/符号\n'+
+    'N·H = '+fx(T.NH,4)+' bits  →  |T| ≈ 2^('+fx(T.NH,2)+')\n'+
+    '教材图 4.11：p₁=0.1, N=100 时该值为 46.9，N=1000 时为 469。';
+  $('#tsNH').textContent=fx(T.NH,4)+' bits';
+  $('#tsSize').textContent='2^'+fx(T.NH,2)+' ≈ 10^'+fx(size10,2)+' 条';
+  $('#tsMass').textContent=fx(T.mass,6);
+  var v=$('#tsVerdict');
+  v.className=T.mass>0.9?'verdict yes':'verdict mid';
+  v.innerHTML='N='+P.N+' 时，仅占全部序列 <b>10^'+fx(size10-all10,2)+'</b> 的典型集已覆盖 <b>'+fx(T.mass*100,3)+'%</b> 的概率质量。'+
+    (P.N<=20?'把 N 调到 100 / 1000，看这个数怎么趋近 1。':'这正是信源编码定理：只需 2^(N·H) 个码字，而非 2^N 个。');
+}
+['#tsP','#tsBeta'].forEach(function(i){$(i).oninput=tsRender;});
+$('#tsN').onchange=tsRender;
+tsRender();
+
+/* ================= ③ 霍夫曼码（Ch5） ================= */
+function hfPars(){return {theta:num($('#hfTheta').value)/100,K:num($('#hfK').value)};}
+function hfDist(theta,K){var w=[],s=0,i,v;for(i=0;i<K;i++){v=Math.pow(theta,i);w.push(v);s+=v;}return w.map(function(x){return x/s;});}
+function hfBuild(ps){
+  var nodes=ps.map(function(p,i){return {p:p,ids:[i],left:null,right:null};}),trace=[];
+  while(nodes.length>1){
+    nodes.sort(function(a,b){return a.p-b.p;});
+    var a=nodes.shift(),b=nodes.shift(),n={p:a.p+b.p,ids:a.ids.concat(b.ids),left:a,right:b};
+    trace.push({pa:a.p,pb:b.p,sum:n.p});
+    nodes.push(n);
+  }
+  var codes={};
+  (function walk(nd,pre){if(!nd.left){codes[nd.ids[0]]=pre||'0';return;}walk(nd.left,pre+'0');walk(nd.right,pre+'1');})(nodes[0],'');
+  return {codes:codes,trace:trace};
+}
+function hfRender(){
+  var P=hfPars(),ps=hfDist(P.theta,P.K),B=hfBuild(ps);
+  $('#hfTv').textContent=fx(P.theta,2);
+  var H=0,L=0,kr=0,i,rows='',cmp='';
+  for(i=0;i<ps.length;i++){
+    var l=B.codes[i].length,ideal=-log2(ps[i]);
+    H+=-ps[i]*log2(ps[i]);L+=ps[i]*l;kr+=Math.pow(2,-l);
+    rows+='<tr><td class="m mono">s'+i+'</td><td class="m mono">'+fx(ps[i],4)+'</td><td class="m mono">'+fx(ideal,3)+
+      '</td><td class="m mono"><b>'+B.codes[i]+'</b></td><td class="m">'+l+'</td><td class="m mono">'+fx(ps[i]*l,4)+'</td></tr>';
+    cmp+='  s'+i+'  理想 '+fx(ideal,3)+' → 实取 '+l+'  (取整多 '+fx(l-ideal,3)+')\n';
+  }
+  $('#hfTab').innerHTML='<tr><th class="m">符号</th><th class="m">p</th><th class="m">−log₂p</th><th class="m">码字</th><th class="m">长度</th><th class="m">贡献</th></tr>'+rows+
+    '<tr><td class="m"><b>合计</b></td><td class="m">1.0000</td><td class="m mono">H='+fx(H,4)+'</td><td class="m">—</td><td class="m"><b>L='+fx(L,4)+'</b></td><td class="m mono">'+fx(L,4)+'</td></tr>';
+  $('#hfTree').textContent='合并 '+B.trace.length+' 次（每次取概率最小的两节点）：\n'+
+    B.trace.map(function(t,k){return '  #'+(k+1)+'  '+fx(t.pa,4)+' + '+fx(t.pb,4)+' = '+fx(t.sum,4);}).join('\n')+
+    '\n\n码长 vs 理想码长（−log₂p）：\n'+cmp;
+  $('#hfH').textContent=fx(H,4)+' bits';
+  $('#hfL').textContent=fx(L,4)+' bits';
+  $('#hfGap').textContent=fx(L-H,4)+' bits（0 ≤ · &lt; 1）';
+  $('#hfKraft').textContent=fx(kr,10);
+  var v=$('#hfVerdict');
+  if(L>=H-1e-9&&L<H+1&&Math.abs(kr-1)<1e-9){
+    v.className='verdict yes';
+    v.innerHTML='<b>H ≤ L &lt; H+1 成立</b>，Kraft 和 = 1（码树被用满）。冗余 '+fx(L-H,4)+
+      ' bits 全部来自「码长必须是整数」；'+(P.theta>0.99?'θ=1 是均匀分布，此时这 0.078 bit 就是最纯粹的取整税。':'把 θ 拖到 1.00 看均匀分布下的取整税。');
+  }else{v.className='verdict no';v.textContent='数值异常：H='+fx(H,4)+' L='+fx(L,4)+' Kraft='+fx(kr,6);}
+}
+$('#hfTheta').oninput=hfRender;$('#hfK').onchange=hfRender;
+hfRender();
+
+/* ================= ④ 算术编码（Ch6.2） ================= */
+var AC_EXAMPLES=['ABCDDCBAAA','AAAAAAAABB','BACDABCDAB','AAAABBBBCC','DDDDCCCBBB'],acIdx=0;
+function acPars(){var m=($('#acMsg').value||'A').toUpperCase().replace(/[^A-D]/g,'').slice(0,10);return {msg:m||'A',pa:num($('#acPA').value)/100};}
+function acModel(pa){var r=(1-pa)/3;return [pa,r,r,r];}
+function acCum(m){var c=[0],s=0,i;for(i=0;i<4;i++){s+=m[i];c.push(s);}return c;}
+function acEncode(msg,m){
+  var c=acCum(m),lo=0,hi=1,steps=[],ideal=0,i;
+  for(i=0;i<msg.length;i++){
+    var k=clamp(msg.charCodeAt(i)-65,0,3),sp=hi-lo,nl=lo+sp*c[k],nh=lo+sp*c[k+1];
+    steps.push({ch:msg[i],lo:nl,hi:nh});
+    lo=nl;hi=nh;ideal+=-log2(m[k]);
+  }
+  return {low:lo,high:hi,steps:steps,ideal:ideal};
+}
+function acShortestBinary(lo,hi){
+  var n,k,v,p;
+  for(n=1;n<=50;n++){
+    p=Math.pow(2,n);k=Math.floor(lo*p)+1;v=k/p;
+    if(v<hi&&v>=lo)return {bits:n,code:k.toString(2).padStart(n,'0'),value:v};
+  }
+  return {bits:0,code:'',value:(lo+hi)/2};
+}
+function acDecode(value,m,len){
+  var c=acCum(m),lo=0,hi=1,out='',t;
+  for(t=0;t<len;t++){
+    var sp=hi-lo,v=(value-lo)/sp,k=0;
+    while(k<3&&v>=c[k+1])k++;
+    out+=String.fromCharCode(65+k);
+    var nl=lo+sp*c[k],nh=lo+sp*c[k+1];lo=nl;hi=nh;
+  }
+  return out;
+}
+function acRender(){
+  var P=acPars(),m=acModel(P.pa),E=acEncode(P.msg,m),S=acShortestBinary(E.low,E.high),
+      D=acDecode(S.value,m,P.msg.length);
+  $('#acPAv').textContent=fx(P.pa,2);
+  $('#acTab').textContent='区间从 [0, 1) 起，按累积概率细分：\n'+
+    E.steps.map(function(s,k){return '  '+(k+1)+'. '+s.ch+'  →  ['+fx(s.lo,7)+', '+fx(s.hi,7)+')';}).join('\n')+
+    '\n最终区间 ['+fx(E.low,7)+', '+fx(E.high,7)+')，宽 '+fx(E.high-E.low,9);
+  $('#acRes').innerHTML='<tr><th>量</th><th class="m">值</th></tr>'+
+    '<tr><td>消息长度</td><td class="m mono">'+P.msg.length+'</td></tr>'+
+    '<tr><td>P(消息) = Π P(符号)</td><td class="m mono">'+fx(Math.pow(2,-E.ideal),8)+'</td></tr>'+
+    '<tr><td>−log₂P(消息)（理论下界）</td><td class="m mono">'+fx(E.ideal,4)+' bits</td></tr>'+
+    '<tr><td>算术码长</td><td class="m mono"><b>'+S.bits+' bits</b></td></tr>'+
+    '<tr><td>定长码长 N·log₂4</td><td class="m mono">'+(2*P.msg.length)+' bits</td></tr>';
+  $('#acCode').textContent=S.code+'  ('+S.bits+' bits)';
+  $('#acDec').textContent=D+(D===P.msg?'  ✓ 与原消息一致':'  ✗ 不一致');
+  $('#acLen').textContent=S.bits+' bits vs '+(2*P.msg.length)+' bits，省 '+fx((1-S.bits/(2*P.msg.length))*100,1)+'%';
+  var v=$('#acVerdict'),ok=(D===P.msg)&&(S.bits<=E.ideal+2);
+  v.className=ok?'verdict yes':'verdict no';
+  v.innerHTML=ok?('解码 <b>逐字符一致</b>，且码长 '+S.bits+' ≤ −log₂P + 2 = '+fx(E.ideal+2,2)+
+    ' bits。P(A)='+fx(P.pa,2)+' 时消息里 A 占 '+fx((P.msg.split('A').length-1)/P.msg.length,2)+
+    ' —— 把 P(A) 调到接近它，码字会变短。'):'数值异常：解码不一致或码长超界。';
+}
+$('#acMsg').oninput=acRender;$('#acPA').oninput=acRender;
+$('#acGo').onclick=function(){acIdx=(acIdx+1)%AC_EXAMPLES.length;$('#acMsg').value=AC_EXAMPLES[acIdx];acRender();};
+acRender();
+
+/* ================= ⑤ 噪声与冗余（Ch1.2） ================= */
+function ncPars(){return {f:num($('#ncF').value)/100,code:$('#ncCode').value};}
+function ncR3pb(f){return 3*f*f-2*f*f*f;}
+function ncPop(x){var c=0;while(x){c+=x&1;x>>=1;}return c;}
+function ncHammingCodebook(){
+  var cols=[1,2,3,4,5,6,7].map(function(j){return [j&1,(j>>1)&1,(j>>2)&1];}),cb=[],x,s,j;
+  for(x=0;x<128;x++){
+    var ok=true;
+    for(s=0;s<3;s++){var p=0;for(j=0;j<7;j++)if((x>>j)&1)p^=cols[j][s];if(p){ok=false;break;}}
+    if(ok)cb.push(x);
+  }
+  return cb;
+}
+function ncHammingBasis(){
+  var rem=ncHammingCodebook().filter(function(x){return x!==0;}),basis=[],span=[0],i,v,add;
+  for(i=0;i<rem.length&&basis.length<4;i++){
+    v=rem[i];if(span.indexOf(v)>=0)continue;
+    basis.push(v);add=span.map(function(s){return s^v;});span=span.concat(add);
+  }
+  return basis;
+}
+var NC_CW=null;
+function ncCodebook(){
+  if(NC_CW)return NC_CW;
+  var basis=ncHammingBasis(),cw=[],m,i,x;
+  for(m=0;m<16;m++){x=0;for(i=0;i<4;i++)if(m&(1<<i))x^=basis[i];cw.push(x);}
+  NC_CW=cw;return cw;
+}
+function ncHamming(f){
+  var cw=ncCodebook(),m,n,c,pb=0,pB=0,r,bd,bm,d,bdiff,pr,w;
+  for(m=0;m<16;m++){
+    for(n=0;n<128;n++){
+      w=ncPop(n);pr=Math.pow(f,w)*Math.pow(1-f,7-w);
+      r=cw[m]^n;bd=99;bm=0;
+      for(c=0;c<16;c++){d=ncPop(r^cw[c]);if(d<bd){bd=d;bm=c;}}
+      bdiff=ncPop(m^bm);
+      pb+=pr*bdiff/4;pB+=pr*(bm!==m?1:0);
+    }
+  }
+  return {pb:pb/16,pB:pB/16};
+}
+var NC_CURVE=null;
+function ncCurve(){
+  if(NC_CURVE)return NC_CURVE;
+  var r3=[],ham=[],i,f;
+  for(i=1;i<=30;i++){f=i/100;r3.push([f,ncR3pb(f)]);ham.push([f,ncHamming(f).pb]);}
+  NC_CURVE={r3:r3,ham:ham};return NC_CURVE;
+}
+function ncRender(){
+  var P=ncPars(),C=ncCurve(),H=ncHamming(P.f);
+  $('#ncFv').textContent=fx(P.f,2);
+  var raw=[],i,f;for(i=1;i<=30;i++){f=i/100;raw.push([f,f]);}
+  var series=[{pts:raw,color:'var(--faint)',label:'无编码'}];
+  if(P.code==='all'||P.code==='r3')series.push({pts:C.r3,color:'var(--warn)',label:'R₃ 重复码'});
+  if(P.code==='all'||P.code==='ham')series.push({pts:C.ham,color:'var(--ok)',label:'(7,4) 汉明'});
+  plot('ncSvg',series,{xmin:0.01,xmax:0.30,ymin:0,ymax:0.30,xd:2,yd:2,xlabel:'翻转率 f',
+    vlines:[{x:P.f,label:'当前 f',color:'var(--purple)'}]});
+  var closed=1-(Math.pow(1-P.f,7)+7*P.f*Math.pow(1-P.f,6));
+  var rows=[['无编码','1',fx(P.f,6),'—'],
+    ['R₃ 重复码','1/3',fx(ncR3pb(P.f),6),'多数表决'],
+    ['(7,4) 汉明','4/7 ≈ 0.571',fx(H.pb,6),'枚举 128 种噪声 × 16 码字']];
+  $('#ncTab').innerHTML='<tr><th>方案</th><th class="m">码率 R</th><th class="m">位错率 p<sub>b</sub></th><th>译码</th></tr>'+
+    rows.map(function(r){return '<tr><td>'+r[0]+'</td><td class="m mono">'+r[1]+'</td><td class="m mono"><b>'+r[2]+'</b></td><td class="faint">'+r[3]+'</td></tr>';}).join('');
+  $('#ncRaw').textContent=fx(P.f,6);
+  $('#ncR3').textContent=fx(ncR3pb(P.f),6);
+  $('#ncHam').textContent=fx(H.pb,6);
+  $('#ncHamB').textContent=fx(H.pB,6)+'（闭式 1−[(1−f)⁷+7f(1−f)⁶] = '+fx(closed,6)+'）';
+  var v=$('#ncVerdict');
+  v.className=Math.abs(H.pB-closed)<1e-9?'verdict yes':'verdict no';
+  v.innerHTML=Math.abs(H.pB-closed)<1e-9?
+    ('枚举译码的块错率与闭式解<b>逐位吻合</b>。f='+fx(P.f,2)+' 时 R₃ 把 p<sub>b</sub> 从 '+fx(P.f,4)+
+     ' 压到 '+fx(ncR3pb(P.f),4)+'，但码率只剩 1/3；汉明码以 0.571 的码率做到 '+fx(H.pb,4)+'。'):
+    '枚举结果与闭式解不一致，检查译码实现。';
+}
+$('#ncF').oninput=ncRender;$('#ncCode').onchange=ncRender;
+ncRender();
+
+/* ================= ⑥ 信道容量（Ch9.5 / Ch10.6） ================= */
+function ccPars(){return {f:num($('#ccF').value)/100,q:num($('#ccQ').value)/100,ch:$('#ccCh').value};}
+function ccChannel(f,ch){
+  if(ch==='z')return [[1,0],[f,1-f]];
+  return [[1-f,f],[f,1-f]];
+}
+function ccMutual(q,W){
+  var py0=(1-q)*W[0][0]+q*W[1][0],py1=(1-q)*W[0][1]+q*W[1][1];
+  var hy=0,hyx=0,k,j;
+  for(j=0;j<2;j++){var pj=j?py1:py0;if(pj>0)hy-=pj*log2(pj);}
+  for(k=0;k<2;k++)for(j=0;j<2;j++)if(W[k][j]>0)hyx-=(k?q:1-q)*W[k][j]*log2(W[k][j]);
+  return hy-hyx;
+}
+function ccBA(W,iters){
+  var r=[0.5,0.5],i,k,j,pj,d,nr,z,s;
+  for(i=0;i<(iters||300);i++){
+    pj=[r[0]*W[0][0]+r[1]*W[1][0],r[0]*W[0][1]+r[1]*W[1][1]];
+    d=[0,0];
+    for(k=0;k<2;k++){s=0;for(j=0;j<2;j++)if(W[k][j]>0&&pj[j]>0)s+=W[k][j]*Math.log(W[k][j]/pj[j]);d[k]=Math.exp(s);}
+    nr=[r[0]*d[0],r[1]*d[1]];z=nr[0]+nr[1];
+    if(z<=0)break;r=[nr[0]/z,nr[1]/z];
+  }
+  return {C:ccMutual(r[1],W),q:r[1]};
+}
+function ccFmax(R){var lo=0,hi=0.5,i,m;for(i=0;i<90;i++){m=(lo+hi)/2;if(1-H2(m)>R)lo=m;else hi=m;}return (lo+hi)/2;}
+function ccRender(){
+  var P=ccPars(),W=ccChannel(P.f,P.ch),BA=ccBA(W),closed=1-H2(P.f),I=ccMutual(P.q,W),fm=ccFmax(0.5);
+  $('#ccFv').textContent=fx(P.f,2);$('#ccQv').textContent=fx(P.q,2);
+  var pts=[],i,q;for(i=0;i<=100;i++){q=i/100;pts.push([q,ccMutual(q,W)]);}
+  plot('ccSvg',[{pts:pts,color:'var(--accent)',label:'I(X;Y) 随 q'},
+    {pts:[[0,BA.C],[1,BA.C]],color:'var(--warn)',label:'容量 C',dash:true}],
+    {xmin:0,xmax:1,ymin:0,ymax:Math.max(1.05,BA.C*1.2),xd:2,yd:3,xlabel:'q = P(x=1)',
+     vlines:[{x:P.q,label:'当前 q'},{x:BA.q,label:'最优 q',color:'var(--ok)'}]});
+  $('#ccTab').innerHTML='<tr><th>量</th><th class="m">现算值</th></tr>'+
+    '<tr><td>H(Y)</td><td class="m mono">'+fx(ccMutual(P.q,W),4)+' + 条件项</td></tr>'+
+    '<tr><td>当前 I(X;Y)</td><td class="m mono"><b>'+fx(I,6)+'</b> bits</td></tr>'+
+    '<tr><td>BA 迭代最优输入 q*</td><td class="m mono">'+fx(BA.q,6)+'</td></tr>'+
+    '<tr><td>BA 容量 C</td><td class="m mono"><b>'+fx(BA.C,6)+'</b> bits</td></tr>'+
+    '<tr><td>BSC 闭式 1−H₂(f)</td><td class="m mono">'+fx(closed,6)+' bits</td></tr>';
+  $('#ccFx').textContent=
+    '信道矩阵 W（行 x，列 y）：\n'+
+    '  ['+fx(W[0][0],3)+'  '+fx(W[0][1],3)+']\n'+
+    '  ['+fx(W[1][0],3)+'  '+fx(W[1][1],3)+']\n\n'+
+    'I(X;Y) = H(Y) − H(Y|X)\n'+
+    'C = max_q I(X;Y)   ← BA 迭代求 q*\n'+
+    'H₂('+fx(P.f,2)+') = '+fx(H2(P.f),6)+'\n'+
+    '教材式 1.35：C(f) = 1 − H₂(f)，f=0.1 时 C ≃ 0.53';
+  $('#ccI').textContent=fx(I,6)+' bits';
+  $('#ccBA').textContent=fx(BA.C,6)+' bits（q* = '+fx(BA.q,4)+'）';
+  $('#ccC').textContent=fx(closed,6)+' bits';
+  $('#ccFmax').textContent=fx(fm,6);
+  var v=$('#ccVerdict'),match=P.ch==='bsc'?Math.abs(BA.C-closed)<1e-5:true;
+  v.className=match?'verdict yes':'verdict no';
+  v.innerHTML=P.ch==='bsc'?
+    ('BA 迭代算出 <b>'+fx(BA.C,6)+'</b>，与闭式 <code>1−H₂('+fx(P.f,2)+')</code> 一致；f=0.1 时约 <b>0.53</b>（教材值）。'+
+     '把 q 拖离 0.5，I 立刻掉下来 —— 容量是<b>输入分布也要最优</b>才算出来的。'):
+    ('Z 信道非对称：最优点 q* = '+fx(BA.q,4)+'（不是 0.5），BA 容量 <b>'+fx(BA.C,6)+
+     '</b> bits。它有一条<b>完全无噪</b>的输入（x=0 必出 y=0），容量反而高于同 f 的 BSC 闭式 '+fx(closed,6)+' —— 所以容量没有通用闭式，只能对输入分布取最大。');
+}
+['#ccF','#ccQ'].forEach(function(i){$(i).oninput=ccRender;});
+$('#ccCh').onchange=ccRender;
+ccRender();
+
+/* ================= ⑦ 从码长到证据（Ch3.2 / 3.3） ================= */
+function bcPars(){
+  var N=num($('#bcN').value),K=Math.min(num($('#bcK').value),N),pr=$('#bcPrior').value,a=1,b=1;
+  if(pr==='jeff'){a=0.5;b=0.5;}else if(pr==='fair'){a=5;b=5;}
+  return {N:N,K:K,a:a,b:b};
+}
+function bcPost(N,K,a,b){return {a:a+K,b:b+N-K};}
+function bcEvidence(N,K,a,b){return Math.exp(lbeta(a+K,b+N-K)-lbeta(a,b));}
+function bcDensity(p,a,b){if(p<=0||p>=1)return 0;return Math.exp((a-1)*Math.log(p)+(b-1)*Math.log(1-p)-lbeta(a,b));}
+function bcRender(){
+  var P=bcPars(),B=bcPost(P.N,P.K,P.a,P.b),alpha=B.a,beta=B.b;
+  $('#bcNv').textContent=P.N;$('#bcKv').textContent=P.K;
+  var mean=alpha/(alpha+beta),mapv=(alpha>1&&beta>1)?(alpha-1)/(alpha+beta-2):(mean>0.5?1:0);
+  var sd=Math.sqrt(alpha*beta/((alpha+beta)*(alpha+beta)*(alpha+beta+1)));
+  var ev=bcEvidence(P.N,P.K,P.a,P.b),fair=Math.pow(2,-P.N),bf=ev/fair;
+  var pts=[],i,p,mx=0;
+  for(i=1;i<=199;i++){p=i/200;var d=bcDensity(p,alpha,beta);pts.push([p,d]);if(d>mx)mx=d;}
+  plot('bcSvg',[{pts:pts,color:'var(--accent)',label:'Beta 后验密度'}],
+    {xmin:0,xmax:1,ymin:0,ymax:mx*1.15,xd:2,yd:2,xlabel:'偏置 p',
+     vlines:[{x:P.N?P.K/P.N:0.5,label:'MLE',color:'var(--warn)'},{x:mean,label:'后验均值',color:'var(--ok)'}]});
+  $('#bcTab').innerHTML='<tr><th>量</th><th class="m">值</th></tr>'+
+    '<tr><td>先验 Beta(a,b)</td><td class="m mono">('+fx(P.a,1)+', '+fx(P.b,1)+')</td></tr>'+
+    '<tr><td>后验 Beta(α,β)</td><td class="m mono"><b>('+fx(alpha,1)+', '+fx(beta,1)+')</b></td></tr>'+
+    '<tr><td>MLE = K/N</td><td class="m mono">'+fx(P.N?P.K/P.N:0,6)+'</td></tr>'+
+    '<tr><td>后验均值 α/(α+β)</td><td class="m mono">'+fx(mean,6)+'</td></tr>'+
+    '<tr><td>MAP (α−1)/(α+β−2)</td><td class="m mono">'+fx(mapv,6)+'</td></tr>'+
+    '<tr><td>后验标准差</td><td class="m mono">'+fx(sd,6)+'</td></tr>'+
+    '<tr><td>证据 P(D|M<sub>弯</sub>)</td><td class="m mono">'+fx(ev,8)+'</td></tr>'+
+    '<tr><td>公平模型 P(D|M<sub>公平</sub>)=2⁻ᴺ</td><td class="m mono">'+fx(fair,8)+'</td></tr>';
+  $('#bcFx').textContent=
+    'P(D|M) = ∫ p^K (1−p)^(N−K) · Beta(a,b) 先验 dp\n'+
+    '       = B(a+K, b+N−K) / B(a,b)\n'+
+    '       = B('+fx(alpha,1)+', '+fx(beta,1)+') / B('+fx(P.a,1)+', '+fx(P.b,1)+')\n'+
+    '       = '+fx(ev,8)+'\n\n'+
+    '码长 −log₂P(D|M) = '+fx(-safeLog2(ev),3)+' bits\n'+
+    '公平模型码长 = N = '+P.N+' bits';
+  $('#bcMLE').textContent=fx(P.N?P.K/P.N:0,6);
+  $('#bcMean').textContent=fx(mean,6)+' / '+fx(mapv,6);
+  $('#bcBF').textContent=fx(bf,4)+(bf>1?'  → 支持「弯」':'  → 支持「公平」');
+  $('#bcBits').textContent=fx(log2(bf),4)+' bits';
+  var v=$('#bcVerdict');
+  v.className='verdict mid';
+  v.innerHTML='数据 N='+P.N+'、K='+P.K+'：均匀先验下后验均值 = (K+1)/(N+2) = <b>'+fx((P.K+1)/(P.N+2),6)+
+    '</b>，与现算一致。贝叶斯因子 <b>'+fx(bf,3)+'</b>，'+
+    (bf>1?'即弯硬币模型给数据短了 '+fx(log2(bf),2)+' bits。':'还不足以否掉公平硬币 —— 把 K 拖到 N 看 BF 怎么翻。');
+}
+['#bcN','#bcK'].forEach(function(i){$(i).oninput=bcRender;});
+$('#bcPrior').onchange=bcRender;
+bcRender();
+
+/* ================= ⑧ Occam 因子（Ch28） ================= */
+function ocPars(){return {N:num($('#ocN').value),frac:num($('#ocK').value)/100,sel:$('#ocModel').value};}
+function ocModels(){return [{K:2,name:'M₁  coarse'},{K:10,name:'M₂  medium'},{K:100,name:'M₃  fine'}];}
+function ocGrid(K){var g=[],i;for(i=0;i<K;i++)g.push((i+0.5)/K);return g;}
+function ocEvidence(N,K,grid){
+  var s=0,best=0,i,p,lp,lq,v;
+  for(i=0;i<grid.length;i++){
+    p=grid[i];lp=p>0?Math.log(p):-1e12;lq=(1-p)>0?Math.log(1-p):-1e12;
+    v=Math.exp(K*lp+(N-K)*lq);s+=v;if(v>best)best=v;
+  }
+  var ev=s/grid.length;
+  return {ev:ev,best:best,fac:best>0?ev/best:0};
+}
+function ocRender(){
+  var P=ocPars(),K=Math.round(P.N*P.frac),models=ocModels(),R=[],i,sum=0;
+  for(i=0;i<models.length;i++){
+    var E=ocEvidence(P.N,K,ocGrid(models[i].K));
+    R.push({K:models[i].K,name:models[i].name,ev:E.ev,best:E.best,fac:E.fac,bits:-safeLog2(E.ev)});
+    sum+=E.ev;
+  }
+  $('#ocNv').textContent=P.N;$('#ocKv').textContent=fx(P.frac,2);
+  var series=models.map(function(m,mi){
+    var pts=[],n;
+    for(n=2;n<=80;n+=2){var k=Math.round(n*P.frac);pts.push([n,-safeLog2(ocEvidence(n,k,ocGrid(m.K)).ev)]);}
+    return {pts:pts,color:['var(--ok)','var(--accent)','var(--warn)'][mi],label:m.name};
+  });
+  plot('ocSvg',series,{xmin:2,xmax:80,ymin:0,yd:1,xlabel:'样本数 N（纵轴：−log₂ 证据 = 码长 bits）',
+    vlines:[{x:P.N,label:'当前 N',color:'var(--purple)'}]});
+  var rows='',win=0;
+  for(i=0;i<R.length;i++)if(R[i].ev>R[win].ev)win=i;
+  for(i=0;i<R.length;i++){
+    if(P.sel!=='all'&&String(R[i].K)!==P.sel)continue;
+    rows+='<tr'+(i===win?' class="kbtrue"':'')+'><td>'+R[i].name+'</td><td class="m mono">'+R[i].K+
+      '</td><td class="m mono">'+fx(R[i].bits,3)+'</td><td class="m mono">'+fx(R[i].best,8)+
+      '</td><td class="m mono">'+fx(R[i].fac,6)+'</td><td class="m mono"><b>'+fx(R[i].ev/sum,6)+'</b></td></tr>';
+  }
+  $('#ocTab').innerHTML='<tr><th>模型</th><th class="m">假设数 K</th><th class="m">−log₂证据(bits)</th><th class="m">最优假设似然</th><th class="m">Occam 因子</th><th class="m">P(M|D)</th></tr>'+rows;
+  $('#ocBest').textContent=R[win].name+'（P = '+fx(R[win].ev/sum,4)+'）';
+  $('#ocFac').textContent=fx(R[2].fac,6)+'（≈ 1/'+fx(1/Math.max(R[2].fac,1e-12),1)+'）';
+  var v=$('#ocVerdict');
+  v.className='verdict mid';
+  v.innerHTML='N='+P.N+'、正面 '+K+' 次：<b>'+R[win].name+'</b> 的证据最大。M₃ 里最好的那个假设似然是 '+
+    fx(R[2].best,6)+'，但摊到 100 个假设后只剩 <b>'+fx(R[2].fac,6)+'</b> 的 Occam 因子。'+
+    (P.N<=12?'把 N 拖大：数据变多时似然峰变尖，复杂模型才把这份罚赚回来。':'数据够多，复杂模型已经能把罚赚回来 —— 贝叶斯从不「偏好简单」，它只是把概率摊平。');
+}
+['#ocN','#ocK'].forEach(function(i){$(i).oninput=ocRender;});
+$('#ocModel').onchange=ocRender;
+ocRender();
+
+/* ================= ⑨ 蒙特卡洛四件套（Ch29） ================= */
+function mcPars(){return {N:num($('#mcN').value),sig:num($('#mcSig').value)/10,seed:num($('#mcSeed').value)};}
+function mcESS(a){
+  var n=a.length,m=0,i,c0=0,c1=0;
+  if(n<2)return n;
+  for(i=0;i<n;i++)m+=a[i];m/=n;
+  for(i=0;i<n;i++)c0+=(a[i]-m)*(a[i]-m);
+  for(i=0;i<n-1;i++)c1+=(a[i]-m)*(a[i+1]-m);
+  var rho=c0>0?c1/c0:0;
+  return Math.max(1,Math.min(n,n*(1-rho)/(1+rho)));
+}
+var MC_GRID=null;
+function mcGrid(){if(MC_GRID)return MC_GRID;var a=[],g;for(g=-8;g<=8;g+=0.04)a.push([g,mixPdf(g)]);MC_GRID=a;return a;}
+function mcRun(N,sig,seed){
+  var M=mixMoments(),i,x,w,u,g,acc,tries,burn,step,y,cur,prop,rho;
+  /* 重要性采样：q = N(0,sig²) */
+  var r1=mkRnd(seed*7919+1),isX=[],isW=[],sw=0,swx=0,swx2=0,sw2=0;
+  for(i=0;i<N;i++){
+    x=rnorm(r1)*sig;w=mixPdf(x)/Math.max(normPdf(x,0,sig),1e-300);
+    isX.push(x);isW.push(w);sw+=w;swx+=w*x;swx2+=w*x*x;sw2+=w*w;
+  }
+  var IS={m1:swx/sw,m2:swx2/sw,ess:sw*sw/Math.max(sw2,1e-300),xs:isX,ws:isW,acc:1};
+  /* 拒绝采样：包络 M·q，M 由网格真算 */
+  var r2=mkRnd(seed*104729+3),Mx=0;
+  mcGrid().forEach(function(p){var q=normPdf(p[0],0,sig);if(q>0){var t=p[1]/q;if(t>Mx)Mx=t;}});
+  Mx*=1.05;
+  var rsX=[],sx=0,sx2=0,acc2=0,tries2=0;
+  while(acc2<N&&tries2<N*200){
+    tries2++;x=rnorm(r2)*sig;u=r2();
+    if(u*Mx*normPdf(x,0,sig)<=mixPdf(x)){rsX.push(x);sx+=x;sx2+=x*x;acc2++;}
+  }
+  var RS={m1:acc2?sx/acc2:0,m2:acc2?sx2/acc2:0,ess:acc2,xs:rsX,ws:null,acc:tries2?acc2/tries2:0};
+  /* Metropolis：随机游走 MH */
+  var r3=mkRnd(seed*15485863+7),mhX=[],mh=0,mh1=0,mh2=0,mha=0,burn3=Math.floor(N*0.1);
+  x=0;cur=mixPdf(x);step=Math.max(sig*0.9,1.2);
+  for(i=0;i<N+burn3;i++){
+    y=x+rnorm(r3)*step;prop=mixPdf(y);
+    if(cur>0&&Math.log(r3()+1e-300)<Math.log(prop+1e-300)-Math.log(cur)){x=y;cur=prop;mha++;}
+    if(i>=burn3){mhX.push(x);mh1+=x;mh2+=x*x;mh++;}
+  }
+  var MH={m1:mh1/mh,m2:mh2/mh,ess:mcESS(mhX),xs:mhX,ws:null,acc:mha/(N+burn3)};
+  /* 辅助变量 Gibbs（切片式）：u|x ~ U(0,p(x))；x|u ~ U({p(x)>u}) */
+  var r4=mkRnd(seed*49979687+11),gbX=[],gb1=0,gb2=0,gb=0,burn4=Math.floor(N*0.1);
+  x=0;
+  for(i=0;i<N+burn4;i++){
+    u=r4()*mixPdf(x);
+    var pool=[],grid=mcGrid(),k;
+    for(k=0;k<grid.length;k++)if(grid[k][1]>u)pool.push(grid[k][0]);
+    if(pool.length)x=pool[Math.floor(r4()*pool.length)];
+    if(i>=burn4){gbX.push(x);gb1+=x;gb2+=x*x;gb++;}
+  }
+  var GB={m1:gb1/gb,m2:gb2/gb,ess:mcESS(gbX),xs:gbX,ws:null,acc:1};
+  return {IS:IS,RS:RS,MH:MH,GB:GB,M:M,env:Mx};
+}
+function mcHist(xs,ws,lo,hi,bins){
+  var h=[],i;for(i=0;i<bins;i++)h.push(0);
+  var tot=0,b;
+  for(i=0;i<xs.length;i++){
+    b=Math.floor((xs[i]-lo)/(hi-lo)*bins);
+    if(b>=0&&b<bins){var w=ws?ws[i]:1;h[b]+=w;tot+=w;}
+  }
+  var dx=(hi-lo)/bins;
+  return h.map(function(v,j){return [lo+(j+0.5)*dx,tot?v/(tot*dx):0];});
+}
+function mcRender(){
+  var P=mcPars(),R=mcRun(P.N,P.sig,P.seed),M=mixMoments();
+  $('#mcNv').textContent=P.N;$('#mcSv').textContent=fx(P.sig,1);$('#mcSeedv').textContent=P.seed;
+  var lo=-8,hi=8,bins=40,theory=[],i;
+  for(i=0;i<=160;i++)theory.push([lo+(hi-lo)*i/160,mixPdf(lo+(hi-lo)*i/160)]);
+  var defs=[['IS','重要性',R.IS,'var(--warn)'],['RS','拒绝',R.RS,'var(--purple)'],
+            ['MH','Metropolis',R.MH,'var(--ok)'],['GB','Gibbs(切片)',R.GB,'var(--cyan)']];
+  var series=[{pts:theory,color:'var(--fg)',label:'真实 p(x)',w:2.4}];
+  defs.forEach(function(d){series.push({pts:mcHist(d[2].xs,d[2].ws,lo,hi,bins),color:d[3],label:d[1]});});
+  plot('mcSvg',series,{xmin:lo,xmax:hi,ymin:0,yd:3,xd:1,xlabel:'x（柱状=各采样器直方图，白线=真实 p）'});
+  var rows='';
+  defs.forEach(function(d){
+    var r=d[2],e1=Math.abs(r.m1-M.m1),e2=Math.abs(r.m2-M.m2);
+    rows+='<tr><td>'+d[1]+'</td><td class="m mono">'+fx(r.m1,4)+'</td><td class="m mono">'+fx(r.m2,4)+
+      '</td><td class="m mono">'+fx(e1,4)+' / '+fx(e2,4)+'</td><td class="m mono">'+fx(r.ess,0)+
+      '</td><td class="m mono">'+fx(r.acc,3)+'</td></tr>';
+  });
+  $('#mcTab').innerHTML='<tr><th>方法</th><th class="m">E[x]</th><th class="m">E[x²]</th><th class="m">绝对误差</th><th class="m">ESS</th><th class="m">接受率</th></tr>'+rows;
+  $('#mcTrue').textContent=fx(M.m1,4)+' / '+fx(M.m2,4);
+  var best=defs.slice().sort(function(a,b){return Math.abs(a[2].m1-M.m1)-Math.abs(b[2].m1-M.m1);})[0];
+  var v=$('#mcVerdict');v.className='verdict mid';
+  v.innerHTML='目标 <code>0.6·N(−2,0.7²)+0.4·N(2,0.9²)</code>，解析矩 <b>'+fx(M.m1,3)+' / '+fx(M.m2,3)+
+    '</b>。这一轮 <b>'+best[1]+'</b> 的 E[x] 最接近真值；重要性采样 ESS = <b>'+fx(R.IS.ess,0)+
+    '</b> / '+P.N+'，把 σ 拖到 0.5 看权重怎么塌、拖到 6 看 MH 接受率怎么塌。';
+}
+['#mcN','#mcSig','#mcSeed'].forEach(function(i){$(i).oninput=mcRender;});
+$('#mcGo').onclick=function(){var s=(num($('#mcSeed').value)%9)+1;$('#mcSeed').value=s;mcRender();};
+mcRender();
+
+/* ================= ⑩ 变分下界（Ch33） ================= */
+function vbPars(){return {mu:num($('#vbMu').value)/10,s:num($('#vbS').value)/10};}
+function vbELBO(mu,s){
+  var n=400,lo=-8,hi=8,dx=(hi-lo)/n,eq=0,i,x,q;
+  for(i=0;i<n;i++){
+    x=lo+(i+0.5)*dx;q=normPdf(x,mu,s);
+    eq+=q*Math.log(Math.max(mixPdf(x),1e-300))*dx;
+  }
+  var Hq=0.5*Math.log(2*Math.PI*Math.E*s*s);
+  return (eq+Hq)/Math.LN2;
+}
+function vbRender(){
+  var P=vbPars(),elbo=vbELBO(P.mu,P.s),M=mixMoments(),varP=M.m2-M.m1*M.m1;
+  $('#vbMuv').textContent=fx(P.mu,1);$('#vbSv').textContent=fx(P.s,1);
+  var ppts=[],qpts=[],i,x;
+  for(i=0;i<=160;i++){x=-6+12*i/160;ppts.push([x,mixPdf(x)]);qpts.push([x,normPdf(x,P.mu,P.s)]);}
+  plot('vbSvg',[{pts:ppts,color:'var(--fg)',label:'p(x) 双峰',w:2.4},{pts:qpts,color:'var(--accent)',label:'q(x)=N(μ,s²)'}],
+    {xmin:-6,xmax:6,ymin:0,yd:3,xd:1,xlabel:'x'});
+  $('#vbTab').innerHTML='<tr><th>量</th><th class="m">现算值</th></tr>'+
+    '<tr><td>q 的 (μ, s)</td><td class="m mono">('+fx(P.mu,2)+', '+fx(P.s,2)+')</td></tr>'+
+    '<tr><td>E_q[log p(x)]</td><td class="m mono">'+fx(vbELBO(P.mu,P.s)*Math.LN2-0.5*Math.log(2*Math.PI*Math.E*P.s*P.s),4)+' nat</td></tr>'+
+    '<tr><td>H(q)</td><td class="m mono">'+fx(0.5*Math.log(2*Math.PI*Math.E*P.s*P.s),4)+' nat</td></tr>'+
+    '<tr><td>p 的真实方差</td><td class="m mono">'+fx(varP,4)+'</td></tr>'+
+    '<tr><td>q 的方差 s²</td><td class="m mono">'+fx(P.s*P.s,4)+'</td></tr>'+
+    '<tr><td>log Z（p 已归一化）</td><td class="m mono">0</td></tr>';
+  $('#vbFx').textContent=
+    'ELBO(q) = E_q[log p(x)] − E_q[log q(x)]\n'+
+    '        = E_q[log p(x)] + H(q)\n'+
+    '        = −KL(q ‖ p) + log Z\n'+
+    'log Z = 0  ⇒  ELBO ≤ 0（bits）\n\n'+
+    '现算 ELBO = '+fx(elbo,6)+' bits\n'+
+    'KL(q ‖ p) = '+fx(-elbo,6)+' bits';
+  $('#vbELBO').textContent=fx(elbo,6)+' bits';
+  $('#vbKL').textContent=fx(-elbo,6)+' bits';
+  $('#vbVar').textContent=fx(P.s*P.s,3)+' vs '+fx(varP,3);
+  var v=$('#vbVerdict');
+  v.className=elbo<=1e-6?'verdict yes':'verdict no';
+  v.innerHTML=elbo<=1e-6?
+    ('ELBO = <b>'+fx(elbo,4)+'</b> ≤ 0 成立，缺口正好是 KL。点「网格搜索最优 q」：最优单高斯的方差会<b>小于</b> '+
+     fx(varP,3)+'，因为 <code>KL(q‖p)</code> 宁可只盖住一个峰也不肯铺到低谷 —— 这就是 VAE 后验偏窄的根源。'):
+    'ELBO 出现正值，检查数值积分。';
+}
+function vbOptimize(){
+  var bm=0,bs=1,best=-1e18,u,s,e;
+  for(u=-4;u<=4.0001;u+=0.2)for(s=0.3;s<=4.0001;s+=0.1){e=vbELBO(u,s);if(e>best){best=e;bm=u;bs=s;}}
+  $('#vbMu').value=Math.round(bm*10);$('#vbS').value=Math.round(bs*10);
+  vbRender();
+  var v=$('#vbVerdict');v.className='verdict yes';
+  v.innerHTML='网格搜索完成：最优 <b>μ='+fx(bm,2)+', s='+fx(bs,2)+'</b>，ELBO='+fx(best,4)+
+    ' bits。q 的方差 '+fx(bs*bs,3)+' 仍小于 p 的真实方差 '+fx(mixMoments().m2-mixMoments().m1*mixMoments().m1,3)+
+    ' —— 单高斯近似双峰必然低估不确定性。';
+}
+['#vbMu','#vbS'].forEach(function(i){$(i).oninput=vbRender;});
+$('#vbOpt').onclick=vbOptimize;
+vbRender();
+
+/* ================= ⑪ 消息传递（Ch16 / Ch26） ================= */
+var MP_SEED=1;
+function mpPars(){return {N:num($('#mpN').value),p:num($('#mpP').value)/100,g:num($('#mpG').value)/100,f:num($('#mpF').value)/100};}
+function mpObserv(N,p,g,f,seed){
+  var rnd=mkRnd(seed*104729+7),x=[],y=[],t;
+  x[0]=rnd()<p?1:0;
+  for(t=1;t<N;t++)x[t]=(rnd()<g)?1-x[t-1]:x[t-1];
+  for(t=0;t<N;t++)y[t]=(rnd()<f)?1-x[t]:x[t];
+  return {x:x,y:y};
+}
+function spBrute(N,p,g,f,y){
+  var marg=[],t,m,s,Z=0,best=-1,bestSeq=null;
+  for(t=0;t<N;t++)marg.push(0);
+  for(m=0;m<(1<<N);m++){
+    var seq=[],pr;
+    for(t=0;t<N;t++)seq.push((m>>t)&1);
+    pr=seq[0]?p:1-p;
+    for(t=1;t<N;t++)pr*=(seq[t]!==seq[t-1]?g:1-g);
+    for(t=0;t<N;t++)pr*=(y[t]!==seq[t]?f:1-f);
+    Z+=pr;
+    for(t=0;t<N;t++)if(seq[t])marg[t]+=pr;
+    if(pr>best){best=pr;bestSeq=seq.slice();}
+  }
+  for(t=0;t<N;t++)marg[t]/=Z;
+  return {marg:marg,best:bestSeq,Z:Z};
+}
+function spFwdBack(N,p,g,f,y){
+  var a=[],b=[],t,s,s2,z,u,v,marg=[];
+  a[0]=[(1-p)*(y[0]===0?1-f:f),p*(y[0]===1?1-f:f)];
+  z=a[0][0]+a[0][1];a[0][0]/=z;a[0][1]/=z;
+  for(t=1;t<N;t++){
+    a[t]=[0,0];
+    for(s=0;s<2;s++)for(s2=0;s2<2;s2++)a[t][s2]+=a[t-1][s]*(s2!==s?g:1-g)*(y[t]===s2?1-f:f);
+    z=a[t][0]+a[t][1];a[t][0]/=z;a[t][1]/=z;
+  }
+  b[N-1]=[1,1];
+  for(t=N-2;t>=0;t--){
+    b[t]=[0,0];
+    for(s=0;s<2;s++)for(s2=0;s2<2;s2++)b[t][s]+=(s2!==s?g:1-g)*(y[t+1]===s2?1-f:f)*b[t+1][s2];
+    z=b[t][0]+b[t][1];b[t][0]/=z;b[t][1]/=z;
+  }
+  for(t=0;t<N;t++){u=a[t][1]*b[t][1];v=a[t][0]*b[t][0];marg.push(u/(u+v));}
+  return {alpha:a,beta:b,marg:marg};
+}
+function spViterbi(N,p,g,f,y){
+  var dp=[[Math.log(1-p)+Math.log(y[0]===0?1-f:f),Math.log(p)+Math.log(y[0]===1?1-f:f)]],par=[],t,s,s2,v,cur,pa,seq,last;
+  for(t=1;t<N;t++){
+    cur=[-1e18,-1e18];pa=[0,0];
+    for(s2=0;s2<2;s2++)for(s=0;s<2;s++){
+      v=dp[t-1][s]+Math.log(s2!==s?g:1-g)+Math.log(y[t]===s2?1-f:f);
+      if(v>cur[s2]){cur[s2]=v;pa[s2]=s;}
+    }
+    dp.push(cur);par.push(pa);
+  }
+  last=dp[N-1][0]>dp[N-1][1]?0:1;seq=new Array(N);seq[N-1]=last;
+  for(t=N-1;t>0;t--)seq[t-1]=par[t-1][seq[t]];
+  return seq;
+}
+function mpRender(){
+  var P=mpPars(),O=mpObserv(P.N,P.p,P.g,P.f,MP_SEED),B=spBrute(P.N,P.p,P.g,P.f,O.y),
+      S=spFwdBack(P.N,P.p,P.g,P.f,O.y),V=spViterbi(P.N,P.p,P.g,P.f,O.y);
+  $('#mpNv').textContent=P.N;$('#mpPv').textContent=fx(P.p,2);$('#mpGv').textContent=fx(P.g,2);$('#mpFv').textContent=fx(P.f,2);
+  var rows='',maxerr=0,t;
+  for(t=0;t<P.N;t++){
+    var e=Math.abs(B.marg[t]-S.marg[t]);if(e>maxerr)maxerr=e;
+    rows+='<tr><td class="m mono">t='+(t+1)+'</td><td class="m mono">'+O.y[t]+'</td><td class="m mono">'+fx(B.marg[t],9)+
+      '</td><td class="m mono"><b>'+fx(S.marg[t],9)+'</b></td><td class="m mono">'+fx(e,12)+'</td></tr>';
+  }
+  $('#mpTab').innerHTML='<tr><th>节点</th><th class="m">观测 y</th><th class="m">暴力枚举</th><th class="m">和积 α·β</th><th class="m">误差</th></tr>'+rows;
+  $('#mpFx').textContent=
+    '隐状态 x₁…x_'+P.N+'，观测 y = x ⊕ BSC(f)\n'+
+    'y = ['+O.y.join(', ')+']\n'+
+    '真实隐状态（仅作对照）= ['+O.x.join(', ')+']\n\n'+
+    'α_t(x)  ∝ Σ_{x′} α_{t−1}(x′)·P(x|x′)·P(y_t|x)\n'+
+    'β_t(x′) ∝ Σ_x  P(x|x′)·P(y_{t+1}|x)·β_{t+1}(x)\n'+
+    'P(x_t|y) ∝ α_t(x)·β_t(x)\n\n'+
+    '枚举 '+Math.pow(2,P.N)+' 条序列得 Z = '+fx(B.Z,8);
+  $('#mpErr').textContent=fx(maxerr,12);
+  var same=V.join('')===B.best.join('');
+  $('#mpVit').textContent=V.join('')+(same?'  = 枚举 argmax '+B.best.join(''):'  ≠ 枚举 argmax '+B.best.join(''));
+  $('#mpCost').textContent='2^'+P.N+' = '+Math.pow(2,P.N)+' 条序列（和积只需 O(N)）';
+  var v=$('#mpVerdict');v.className=(maxerr<1e-9&&same)?'verdict yes':'verdict no';
+  v.innerHTML=(maxerr<1e-9&&same)?
+    ('和积的逐节点边缘与<b>暴力枚举逐位吻合</b>（最大误差 '+fx(maxerr,12)+'），最小和给出的最可能序列也等于枚举 argmax。'+
+     '树结构上 BP 是精确推断，复杂度从 2^'+P.N+' 降到 O(N)。'):
+    '和积或最小和与枚举不一致，检查消息实现。';
+}
+['#mpN','#mpP','#mpG','#mpF'].forEach(function(i){$(i).oninput=mpRender;});
+$('#mpGo').onclick=function(){MP_SEED=MP_SEED%9+1;mpRender();};
+mpRender();
+
+/* ================= ⑫ LDPC 与香农限（Ch47 / Ch16） ================= */
+function ldPars(){return {f:num($('#ldF').value)/100,iters:num($('#ldIter').value),N:num($('#ldN').value)};}
+function ldMatrix(N){
+  var M=N/2,H=[],i,j;
+  for(i=0;i<M;i++)H.push(new Array(N).fill(0));
+  for(j=0;j<N;j++){H[j%M][j]=1;H[(j*7+3)%M][j]=1;}
+  return H;
+}
+function ldRank(H){
+  var M=H.length,N=H[0].length,rows=H.map(function(r){return r.slice();}),rank=0,col=0,r,i,j,t,piv;
+  for(col=0;col<N&&rank<M;col++){
+    piv=-1;for(r=rank;r<M;r++)if(rows[r][col]){piv=r;break;}
+    if(piv<0)continue;
+    t=rows[rank];rows[rank]=rows[piv];rows[piv]=t;
+    for(r=0;r<M;r++)if(r!==rank&&rows[r][col])for(j=col;j<N;j++)rows[r][j]^=rows[rank][j];
+    rank++;
+  }
+  return rank;
+}
+function ldBP(H,f,iters,y,seed){
+  var M=H.length,N=H[0].length,i,j,k,t;
+  var L0=[],c2v=[],v2c=[],nbV=[],nbC=[],bers=[];
+  for(j=0;j<N;j++)L0.push((1-2*y[j])*Math.log((1-f)/Math.max(f,1e-9)));
+  for(i=0;i<M;i++)c2v.push(new Array(N).fill(0));
+  for(j=0;j<N;j++){v2c.push(new Array(M).fill(0));nbV[j]=[];}
+  for(i=0;i<M;i++)nbC[i]=[];
+  for(j=0;j<N;j++)for(i=0;i<M;i++)if(H[i][j]){nbV[j].push(i);nbC[i].push(j);}
+  for(t=0;t<iters;t++){
+    for(i=0;i<M;i++){
+      var vals=nbC[i].map(function(jj){return clamp(Math.tanh(v2c[jj][i]/2),-0.999999999,0.999999999);}),
+          pre=[1],suf=[],k2;
+      for(k2=0;k2<vals.length;k2++)pre.push(pre[k2]*vals[k2]);
+      suf=new Array(vals.length+1).fill(1);
+      for(k2=vals.length-1;k2>=0;k2--)suf[k2]=suf[k2+1]*vals[k2];
+      for(k2=0;k2<vals.length;k2++)c2v[i][nbC[i][k2]]=2*Math.atanh(clamp(pre[k2]*suf[k2+1],-0.999999999,0.999999999));
+    }
+    var post=new Array(N).fill(0),err=0;
+    for(j=0;j<N;j++){
+      var sum=L0[j];for(k=0;k<nbV[j].length;k++)sum+=c2v[nbV[j][k]][j];
+      for(k=0;k<nbV[j].length;k++)v2c[j][nbV[j][k]]=sum-c2v[nbV[j][k]][j];
+      post[j]=sum;if(sum<0)err++;
+    }
+    bers.push(err/N);
+  }
+  return bers;
+}
+function ldSim(f,iters,N,seed,trials){
+  var H=ldMatrix(N),rnd=mkRnd(seed*32452843+17),acc=[],t,k,j;
+  for(k=0;k<iters;k++)acc.push(0);
+  for(t=0;t<trials;t++){
+    var y=[];for(j=0;j<N;j++)y.push(rnd()<f?1:0);
+    var b=ldBP(H,f,iters,y,seed);
+    for(k=0;k<iters;k++)acc[k]+=b[k];
+  }
+  return {bers:acc.map(function(a){return a/trials;}),rank:ldRank(H),R:(N-ldRank(H))/N};
+}
+var LD_SEED=1,LD_CACHE={};
+function ldWaterfall(N,seed,iters){
+  var key=N+'|'+seed+'|'+iters;
+  if(LD_CACHE[key])return LD_CACHE[key];
+  var pts=[],i,f,S;
+  for(i=1;i<=16;i++){f=i*0.0125;S=ldSim(f,iters,N,seed,24);pts.push([f,S.bers[iters-1]]);}
+  var out={pts:pts,rank:S.rank,R:S.R};
+  LD_CACHE[key]=out;return out;
+}
+function ldRender(){
+  var P=ldPars(),W=ldWaterfall(P.N,LD_SEED,P.iters),S=ldSim(P.f,P.iters,P.N,LD_SEED,60),fm=ccFmax(W.R);
+  $('#ldFv').textContent=fx(P.f,3);$('#ldIv').textContent=P.iters;
+  plot('ldSvg',[{pts:W.pts,color:'var(--accent)',label:'LDPC 迭代 '+P.iters+' 次后的 BER'},
+    {pts:[[P.f,0],[P.f,Math.max(0.3,W.pts[W.pts.length-1][1])]],color:'var(--purple)',label:'当前 f',dash:true}],
+    {xmin:0,xmax:0.2,ymin:0,ymax:0.35,yd:2,xd:2,xlabel:'BSC 翻转率 f',
+     vlines:[{x:fm,label:'香农限 f_max',color:'var(--warn)'}]});
+  var rows='',k;
+  for(k=0;k<P.iters;k++)rows+='<tr><td class="m mono">'+(k+1)+'</td><td class="m mono">'+fx(S.bers[k],5)+'</td></tr>';
+  $('#ldTab').innerHTML='<tr><th class="m">迭代次数</th><th class="m">BER（60 次蒙特卡洛）</th></tr>'+rows;
+  $('#ldInfo').innerHTML='<tr><th>量</th><th class="m">值</th></tr>'+
+    '<tr><td>变量节点 N</td><td class="m mono">'+P.N+'</td></tr>'+
+    '<tr><td>校验节点 M</td><td class="m mono">'+(P.N/2)+'</td></tr>'+
+    '<tr><td>rank(H)（高斯消元 mod 2）</td><td class="m mono">'+W.rank+'</td></tr>'+
+    '<tr><td>当前 f 的信道容量 C(f)</td><td class="m mono">'+fx(1-H2(P.f),4)+'</td></tr>'+
+    '<tr><td>码率 R=(N−rank)/N</td><td class="m mono">'+fx(W.R,4)+'</td></tr>'+
+    '<tr><td>C(f) 与 R 的关系</td><td class="m mono">'+(1-H2(P.f)>W.R?'C &gt; R 可行':'C ≤ R 不可能可靠')+'</td></tr>';
+  $('#ldR').textContent=fx(W.R,4);
+  $('#ldFmax').textContent=fx(fm,6);
+  $('#ldBER').textContent=fx(S.bers[0],5)+' → '+fx(S.bers[P.iters-1],5);
+  var v=$('#ldVerdict');
+  v.className=S.bers[P.iters-1]<=S.bers[0]?'verdict yes':'verdict mid';
+  var d=S.bers[P.iters-1]-S.bers[0];
+  v.innerHTML='码率 <b>'+fx(W.R,3)+'</b> 对应的香农限 f<sub>max</sub> = <b>'+fx(fm,4)+
+    '</b>（解 1−H₂(f)=R）。f='+fx(P.f,3)+' 时 BER：'+fx(S.bers[0],4)+' → '+fx(S.bers[P.iters-1],4)+
+    (d<0?'，迭代确实把错误压了下去。':'，短码的校验图有环，BP 不保证单调下降，末几轮小幅振荡是正常现象。')+
+    '面板 ⑥ 的容量、面板 ⑪ 的和积算法，在这里合成一条曲线 —— 全卷闭环。';
+}
+['#ldF','#ldIter'].forEach(function(i){$(i).oninput=ldRender;});
+$('#ldN').onchange=ldRender;
+$('#ldGo').onclick=function(){LD_SEED=LD_SEED%9+1;LD_CACHE={};ldRender();};
+ldRender();
+
+/* ================= ⑬ 全卷速查 ================= */
+var UQROWS=null;
+function uqRender(){
+  if(!UQROWS)UQROWS=QQ('#uqTab tr[data-ch]').map(function(r){
+    return {ch:r.dataset.ch,html:r.innerHTML,txt:r.textContent.toLowerCase()};
+  });
+  var q=($('#uqQ').value||'').trim().toLowerCase(),c=$('#uqC').value,n=0;
+  var t='<tr><th class="m">章</th><th class="m">面板</th><th class="m">一句话</th><th class="m">最容易踩的坑</th></tr>';
+  UQROWS.forEach(function(r){
+    if(c&&r.ch!==c)return;
+    if(q&&r.txt.indexOf(q)<0)return;
+    n++;t+='<tr data-ch="'+r.ch+'">'+r.html+'</tr>';
+  });
+  $('#uqTab').innerHTML=t;
+  $('#uqN').textContent=n;
+}
+$('#uqQ').oninput=uqRender;$('#uqC').onchange=uqRender;
+uqRender();
+
+})();
+</script>
+</body>
+</html>

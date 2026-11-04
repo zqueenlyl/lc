@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信息论 · 教程导论 Ch1–4 · 离散信息论 · 交互式图解</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1b2130; --line:#2b3444;
+  --fg:#e6edf3; --dim:#93a1b1; --faint:#6e7d8d;
+  --accent:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --purple:#bc8cff; --cyan:#39c5cf;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#ffffff; --panel:#f6f8fa; --panel2:#eaeef2; --line:#d0d7de;
+    --fg:#1f2328; --dim:#57606a; --faint:#818b98;
+    --accent:#0969da; --ok:#1a7f37; --warn:#9a6700; --bad:#cf222e; --purple:#8250df; --cyan:#1b7c83;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:15px;}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;line-height:1.3}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:18px 0 6px;color:var(--fg)}
+p{margin:8px 0}
+.lead{font-size:17px;color:var(--fg)}
+.dim{color:var(--dim)}
+.faint{color:var(--faint);font-size:13px}
+code,.mono{font-family:var(--mono)}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.hero .eq{font-family:var(--mono);font-size:14px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;margin-top:12px;display:block;color:var(--cyan);line-height:1.9}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;
+  padding:6px 14px;font-size:13px;cursor:pointer;user-select:none}
+.tab:hover{color:var(--fg)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card>h2{margin-bottom:2px}
+.sub{color:var(--dim);font-size:13px;margin:0 0 10px}
+button.btn{border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;
+  padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+input[type=range]{accent-color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+th{background:var(--panel2);font-weight:600;color:var(--dim);font-size:12.5px}
+td.m,th.m{text-align:center}
+td.n{font-family:var(--mono);text-align:right}
+tr.hl td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+tr.cex td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.t{color:var(--ok);font-weight:700}
+.f{color:var(--bad);font-weight:700}
+.u{color:var(--faint)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-size:13.5px}
+.kv b{font-family:var(--mono);color:var(--accent)}
+.verdict{border-radius:9px;padding:10px 13px;font-size:14px;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.verdict.yes{border-color:var(--ok);color:var(--ok)}
+.verdict.mid{border-color:var(--warn);color:var(--warn)}
+.note{border-left:3px solid var(--purple);padding:6px 12px;margin:12px 0;font-size:13px;color:var(--dim);background:var(--panel2);border-radius:0 6px 6px 0}
+.note b{color:var(--fg)}
+.mini{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--panel2)}
+.mini b{display:block;font-size:13px;margin-bottom:4px}
+.mini span{font-size:12.5px;color:var(--dim)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;
+  font-family:var(--mono);margin:2px 3px 2px 0;color:var(--dim)}
+.bits{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--cyan)}
+.bars{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.bar{display:grid;grid-template-columns:1fr 120px;font-size:12px;align-items:center;gap:10px}
+.bar .nm{font-size:12px;color:var(--dim)}
+.bar .tr{border:1px solid var(--line);border-radius:4px;background:var(--panel2);height:15px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent);display:block}
+.bar .vv{font-family:var(--mono);text-align:right;font-size:12px}
+svg text{fill:var(--fg)}
+svg .ax{stroke:var(--line)}
+svg .gl{stroke:var(--line);stroke-dasharray:3 3}
+svg .wire{fill:none;stroke-width:2}
+details{margin-top:10px}
+details>summary{cursor:pointer;color:var(--dim);font-size:13px}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Stone《Information Theory: A Tutorial Introduction》· 最小核心集 · 只做 Ch1–4 + 一个连续桥</div>
+  <h1>信息是「惊喜的比特数」，编码定理是「这个数能不能被逼到」</h1>
+  <p class="lead">全卷只走一条链：<b>一个结果的惊喜度</b> → <b>平均惊喜度（熵）</b> →
+  <b>信源编码：平均码长能不能压到 H</b> → <b>噪声信道：一次使用能可靠传多少比特</b> →
+  <b>R&lt;C 可达、R&gt;C 不可能</b>。每个数字都由下面的真算法现算，不写死结果。</p>
+  <div class="eq">I(x) = log₂(1/p(x))　|　H = −Σ p log₂ p　|　H ≤ L* &lt; H+1　|　C = max<sub>p(x)</sub> I(X;Y) = 1 − H(p)（BSC）　|　R &lt; C 可达，R &gt; C 不可能</div>
+  <p class="faint">本卷砍掉：Ch5–7 连续变量压进第 ⑩ 面板；Ch8 热力学熵、Ch9 应用综述、附录 A–H 跳过；熵/KL/交叉熵的定义在库里已有，不重复造面板。</p>
+</header>
+
+<nav class="tabs">
+  <div class="tab on" data-panel="p1">① 惊喜度与比特</div>
+  <div class="tab" data-panel="p2">② 熵 = 平均惊喜</div>
+  <div class="tab" data-panel="p3">③ 联合·条件·链式</div>
+  <div class="tab" data-panel="p4">④ 信源编码定理</div>
+  <div class="tab" data-panel="p5">⑤ 典型集 AEP</div>
+  <div class="tab" data-panel="p6">⑥ 二元对称信道</div>
+  <div class="tab" data-panel="p7">⑦ 互信息</div>
+  <div class="tab" data-panel="p8">⑧ 信道容量</div>
+  <div class="tab" data-panel="p9">⑨ 噪声信道编码</div>
+  <div class="tab" data-panel="p10">⑩ 连续变量桥</div>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section class="panel on" id="p1">
+  <div class="card">
+    <h2>① 惊喜度与比特：<code>log₂(1/p)</code> 就是「几次是非问」</h2>
+    <p class="sub">Shannon 的第一步是把「信息」从语义里剥出来：越少见的结果，来了越惊喜。若结果 x 的概率是 p，
+    惊喜度定义为 <code>I(x)=log₂(1/p)</code> 比特 —— 因为一次公平的是非问最多给出 1 比特，
+    而概率 1/8 的结果恰好需要 3 次二分才能定位。教材用「20 问」游戏引入它。</p>
+    <div class="controls">
+      <span class="faint">结果概率 p</span><input type="range" id="sP" min="1" max="99" step="1" value="50"><b class="mono" id="sPv">0.50</b>
+      <span class="faint">候选对象数 N（20 问）</span><input type="range" id="sN" min="2" max="64" step="1" value="20"><b class="mono" id="sNv">20</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>概率 → 惊喜度（现算）</h3>
+        <table id="sTab"></table>
+        <div class="kv"><span>该结果的惊喜度 log₂(1/p)</span><b id="sI">—</b></div>
+        <div class="kv"><span>需要的最少是非问次数 ⌈log₂(1/p)⌉</span><b id="sQ">—</b></div>
+      </div>
+      <div>
+        <h3>惊喜度曲线</h3>
+        <div id="sSvg"></div>
+      </div>
+    </div>
+    <h3>N 个等可能对象，最优提问树</h3>
+    <div class="grid2">
+      <div class="mini"><b>最坏情况 ⌈log₂ N⌉ 问</b><span id="sWorst">—</span></div>
+      <div class="mini"><b>平均最优提问次数（现算树）</b><span id="sExp">—</span></div>
+    </div>
+    <div class="kv"><span>树的形状：深度 ⌈log₂N⌉−1 / 深度 ⌈log₂N⌉ 的叶子</span><b id="sShape">—</b></div>
+    <div class="kv"><span>若按「一个个问」的笨办法，平均要问</span><b id="sNaive">—</b></div>
+    <div id="sV" class="verdict"></div>
+    <div class="note"><b>为什么用 log₂：</b>两个独立结果一起出现时概率相乘、惊喜度应该相加，
+    只有对数把乘法变成加法；底取 2 只是把单位定成「一次公平是非问」。
+    注意 <b>惊喜度是单个结果的量，熵才是分布的平均量</b> —— 下一面板。</div>
+    <div class="note"><b>20 问的直觉：</b>N 个等可能对象，每次回答把候选减半，最坏 ⌈log₂N⌉ 问。
+    但 N 不是 2 的幂时，最优树的期望提问数比 ⌈log₂N⌉ 略小（有些对象能更早被问出来）；
+    上面那个期望值是把<b>最优二叉树</b>真算出来的，不是拿上限糊过去。</div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="panel" id="p2">
+  <div class="card">
+    <h2>② 熵 = 平均惊喜度：<code>H = −Σ p log₂ p</code></h2>
+    <p class="sub">一个信源不是只发一个结果，而是按分布发。把每个结果的惊喜度按概率加权平均，就是熵。
+    它同时是「平均不确定性」和「平均最少要问几次」，也是下一面板里码长的下界。</p>
+    <div class="controls">
+      <span class="faint">符号个数 K</span><select id="hK"></select>
+      <span class="faint">分布偏斜 r（p<sub>i</sub> ∝ r<sup>i</sup>，r=1 为均匀）</span><input type="range" id="hR" min="0" max="99" step="1" value="50"><b class="mono" id="hRv">0.50</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>逐符号账本（每个数现算）</h3>
+        <div class="scroll"><table id="hTab"></table></div>
+      </div>
+      <div>
+        <h3>熵随偏斜 r 的变化</h3>
+        <div id="hSvg"></div>
+      </div>
+    </div>
+    <div class="kv"><span>熵 H(p<sub>1</sub>…p<sub>K</sub>)</span><b id="hH">—</b></div>
+    <div class="kv"><span>上界 log₂ K（均匀分布时取到）</span><b id="hMax">—</b></div>
+    <div class="kv"><span>冗余 log₂K − H（分布不均匀的代价）</span><b id="hRed">—</b></div>
+    <div class="kv"><span>校验：Σ p<sub>i</sub> = 1 / Σ 贡献 = H</span><b id="hChk">—</b></div>
+    <div id="hBars" class="bars"></div>
+    <div id="hV" class="verdict"></div>
+    <div class="note"><b>两个端点：</b>确定信源（某个 p=1）时 H=0，什么也不用传；K 个符号等概率时 H=log₂K，
+    一个符号都省不掉。把 r 从 1 往 0 拉，就是在把概率往第一个符号上堆，熵单调下降 —— 曲线是真的对每个 r 重算的。</div>
+    <div class="note"><b>和库里已有内容的关系：</b>AIMA 第 19 章用 <code>B(p/(p+n))=−p log₂p−n log₂n</code> 算决策树的信息增益，
+    用的就是同一个 H；本卷不再重复定义，而是往下走「H 到底能不能被码长逼到」。</div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="panel" id="p3">
+  <div class="card">
+    <h2>③ 联合熵、条件熵与链式法则：信息量怎么拆</h2>
+    <p class="sub">两个变量一起看时，联合分布拆成「先知道 Y，再知道 X」或反过来，
+    拆法不同但总账必须相等：<code>H(X,Y)=H(Y)+H(X|Y)=H(X)+H(Y|X)</code>。
+    下面用三个参数 (<code>q=P(X=1)</code>、<code>a=P(Y=1|X=0)</code>、<code>b=P(Y=1|X=1)</code>) 现造一张联合表。</p>
+    <div class="controls">
+      <span class="faint">q = P(X=1)</span><input type="range" id="jQ" min="0" max="100" step="1" value="50"><b class="mono" id="jQv">0.50</b>
+      <span class="faint">a = P(Y=1|X=0)</span><input type="range" id="jA" min="0" max="100" step="1" value="20"><b class="mono" id="jAv">0.20</b>
+      <span class="faint">b = P(Y=1|X=1)</span><input type="range" id="jB" min="0" max="100" step="1" value="80"><b class="mono" id="jBv">0.80</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>联合分布 P(X,Y)（现算）</h3>
+        <table id="jTab"></table>
+        <h3>边缘分布</h3>
+        <div id="jMar"></div>
+      </div>
+      <div>
+        <h3>信息量账本（bits）</h3>
+        <div id="jBars" class="bars"></div>
+      </div>
+    </div>
+    <div class="kv"><span>链式法则① H(Y) + H(X|Y)</span><b id="jC1">—</b></div>
+    <div class="kv"><span>链式法则② H(X) + H(Y|X)</span><b id="jC2">—</b></div>
+    <div class="kv"><span>直接算 H(X,Y)</span><b id="jC3">—</b></div>
+    <div class="kv"><span>I(X;Y) = H(X)−H(X|Y) = H(Y)−H(Y|X) = H(X)+H(Y)−H(X,Y)</span><b id="jI">—</b></div>
+    <div class="kv"><span>条件熵 H(X|Y) ≤ H(X)（知道 Y 不会更不确定）</span><b id="jMono">—</b></div>
+    <div id="jV" class="verdict"></div>
+    <div class="note"><b>独立怎么判：</b>当 a=b 时，Y 与 X 无关，联合表退化为外积，I(X;Y)=0，H(X|Y)=H(X)。
+    把 a 和 b 调到同一个值试试；反过来 a、b 差得越远，X 和 Y 越相关，I 越大。
+    这里 I 是<b>从联合分布三种拆法分别算出来再对照</b>的，不是套一个公式就报数。</div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="panel" id="p4">
+  <div class="card">
+    <h2>④ 信源编码定理：<code>H ≤ L* &lt; H+1</code>，块编码把它逼到 H</h2>
+    <p class="sub">Shannon 第一定理：无失真编码的平均码长以熵为下界，且总能用 Huffman 码做到比 H 多不到 1 比特；
+    把 N 个符号打成一块再编码，每符号开销被压到 <code>H ≤ L<sub>N</sub>/N &lt; H + 1/N</code>。
+    左边是真跑 Huffman 建树，右边是对 N=1…6 逐块长真算码长。</p>
+    <div class="two">
+      <div>
+        <h3>A · K 个符号的 Huffman 码</h3>
+        <div class="controls">
+          <span class="faint">K</span><select id="scK"></select>
+          <span class="faint">偏斜 r</span><input type="range" id="scR" min="0" max="99" step="1" value="50"><b class="mono" id="scRv">0.50</b>
+        </div>
+        <div class="scroll"><table id="scTab"></table></div>
+        <div class="kv"><span>熵 H</span><b id="scH">—</b></div>
+        <div class="kv"><span>Huffman 平均码长 L*</span><b id="scL">—</b></div>
+        <div class="kv"><span>开销 L* − H（应落在 [0,1)）</span><b id="scGap">—</b></div>
+        <div class="kv"><span>Kraft 和 Σ2<sup>−l</sup>（前缀码必须 = 1）</span><b id="scKraft">—</b></div>
+        <button class="btn" id="scMore" type="button">展开码本</button>
+      </div>
+      <div>
+        <h3>B · 块编码（Bernoulli(p) 信源）</h3>
+        <div class="controls">
+          <span class="faint">p = P(1)</span><input type="range" id="scP" min="5" max="95" step="1" value="70"><b class="mono" id="scPv">0.70</b>
+          <span class="faint">块长 N</span><input type="range" id="scN" min="1" max="4" step="1" value="1"><b class="mono" id="scNv">1</b>
+        </div>
+        <div id="scSvg"></div>
+        <div class="kv"><span>当前块长的码本（点按钮展开）</span><b id="scBook">—</b></div>
+        <div class="kv"><span>单符号熵 H(p)</span><b id="scHp">—</b></div>
+        <div class="kv"><span>当前 N：L<sub>N</sub> / N（每符号码长）</span><b id="scRate">—</b></div>
+        <div class="kv"><span>上界 H + 1/N</span><b id="scBound">—</b></div>
+        <div class="kv"><span>2<sup>N</sup> 个块序列，码本条数</span><b id="scRows">—</b></div>
+      </div>
+    </div>
+    <div id="scV" class="verdict"></div>
+    <div class="note"><b>为什么 dyadic 分布能取等号：</b>把 r 调到 1 且 K 取 2 的幂，各 p<sub>i</sub> 恰好是 2 的负整数次幂，
+    <code>−log₂p<sub>i</sub></code> 全是整数，Huffman 码长正好等于它，L*=H，开销 0。
+    其他分布只能整数码长，所以有「不到 1 比特」的零头 —— 块编码把这个零头的<b>上界</b>摊薄到 1/N。
+    <b>注意曲线会小幅回弹：</b>Huffman 码长必须是整数，某一块长凑巧不利时 L<sub>N</sub>/N 会比前一块长略高
+    （真算结果，教材也没说它单调）；单调收紧的是定理保证的上界 H+1/N，不是 Huffman 的实际码长。</div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="panel" id="p5">
+  <div class="card">
+    <h2>⑤ 典型集与 AEP：为什么「几乎所有概率」只占 2<sup>NH</sup> 个序列</h2>
+    <p class="sub">N 次独立抽样共有 2<sup>N</sup> 个序列，但当 p≠0.5 时它们<b>远不等概率</b>。
+    按「每符号自信息离 H 有多远」把序列由近及远排序，凑够 1−ε 的质量只需要大约 2<sup>NH</sup> 个序列 —— 这就是渐近均分割性（AEP），
+    也是第一定理成立的真正原因：只需给典型集里的序列编短码。</p>
+    <div class="controls">
+      <span class="faint">p = P(1)</span><input type="range" id="aeP" min="5" max="95" step="1" value="70"><b class="mono" id="aePv">0.70</b>
+      <span class="faint">序列长度 N</span><input type="range" id="aeN" min="4" max="14" step="1" value="10"><b class="mono" id="aeNv">10</b>
+      <span class="faint">ε</span><select id="aeE"></select>
+      <button class="btn" id="aeMore" type="button">展开序列</button>
+    </div>
+    <div class="two">
+      <div>
+        <h3>序列按概率质量分布（横轴：每符号自信息）</h3>
+        <div id="aeSvg"></div>
+      </div>
+      <div>
+        <h3>典型集账本</h3>
+        <div class="kv"><span>全部序列数 2<sup>N</sup></span><b id="aeAll">—</b></div>
+        <div class="kv"><span>典型集大小 |A<sub>ε</sub>|（现算）</span><b id="aeSize">—</b></div>
+        <div class="kv"><span>2<sup>NH</sup>（教材预测）</span><b id="aePred">—</b></div>
+        <div class="kv"><span>典型集占的概率质量</span><b id="aeMass">—</b></div>
+        <div class="kv"><span>单符号熵 H(p)</span><b id="aeH">—</b></div>
+        <div class="kv"><span>典型集内平均「每符号自信息」</span><b id="aeAvg">—</b></div>
+        <div class="kv"><span>典型集占全部序列的比例</span><b id="aeFrac">—</b></div>
+        <div id="aeBars" class="bars"></div>
+      </div>
+    </div>
+    <div class="scroll"><table id="aeTab"></table></div>
+    <div id="aeV" class="verdict"></div>
+    <div class="note"><b>把 p 调到 0.5：</b>所有 2<sup>N</sup> 个序列等概率，典型集就是全体，|A|=2<sup>N</sup>=2<sup>NH</sup>，
+    每符号自信息恒等于 1 bit。p 偏离 0.5 越远，典型集占比越小 —— 但仍装下几乎全部概率质量。
+    上面的 |A| 是<b>枚举全部 2<sup>N</sup> 个序列后按与 H 的距离排序、逐个累加</b>（同一距离的序列整组计入）得到的，
+    不是套公式；p=0.5 时所有序列的自信息都等于 H，因此典型集就是全体。
+    <b>别被 |A| 和 2<sup>NH</sup> 的差吓到：</b>本面板的 ε 是「要覆盖 1−ε 的概率质量」的质量容差，
+    不是教材 AEP 定义里的「自信息偏离容差」；有限 N 时为了凑够 90% 质量，集合必须比 2<sup>NH</sup> 大一圈。
+    AEP 给的是 N→∞ 时的渐近量级，两种 ε 不要混用。</div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="panel" id="p6">
+  <div class="card">
+    <h2>⑥ 二元对称信道 BSC：噪声把多少信息翻掉了</h2>
+    <p class="sub">输入 X∈{0,1}，信道以概率 p 翻转，<code>P(Y=1|X=0)=P(Y=0|X=1)=p</code>。
+    给定先验 q=P(X=1)，下面把联合分布、后验、MAP 判决、错误率全部现算。</p>
+    <div class="controls">
+      <span class="faint">翻转概率 p</span><input type="range" id="bcP" min="0" max="50" step="1" value="10"><b class="mono" id="bcPv">0.10</b>
+      <span class="faint">先验 q = P(X=1)</span><input type="range" id="bcQ" min="0" max="100" step="1" value="50"><b class="mono" id="bcQv">0.50</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>信道矩阵与联合分布</h3>
+        <div class="scroll"><table id="bcTab"></table></div>
+        <h3>后验与 MAP 判决</h3>
+        <div class="scroll"><table id="bcPost"></table></div>
+      </div>
+      <div>
+        <h3>信道图（线上标的是真概率）</h3>
+        <div id="bcSvg"></div>
+        <h3>错误率随 p 变化（蓝：等先验；绿：当前先验）</h3>
+        <div id="bcSvg2"></div>
+      </div>
+    </div>
+    <div class="kv"><span>P(Y=1)</span><b id="bcPY">—</b></div>
+    <div class="kv"><span>噪声熵 H(Y|X) = H(p)</span><b id="bcNoise">—</b></div>
+    <div class="kv"><span>互信息 I(X;Y)</span><b id="bcMI">—</b></div>
+    <div class="kv"><span>MAP 判决错误率（按当前 q 最优）</span><b id="bcErr">—</b></div>
+    <div class="kv"><span>等先验/最大似然判决错误率 = p</span><b id="bcML">—</b></div>
+    <div id="bcV" class="verdict"></div>
+    <div class="note"><b>两个极端：</b>p=0 时无噪声，I=H(X)、错误率 0；p=0.5 时输出与输入<b>统计独立</b>，
+    I=0、MAP 只能永远猜先验里的多数类，错误率 = min(q,1−q)。把 p 拉到 0.5 看 I 归零，是后面「容量」的起点。</div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="panel" id="p7">
+  <div class="card">
+    <h2>⑦ 互信息：<code>I(X;Y)</code> 是「知道 Y 之后省下的比特」</h2>
+    <p class="sub">本面板把上一面板的信道量从三个方向各算一遍再对照：
+    <code>I = H(X)−H(X|Y) = H(Y)−H(Y|X) = H(X)+H(Y)−H(X,Y)</code>。
+    曲线是固定 p、扫输入先验 q 得到的 I(q) —— 它的峰值就是下一面板的信道容量。</p>
+    <div class="controls">
+      <span class="faint">翻转概率 p</span><input type="range" id="miP" min="0" max="50" step="1" value="10"><b class="mono" id="miPv">0.10</b>
+      <span class="faint">先验 q = P(X=1)</span><input type="range" id="miQ" min="0" max="100" step="1" value="50"><b class="mono" id="miQv">0.50</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>三种算法分别算 I（应相等）</h3>
+        <div class="scroll"><table id="miTab"></table></div>
+        <div class="kv"><span>联合分布 P(X,Y) 四个格子之和</span><b id="miSum">—</b></div>
+        <div class="kv"><span>校验 I ≥ 0 且 I ≤ min(H(X),H(Y))</span><b id="miBound">—</b></div>
+      </div>
+      <div>
+        <h3>I(q) 曲线：峰值 = 容量</h3>
+        <div id="miSvg"></div>
+      </div>
+    </div>
+    <div class="kv"><span>当前 q 下的 I(X;Y)</span><b id="miNow">—</b></div>
+    <div class="kv"><span>最大值 max<sub>q</sub> I（下一面板精确最优化）</span><b id="miMax">—</b></div>
+    <div class="kv"><span>教材闭式 1 − H(p)</span><b id="miClosed">—</b></div>
+    <div id="miV" class="verdict"></div>
+    <div class="note"><b>为什么用「省下的比特」这个说法：</b>H(X|Y) 是知道 Y 之后对 X 还剩多少不确定，
+    两者之差就是 Y 提供的关于 X 的信息。I 对 X、Y 对称，且恒 ≥0；
+    <b>I=0 当且仅当 X 与 Y 独立</b>（把 p 调到 0.5 验证）。
+    Ch6 的连续版只是把求和换成积分，量本身不变 —— 本卷在第 ⑩ 面板用高斯一次过掉。</div>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="panel" id="p8">
+  <div class="card">
+    <h2>⑧ 信道容量：<code>C = max<sub>p(x)</sub> I(X;Y)</code>，BSC 上就是 <code>1 − H(p)</code></h2>
+    <p class="sub">容量是「把输入分布调到最好时，一次信道使用最多能可靠传多少比特」，
+    与具体译码算法无关。下面对 <code>I(q)=H(Y)−H(p)</code> 做三分搜索真最优化，
+    再和教材闭式 <code>1−H(p)</code> 对照；表格里每行的 I(q) 也都是现算的。</p>
+    <div class="controls">
+      <span class="faint">翻转概率 p</span><input type="range" id="caP" min="0" max="50" step="1" value="10"><b class="mono" id="caPv">0.10</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>扫输入先验 q（11 个点全部现算）</h3>
+        <div class="scroll"><table id="caTab"></table></div>
+      </div>
+      <div>
+        <h3>I(q) 曲线与峰值</h3>
+        <div id="caSvg"></div>
+      </div>
+    </div>
+    <div class="kv"><span>三分搜索最优 q*</span><b id="caQ">—</b></div>
+    <div class="kv"><span>数值最优 C = I(q*)</span><b id="caC">—</b></div>
+    <div class="kv"><span>教材闭式 1 − H(p)</span><b id="caClosed">—</b></div>
+    <div class="kv"><span>两者之差（应 ≈ 0）</span><b id="caDiff">—</b></div>
+    <div class="kv"><span>噪声熵 H(p)（被扣掉的那部分）</span><b id="caH">—</b></div>
+    <div id="caV" class="verdict"></div>
+    <div class="note"><b>为什么均匀输入最优：</b>BSC 关于 0/1 对称，<code>H(Y|X)=H(p)</code> 与 q 无关，
+    所以最大化 I 等价于最大化 H(Y)，而二元 H(Y) 在 P(Y=1)=0.5 时最大；
+    对称信道里 q=0.5 恰好给出 P(Y=1)=0.5。这不是「猜的」，是上面 240 轮三分搜索搜出来的 q*。</div>
+    <div class="note"><b>边界：</b>p=0 → C=1 bit/use（每次使用传满 1 比特）；p=0.5 → C=0（信道完全无用）；
+    p&gt;0.5 并不更糟，因为把 0/1 的解释翻过来就等价于 1−p —— 容量关于 p=0.5 对称。</div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="panel" id="p9">
+  <div class="card">
+    <h2>⑨ 噪声信道编码定理：<code>R &lt; C</code> 可达，<code>R &gt; C</code> 不可能</h2>
+    <p class="sub">Shannon 第二定理。可达一侧用真跑的码：重复码（逐个错误图样精确求和）与 (7,4) 汉明码
+    （枚举 2<sup>7</sup> 个错误图样 + 最近码字译码，不是模拟）；
+    converse 一侧用 Fano 不等式给出 <code>P<sub>e</sub> ≥ 1 − C/R − 1/k</code> 的硬下界。</p>
+    <div class="controls">
+      <span class="faint">翻转概率 p</span><input type="range" id="ncP" min="1" max="40" step="1" value="10"><b class="mono" id="ncPv">0.10</b>
+      <span class="faint">重复码长度 n（奇数）</span><select id="ncN"></select>
+      <span class="faint">Fano 下界的码率 R</span><select id="ncR"></select>
+    </div>
+    <div class="two">
+      <div>
+        <h3>方案对照（错误率全部精确枚举）</h3>
+        <div class="scroll"><table id="ncTab"></table></div>
+        <div class="kv"><span>当前 p 下的容量 C = 1 − H(p)</span><b id="ncC">—</b></div>
+        <div class="kv"><span>(7,4) 汉明码最小距离 d<sub>min</sub>（真算）</span><b id="ncD">—</b></div>
+        <div class="kv"><span>汉明码错误率 vs 闭式 1−(1−p)⁷−7p(1−p)⁶</span><b id="ncChk">—</b></div>
+        <div class="kv"><span>Fano 下界（k=100 长码，R&gt;C 时为正）</span><b id="ncFano">—</b></div>
+      </div>
+      <div>
+        <h3>错误率随 p：加了冗余确实往下走</h3>
+        <div id="ncSvg"></div>
+        <h3>R 与 C：谁在可达区</h3>
+        <div id="ncSvg2"></div>
+      </div>
+    </div>
+    <div id="ncV" class="verdict"></div>
+    <div class="note"><b>可达一侧：</b>重复码 R=1/n，n 越大错误率越低（p&lt;0.5），但码率也趋于 0 ——
+    它牺牲了速率换可靠，不算「好码」；(7,4) 汉明码 R=4/7 能在 p 较小时把错误率压到远低于 p，
+    代价是同样有最小距离上限。Shannon 的洞见是：只要 R&lt;C，<b>存在</b>足够长的码把错误率做到任意小，
+    不必把速率降到 0。</div>
+    <div class="note"><b>逆定理一侧：</b>若 R&gt;C，Fano 不等式给出与码长无关的正下界
+    <code>P<sub>e</sub> ≥ 1 − C/R − 1/k</code>；k→∞ 时趋近 <code>1 − C/R &gt; 0</code>。
+    上面的数字是把当前 p 的 C 与所选 R 代进去算的，不是写死的结论。把 R 调到 0.5 以下（或把 p 调到很小让 C 变大），
+    下界会被 clamp 到 0 —— 那正是 R&lt;C 的区域。</div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="panel" id="p10">
+  <div class="card">
+    <h2>⑩ 连续变量一页桥：微分熵可以为负，容量才是那个不变量</h2>
+    <p class="sub">Ch5–7 把求和换成积分：高斯微分熵 <code>h=½log₂(2πeσ²)</code>、AWGN 容量 <code>C=½log₂(1+SNR)</code>。
+    概念在离散版已经讲透，这里只补两个离散世界没有的事实：<b>微分熵会随坐标尺度变、甚至为负</b>，
+    以及带限信道的 <code>B log₂(1+S/N)</code> 形式。</p>
+    <div class="controls">
+      <span class="faint">高斯标准差 σ</span><input type="range" id="coS" min="5" max="300" step="5" value="100"><b class="mono" id="coSv">1.00</b>
+      <span class="faint">带宽 B (Hz)</span><input type="range" id="coB" min="1" max="10" step="1" value="1"><b class="mono" id="coBv">1</b>
+      <span class="faint">信噪比 SNR（线性，滑块÷2）</span><input type="range" id="coT" min="0" max="40" step="1" value="3"><b class="mono" id="coTv">1.5</b>
+    </div>
+    <div class="two">
+      <div>
+        <h3>微分熵 h(σ) 与 0 的交点</h3>
+        <div id="coSvg"></div>
+        <div class="kv"><span>高斯微分熵 h = ½log₂(2πeσ²)</span><b id="coH">—</b></div>
+        <div class="kv"><span>均匀 [0,1] 的微分熵 = log₂ 1</span><b id="coU">—</b></div>
+        <div class="kv"><span>h = 0 的临界 σ = 1/√(2πe)</span><b id="coZero">—</b></div>
+        <div class="kv"><span>等效支撑宽度 2<sup>h</sup></span><b id="coWidth">—</b></div>
+      </div>
+      <div>
+        <h3>容量（bits/use 与 bits/s）</h3>
+        <div id="coSvg2"></div>
+        <div class="kv"><span>SNR (dB) = 10 log₁₀(SNR)</span><b id="coDb">—</b></div>
+        <div class="kv"><span>AWGN 容量 ½log₂(1+SNR) bits/use</span><b id="coC">—</b></div>
+        <div class="kv"><span>带限容量 B·log₂(1+SNR) bits/s</span><b id="coBC">—</b></div>
+        <div class="kv"><span>校验：½log₂(1+3) = 1 bit/use</span><b id="coChk">—</b></div>
+      </div>
+    </div>
+    <div id="coV" class="verdict"></div>
+    <div class="note"><b>为什么微分熵不是「绝对信息量」：</b>σ 减半，h 少 1 bit；σ 足够小时 h&lt;0，
+    而离散熵永远 ≥0。原因是连续量的「绝对不确定性」本身没有不变量，换坐标就变。
+    真正不随尺度变的是<b>互信息与信道容量</b>（差一个 h 正负抵消）—— 这也是 Ch6/Ch7 的落点。</div>
+    <div class="note"><b>本卷到此为止：</b>Ch8 热力学熵（物理类比，无新的可算信息论结论）、
+    Ch9 Information as nature's currency（应用科普）、附录 A–H（对数/概率/高斯工具）按「最小核心集」跳过；
+    库里已有的熵、信息增益、KL 散度与交叉熵也不重复造面板。</div>
+  </div>
+</section>
+
+<footer class="card">
+  <details>
+    <summary>全卷速查（10 面板 · 章 · 一句话 · 最容易踩的坑）</summary>
+    <div class="scroll"><table>
+      <tr><th>面板</th><th>章</th><th>一句话</th><th>最容易踩的坑</th></tr>
+      <tr><td>① 惊喜度与比特</td><td>Ch1</td><td>单个结果的惊喜度 = log₂(1/p) bit</td><td>把惊喜度当成分布的平均量；平均量是熵</td></tr>
+      <tr><td>② 熵</td><td>Ch2</td><td>H = −Σ p log₂ p，均匀时最大、确定时为 0</td><td>H 是平均，不是某个结果的 −log₂p</td></tr>
+      <tr><td>③ 链式法则</td><td>Ch2</td><td>H(X,Y)=H(Y)+H(X|Y)=H(X)+H(Y|X)</td><td>把 H(X|Y) 写成 H(Y|X)；I=0 才叫独立</td></tr>
+      <tr><td>④ 信源编码</td><td>Ch3</td><td>H ≤ L* &lt; H+1；块编码每符号压到 H+1/N</td><td>以为 Huffman 对任意分布都能取等号（只有 dyadic 能）</td></tr>
+      <tr><td>⑤ 典型集 AEP</td><td>Ch3</td><td>1−ε 的概率质量集中在约 2^(NH) 个序列里</td><td>以为 2^N 个序列等概率；只有 p=0.5 才是</td></tr>
+      <tr><td>⑥ 二元对称信道</td><td>Ch4</td><td>p=0 无误码，p=0.5 输出与输入独立</td><td>把错误率 p 和互信息 I 混为一谈</td></tr>
+      <tr><td>⑦ 互信息</td><td>Ch4/6</td><td>I = H(X)−H(X|Y) = H(Y)−H(Y|X)，对称且 ≥0</td><td>以为 I 会随输入先验单调增</td></tr>
+      <tr><td>⑧ 信道容量</td><td>Ch4/7</td><td>C = max_{p(x)} I；BSC 上 C = 1−H(p)</td><td>把容量当成「某个码的速率」；它是信道属性</td></tr>
+      <tr><td>⑨ 噪声信道编码</td><td>Ch4</td><td>R&lt;C 可达任意小错误率，R&gt;C 有正下界</td><td>以为重复码就是好码；它把速率降到了 0</td></tr>
+      <tr><td>⑩ 连续变量桥</td><td>Ch5–7</td><td>微分熵可负、依赖尺度；容量才是不变量</td><td>拿离散熵的「非负」去套微分熵</td></tr>
+    </table></div>
+    <p class="faint">砍掉的章：Ch8 热力学熵（物理类比）、Ch9 应用综述、附录 A–H（工具附录）；
+    库里已有的熵 / 信息增益 / KL / 交叉熵定义不重复。判据：库里已有 → 跳过；作者标注可选 → 跳过；
+    纯科普/工具性 → 跳过；优先补库里零命中的信源编码、噪声信道、互信息与容量。</p>
+  </details>
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* 浮动「↑ 章节」按钮：JS 动态创建，滚过 320px 才出现，随时能回到标签栏 */
+(function(){
+  function ini(){
+    if(!document.createElement||!document.body)return;
+    var tt=document.createElement('button');
+    tt.className='btn';tt.type='button';
+    tt.textContent='↑ 章节';tt.title='回到章节标签栏';
+    tt.style.cssText='position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:0 4px 16px rgba(0,0,0,.45)';
+    tt.onclick=function(){
+      var n=(document.querySelector&&document.querySelector('.tabs'));
+      if(n&&n.scrollIntoView)n.scrollIntoView({behavior:'smooth',block:'start'});
+      else if(window.scrollTo)window.scrollTo(0,0);
+    };
+    document.body.appendChild(tt);
+    if(window.addEventListener)window.addEventListener('scroll',function(){
+      tt.style.display=(window.scrollY>320)?'block':'none';},{passive:true});
+  }
+  if(document.readyState==='loading'&&document.addEventListener)document.addEventListener('DOMContentLoaded',ini);
+  else ini();
+})();
+
+/* ==ITLIB_START== */
+/* 纯算法层：不碰 DOM，node 冒烟测试直接 eval 这一段并把结果断言到教材值 */
+var IT=(function(){
+'use strict';
+function log2(x){return Math.log(x)/Math.LN2;}
+function Hb(p){if(p<=0||p>=1)return 0;return -p*log2(p)-(1-p)*log2(1-p);}
+function H(ps){var s=0;for(var i=0;i<ps.length;i++){var p=ps[i];if(p>0)s-=p*log2(p);}return s;}
+function surprise(p){return p<=0?Infinity:-log2(p);}
+
+/* N 个等可能对象的最优是非问树：深度 ⌈log₂N⌉−1 的叶子数 a，深度 ⌈log₂N⌉ 的叶子数 b */
+function questionTree(N){
+  N=Math.max(1,Math.floor(N));
+  if(N===1)return {d:0,k:0,a:0,b:1,expected:0};
+  var d=Math.ceil(log2(N)),k=d-1,a=Math.pow(2,d)-N,b=N-a;
+  return {d:d,k:k,a:a,b:b,expected:(a*k+b*d)/N};
+}
+
+/* 2×2 联合分布：q=P(X=1), a=P(Y=1|X=0), b=P(Y=1|X=1) */
+function jointFrom(q,a,b){return [[(1-q)*(1-a),(1-q)*a],[q*(1-b),q*b]];}
+function marginals(J){
+  return {px:[J[0][0]+J[0][1],J[1][0]+J[1][1]],py:[J[0][0]+J[1][0],J[0][1]+J[1][1]]};
+}
+function jointEntropy(J){var s=0;for(var x=0;x<2;x++)for(var y=0;y<2;y++){var p=J[x][y];if(p>0)s-=p*log2(p);}return s;}
+function HYgX(J){var s=0;for(var x=0;x<2;x++){var t=J[x][0]+J[x][1];if(t>0)s+=t*Hb(J[x][1]/t);}return s;}
+function HXgY(J){var s=0;for(var y=0;y<2;y++){var t=J[0][y]+J[1][y];if(t>0)s+=t*Hb(J[1][y]/t);}return s;}
+function infoFromJoint(J){
+  var m=marginals(J),hx=H(m.px),hy=H(m.py),hxy=jointEntropy(J);
+  var hygx=HYgX(J),hxgy=HXgY(J);
+  return {px:m.px,py:m.py,HX:hx,HY:hy,HXY:hxy,HYgX:hygx,HXgY:hxgy,
+          I1:hx-hxgy,I2:hy-hygx,I3:hx+hy-hxy};
+}
+
+function bscJoint(q,p){return jointFrom(q,p,1-p);}
+function bscI(q,p){var r=q+p-2*q*p;return Hb(r)-Hb(p);}
+function bscCapacity(p){
+  var lo=0,hi=1;
+  for(var it=0;it<240;it++){
+    var m1=lo+(hi-lo)/3,m2=hi-(hi-lo)/3,f1=bscI(m1,p),f2=bscI(m2,p);
+    if(f1<f2)lo=m1;else if(f1>f2)hi=m2;else{lo=m1;hi=m2;}
+  }
+  var q=(lo+hi)/2;
+  return {q:q,C:bscI(q,p),closed:1-Hb(p)};
+}
+function bscError(q,p){
+  var J=bscJoint(q,p),e=0;
+  for(var y=0;y<2;y++)e+=Math.min(J[0][y],J[1][y]);
+  return e;
+}
+
+/* Huffman：每次合并两个最小概率，回溯出码字 */
+function huffman(probs){
+  if(!probs.length)return {codes:[],L:0,kraft:0};
+  if(probs.length===1)return {codes:[''],L:0,kraft:1};
+  var nodes=probs.map(function(p,i){return {p:p,leaf:i};});
+  while(nodes.length>1){
+    nodes.sort(function(a,b){return a.p-b.p;});
+    var A=nodes.shift(),B=nodes.shift();
+    nodes.push({p:A.p+B.p,left:A,right:B});
+  }
+  var codes=new Array(probs.length);
+  (function walk(n,pre){
+    if(n.leaf!==undefined){codes[n.leaf]=pre;return;}
+    walk(n.left,pre+'0');walk(n.right,pre+'1');
+  })(nodes[0],'');
+  var L=0,kr=0;
+  for(var i=0;i<probs.length;i++){L+=probs[i]*codes[i].length;kr+=Math.pow(2,-codes[i].length);}
+  return {codes:codes,L:L,kraft:kr};
+}
+function geometric(K,r){
+  var z=0,i,ps=[];
+  for(i=0;i<K;i++)z+=Math.pow(r,i);
+  for(i=0;i<K;i++)ps.push(Math.pow(r,i)/z);
+  return ps;
+}
+function blockDist(p,N){
+  var arr=[];
+  (function rec(k,pr,s){
+    if(k===N){arr.push({p:pr,s:s});return;}
+    rec(k+1,pr*p,s+'1');rec(k+1,pr*(1-p),s+'0');
+  })(0,1,'');
+  return arr;
+}
+function blockRate(p,N){var d=blockDist(p,N);return huffman(d.map(function(o){return o.p;})).L/N;}
+
+/* AEP：枚举 2^N 个序列，按 |每符号自信息 − H| 由近及远累加到 1−ε；
+   同一自信息的序列（Bernoulli 里即相同的 1 的个数）一并计入，避免等概率时任意截断 */
+function typicalSet(p,N,eps){
+  var arr=blockDist(p,N),H=Hb(p);
+  arr.forEach(function(o){o.per=surprise(o.p)/N;o.dev=Math.abs(o.per-H);});
+  arr.sort(function(a,b){return a.dev-b.dev||b.p-a.p;});
+  var cum=0,size=0,wsum=0;
+  for(var i=0;i<arr.length;i++){
+    var o=arr[i];
+    if(i>0&&cum>=1-eps&&Math.abs(o.per-arr[i-1].per)>1e-12)break;
+    cum+=o.p;size++;wsum+=o.p*o.per;
+  }
+  return {size:size,mass:cum,H:H,all:arr.length,avgPerSym:wsum/(cum||1),seqs:arr,
+          pred:Math.pow(2,N*H)};
+}
+
+function binom(n,k){var r=1;for(var i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
+/* 重复码：枚举错误图样的二项分布精确求和（n 为奇数，多数判决） */
+function repetitionError(p,n){
+  var need=Math.floor(n/2)+1,s=0;
+  for(var j=need;j<=n;j++)s+=binom(n,j)*Math.pow(p,j)*Math.pow(1-p,n-j);
+  return s;
+}
+/* (7,4) 汉明码：parity 在 1,2,4 位；译码取最近码字 */
+function hamming74(){
+  var cw=[];
+  for(var m=0;m<16;m++){
+    var d=[(m>>3)&1,(m>>2)&1,(m>>1)&1,m&1];
+    var p1=d[0]^d[1]^d[3],p2=d[0]^d[2]^d[3],p3=d[1]^d[2]^d[3];
+    cw.push([p1,p2,d[0],p3,d[1],d[2],d[3]]);
+  }
+  return cw;
+}
+function bitsOf(v,n){var a=[];for(var i=n-1;i>=0;i--)a.push((v>>i)&1);return a;}
+function hw(b){var s=0;for(var i=0;i<b.length;i++)s+=b[i];return s;}
+function xorBits(a,b){return a.map(function(v,i){return v^b[i];});}
+function minDistance(cw){
+  var m=99;
+  for(var i=0;i<cw.length;i++)for(var j=i+1;j<cw.length;j++){
+    var d=0;for(var k=0;k<cw[i].length;k++)d+=cw[i][k]^cw[j][k];
+    if(d<m)m=d;
+  }
+  return m;
+}
+function hamming74Decode(rx,cw){
+  var best=-1,bd=99;
+  for(var i=0;i<cw.length;i++){
+    var d=0;for(var k=0;k<7;k++)d+=cw[i][k]^rx[k];
+    if(d<bd){bd=d;best=i;}
+  }
+  return best;
+}
+function hamming74WordError(p){
+  var cw=hamming74(),c0=cw[0],bad=0;
+  for(var e=0;e<128;e++){
+    var eb=bitsOf(e,7),pr=Math.pow(p,hw(eb))*Math.pow(1-p,7-hw(eb));
+    if(hamming74Decode(xorBits(c0,eb),cw)!==0)bad+=pr;
+  }
+  return bad;
+}
+function hamming74Closed(p){return 1-Math.pow(1-p,7)-7*p*Math.pow(1-p,6);}
+/* Fano 逆定理下界：k 个消息比特、码率 R=k/n、容量 C */
+function fanoBound(R,C,k){return Math.max(0,1-C/R-1/k);}
+
+function gaussH(sigma){return 0.5*log2(2*Math.PI*Math.E*sigma*sigma);}
+function uniformH(w){return log2(w);}
+function sigmaZero(){return 1/Math.sqrt(2*Math.PI*Math.E);}
+function awgnC(snr){return 0.5*log2(1+snr);}
+function bandC(B,snr){return B*log2(1+snr);}
+
+return {log2:log2,Hb:Hb,H:H,surprise:surprise,questionTree:questionTree,
+  jointFrom:jointFrom,marginals:marginals,jointEntropy:jointEntropy,HYgX:HYgX,HXgY:HXgY,
+  infoFromJoint:infoFromJoint,bscJoint:bscJoint,bscI:bscI,bscCapacity:bscCapacity,bscError:bscError,
+  huffman:huffman,geometric:geometric,blockDist:blockDist,blockRate:blockRate,typicalSet:typicalSet,
+  repetitionError:repetitionError,hamming74:hamming74,minDistance:minDistance,
+  hamming74WordError:hamming74WordError,hamming74Closed:hamming74Closed,fanoBound:fanoBound,
+  gaussH:gaussH,uniformH:uniformH,sigmaZero:sigmaZero,awgnC:awgnC,bandC:bandC};
+})();
+/* ==ITLIB_END== */
+
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n;}
+function fx(n,d){var s=(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);return s;}
+function W(id,s){var e=$('#'+id);if(e)e.innerHTML=s;}
+function T(id,s){var e=$('#'+id);if(e)e.innerHTML=s;}
+function VD(id,ok,s){var e=$('#'+id);if(!e)return;e.className='verdict '+(ok?'yes':'mid');e.innerHTML=s;}
+function barRows(rows,max){
+  return rows.map(function(r){
+    var w=max>0?Math.max(0,Math.min(100,100*r.v/max)):0;
+    return '<div class="bar"><span class="nm">'+esc(r.n)+'</span>'+
+      '<span class="tr"><span class="fl" style="width:'+fx(w,1)+'%"></span></span>'+
+      '<span class="vv">'+r.t+'</span></div>';
+  }).join('');
+}
+
+/* ---------- 通用 SVG 折线图 ---------- */
+function plot(o){
+  var Wd=o.w||500,Ht=o.h||210,ml=48,mr=12,mt=14,mb=34;
+  var xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  if(xmax===xmin)xmax=xmin+1;if(ymax===ymin)ymax=ymin+1;
+  var sx=function(x){return ml+(x-xmin)/(xmax-xmin)*(Wd-ml-mr);};
+  var sy=function(y){var c=Math.max(ymin,Math.min(ymax,y));return Ht-mb-(c-ymin)/(ymax-ymin)*(Ht-mb-mt);};
+  var s='<svg viewBox="0 0 '+Wd+' '+Ht+'" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)" xmlns="http://www.w3.org/2000/svg">';
+  for(var i=0;i<=4;i++){
+    var gy=ymin+(ymax-ymin)*i/4,xx=xmin+(xmax-xmin)*i/4;
+    s+='<line class="gl" x1="'+ml+'" y1="'+fx(sy(gy),1)+'" x2="'+(Wd-mr)+'" y2="'+fx(sy(gy),1)+'"/>';
+    s+='<text x="'+(ml-6)+'" y="'+fx(sy(gy)+3.5,1)+'" text-anchor="end" font-size="10" fill="var(--faint)">'+fx(gy,o.yd===undefined?2:o.yd)+'</text>';
+    s+='<text x="'+fx(sx(xx),1)+'" y="'+(Ht-mb+15)+'" text-anchor="middle" font-size="10" fill="var(--faint)">'+fx(xx,o.xd===undefined?2:o.xd)+'</text>';
+  }
+  s+='<line class="ax" x1="'+ml+'" y1="'+(Ht-mb)+'" x2="'+(Wd-mr)+'" y2="'+(Ht-mb)+'"/>';
+  s+='<line class="ax" x1="'+ml+'" y1="'+mt+'" x2="'+ml+'" y2="'+(Ht-mb)+'"/>';
+  (o.hlines||[]).forEach(function(h){
+    var y=sy(h.y);
+    s+='<line x1="'+ml+'" y1="'+fx(y,1)+'" x2="'+(Wd-mr)+'" y2="'+fx(y,1)+
+       '" stroke="'+(h.color||'var(--warn)')+'" stroke-width="1.5" stroke-dasharray="6 4"/>';
+    if(h.label)s+='<text x="'+(Wd-mr-3)+'" y="'+fx(y-4,1)+'" text-anchor="end" font-size="10" fill="'+(h.color||'var(--warn)')+'">'+esc(h.label)+'</text>';
+  });
+  (o.curves||[]).forEach(function(c){
+    var pts=c.pts.map(function(p){return fx(sx(p[0]),1)+','+fx(sy(p[1]),1);}).join(' ');
+    s+='<polyline class="wire" points="'+pts+'" style="stroke:'+c.color+';stroke-width:'+(c.width||2)+';'+
+       (c.dash?'stroke-dasharray:5 4;':'')+'"/>';
+  });
+  (o.markers||[]).forEach(function(m){
+    var x=sx(m.x),y=sy(m.y);
+    s+='<circle cx="'+fx(x,1)+'" cy="'+fx(y,1)+'" r="4" fill="'+(m.color||'var(--accent)')+'"/>';
+    if(m.label)s+='<text x="'+fx(x+7,1)+'" y="'+fx(y-6,1)+'" font-size="10" fill="'+(m.color||'var(--accent)')+'">'+esc(m.label)+'</text>';
+  });
+  if(o.xlabel)s+='<text x="'+(Wd/2)+'" y="'+(Ht-3)+'" text-anchor="middle" font-size="11" fill="var(--dim)">'+esc(o.xlabel)+'</text>';
+  s+='</svg>';
+  return s;
+}
+
+/* ---------- tabs ---------- */
+function goPanel(id,push){
+  var tab=$$('.tab').filter(function(x){return x.dataset.panel===id;})[0];
+  if(!tab)return;
+  $$('.tab').forEach(function(x){x.classList.remove('on');});
+  $$('.panel').forEach(function(p){p.classList.remove('on');});
+  tab.classList.add('on');
+  var pnl=$('#'+id);if(pnl)pnl.classList.add('on');
+  if(push){try{history.replaceState(null,'','#'+id);}catch(e){}}
+  var nav=$('.tabs');if(nav&&tab.offsetLeft)nav.scrollLeft=tab.offsetLeft-24;
+  var pn=$('#'+id);
+  if(pn&&pn.getBoundingClientRect){var pr=pn.getBoundingClientRect();
+    if(pr.top<0||pr.top>innerHeight-80)window.scrollTo({top:Math.max(0,scrollY+pr.top-70),behavior:'smooth'});}
+}
+$$('.tab').forEach(function(b){b.onclick=function(){goPanel(b.dataset.panel,true);};});
+if(typeof location!=='undefined'&&/^#p\d+$/.test(location.hash))goPanel(location.hash.slice(1),false);
+
+/* ---------- 下拉选项一律由 JS 写入 ---------- */
+function opts(id,arr,def){
+  var e=$('#'+id);if(!e)return;
+  e.innerHTML=arr.map(function(o){return '<option value="'+o.v+'">'+esc(o.t)+'</option>';}).join('');
+  e.value=def;
+}
+opts('hK',[{v:'2',t:'2 个符号'},{v:'4',t:'4 个符号'},{v:'8',t:'8 个符号'},{v:'16',t:'16 个符号'}],'4');
+opts('scK',[{v:'2',t:'2 个符号'},{v:'4',t:'4 个符号'},{v:'6',t:'6 个符号'},{v:'8',t:'8 个符号'}],'4');
+opts('aeE',[{v:'0.01',t:'ε = 0.01'},{v:'0.05',t:'ε = 0.05'},{v:'0.10',t:'ε = 0.10'},{v:'0.20',t:'ε = 0.20'}],'0.10');
+opts('ncN',[{v:'1',t:'n = 1（不编码）'},{v:'3',t:'n = 3'},{v:'5',t:'n = 5'},{v:'7',t:'n = 7'},{v:'9',t:'n = 9'},{v:'11',t:'n = 11'}],'3');
+opts('ncR',[{v:'0.5',t:'R = 0.50'},{v:'0.6',t:'R = 0.60'},{v:'0.7',t:'R = 0.70'},{v:'0.8',t:'R = 0.80'},{v:'0.9',t:'R = 0.90'},{v:'1.0',t:'R = 1.00'}],'0.8');
+
+/* =========================================================
+   ① 惊喜度与比特
+   ========================================================= */
+function s1Render(){
+  var p=num($('#sP').value)/100,N=num($('#sN').value);
+  T('sPv',fx(p,2));T('sNv',String(N));
+  var I=IT.surprise(p),q=Math.ceil(I);
+  var ps=[0.5,0.25,0.125,0.0625,p];
+  var t='<tr><th class="m">概率 p</th><th class="m">惊喜度 −log₂p (bit)</th><th class="m">相当于几次是非问</th></tr>';
+  ps.forEach(function(x){
+    var v=IT.surprise(x);
+    t+='<tr'+(x===p?' class="hl"':'')+'><td class="m mono">'+fx(x,4)+'</td><td class="m mono">'+fx(v,4)+
+       '</td><td class="m mono">'+fx(v,2)+'</td></tr>';
+  });
+  W('sTab',t);
+  T('sI',fx(I,4)+' bit');T('sQ',String(q));
+  var pts=[];for(var i=1;i<=100;i++){var x=i/100;pts.push([x,IT.surprise(x)]);}
+  W('sSvg',plot({xmin:0,xmax:1,ymin:0,ymax:7,xd:2,yd:1,xlabel:'p',
+    curves:[{pts:pts,color:'var(--accent)'}],markers:[{x:p,y:I,label:'p='+fx(p,2)}]}));
+  var tr=IT.questionTree(N);
+  T('sWorst','⌈log₂ '+N+'⌉ = <b>'+tr.d+'</b> 问');
+  T('sExp','<b>'+fx(tr.expected,4)+'</b> 问（笨办法 '+fx((N+1)/2,1)+' 问）');
+  T('sShape',tr.a+' / '+tr.b);
+  T('sNaive',fx((N+1)/2,2)+' 问');
+  VD('sV',true,'当前 p='+fx(p,2)+' 的结果带来 <b>'+fx(I,3)+' bit</b> 惊喜；N='+N+
+    ' 个等可能对象，最优提问树最坏 '+tr.d+' 问、平均 '+fx(tr.expected,3)+' 问。'+
+    '<br><span class="dim">把 p 拉到 0.01：惊喜度 '+fx(IT.surprise(0.01),3)+
+    ' bit —— 罕见结果一次给出很多信息，这正是 log₂ 的形状。</span>');
+}
+['#sP','#sN'].forEach(function(i){$(i).oninput=s1Render;});
+s1Render();
+
+/* =========================================================
+   ② 熵
+   ========================================================= */
+function s2Render(){
+  var K=num($('#hK').value),r=1-num($('#hR').value)/100;
+  T('hRv',fx(r,2));
+  var ps=IT.geometric(K,r),H=IT.H(ps),mx=IT.log2(K),sum=0;
+  var t='<tr><th class="m">符号 i</th><th class="m">p<sub>i</sub></th><th class="m">−log₂p<sub>i</sub></th><th class="m">p<sub>i</sub>·(−log₂p<sub>i</sub>)</th></tr>';
+  ps.forEach(function(p,i){
+    sum+=p;
+    t+='<tr><td class="m mono">'+i+'</td><td class="n">'+fx(p,4)+'</td><td class="n">'+fx(IT.surprise(p),4)+
+       '</td><td class="n">'+fx(p*IT.surprise(p),4)+'</td></tr>';
+  });
+  t+='<tr class="cex"><td class="m"><b>合计</b></td><td class="n"><b>'+fx(sum,4)+'</b></td><td class="n u">—</td><td class="n"><b>'+fx(H,4)+'</b></td></tr>';
+  W('hTab',t);
+  T('hH',fx(H,4)+' bit');T('hMax',fx(mx,4)+' bit');T('hRed',fx(mx-H,4)+' bit');
+  T('hChk',fx(sum,4)+' / '+fx(ps.reduce(function(a,p){return a+p*IT.surprise(p);},0),4));
+  var pts=[];for(var i=0;i<=100;i++){var rr=0.01+0.99*i/100;pts.push([rr,IT.H(IT.geometric(K,rr))]);}
+  W('hSvg',plot({xmin:0,xmax:1,ymin:0,ymax:mx,xd:2,yd:2,xlabel:'偏斜 r（1 = 均匀）',
+    curves:[{pts:pts,color:'var(--accent)'}],
+    hlines:[{y:mx,color:'var(--ok)',label:'log₂K'}],
+    markers:[{x:r,y:H,label:'H='+fx(H,3)}]}));
+  W('hBars',barRows(ps.map(function(p,i){return {n:'符号 '+i,v:p,t:fx(p,4)};}),Math.max.apply(null,ps)));
+  var near=Math.abs(r-1)<1e-9;
+  VD('hV',true,near?'r=1 是均匀分布：<b>H = log₂ '+K+' = '+fx(H,4)+' bit</b>，取到上界，冗余 0。':
+    '当前分布 <b>H = '+fx(H,4)+' bit</b>，比上界 log₂K 少 '+fx(mx-H,4)+
+    ' bit。<br><span class="dim">把 r 拉回 1 取到上界，拉向 0 则概率堆到第一个符号上，H 趋近 0。</span>');
+}
+$('#hK').onchange=s2Render;$('#hR').oninput=s2Render;
+s2Render();
+
+/* =========================================================
+   ③ 联合·条件·链式
+   ========================================================= */
+function s3Render(){
+  var q=num($('#jQ').value)/100,a=num($('#jA').value)/100,b=num($('#jB').value)/100;
+  T('jQv',fx(q,2));T('jAv',fx(a,2));T('jBv',fx(b,2));
+  var J=IT.jointFrom(q,a,b),m=IT.marginals(J),I=IT.infoFromJoint(J);
+  var t='<tr><th class="m">P(X,Y)</th><th class="m">Y=0</th><th class="m">Y=1</th><th class="m">P(X)</th></tr>';
+  for(var x=0;x<2;x++)t+='<tr><td class="m mono">X='+x+'</td><td class="n">'+fx(J[x][0],4)+'</td><td class="n">'+
+    fx(J[x][1],4)+'</td><td class="n"><b>'+fx(m.px[x],4)+'</b></td></tr>';
+  t+='<tr class="hl"><td class="m">P(Y)</td><td class="n"><b>'+fx(m.py[0],4)+'</b></td><td class="n"><b>'+
+     fx(m.py[1],4)+'</b></td><td class="n">'+fx(m.py[0]+m.py[1],4)+'</td></tr>';
+  W('jTab',t);
+  W('jMar','<span class="pill">P(X=1) = '+fx(m.px[1],4)+'</span><span class="pill">P(Y=1) = '+fx(m.py[1],4)+'</span>'+
+    '<span class="pill">ΣP(X,Y) = '+fx(J[0][0]+J[0][1]+J[1][0]+J[1][1],4)+'</span>');
+  var rows=[
+    {n:'H(X)',v:I.HX},{n:'H(Y)',v:I.HY},{n:'H(X,Y)',v:I.HXY},
+    {n:'H(X|Y)',v:I.HXgY},{n:'H(Y|X)',v:I.HYgX},{n:'I(X;Y)',v:I.I1}
+  ];
+  W('jBars',barRows(rows.map(function(o){return {n:o.n,v:o.v,t:fx(o.v,4)};}),2.1));
+  T('jC1',fx(I.HY+I.HXgY,6));T('jC2',fx(I.HX+I.HYgX,6));T('jC3',fx(I.HXY,6));
+  T('jI',fx(I.I1,6)+' / '+fx(I.I2,6)+' / '+fx(I.I3,6));
+  T('jMono',fx(I.HXgY,6)+' ≤ '+fx(I.HX,6)+'（'+(I.HXgY<=I.HX+1e-9?'成立':'不成立')+'）');
+  var indep=Math.abs(a-b)<1e-9;
+  VD('jV',true,indep?'a=b，<b>X 与 Y 独立</b>：I(X;Y)='+fx(I.I1,6)+
+      '≈0，H(X|Y)=H(X)。<br><span class="dim">三种算法算出的 I 也一致到小数点后 6 位。</span>':
+    'a≠b，<b>Y 提供了关于 X 的 '+fx(I.I1,4)+' bit</b> 信息：H(X)='+fx(I.HX,4)+
+    ' → H(X|Y)='+fx(I.HXgY,4)+'。<br><span class="dim">把 a、b 调到同一个值，I 会精确归零。</span>');
+}
+['#jQ','#jA','#jB'].forEach(function(i){$(i).oninput=s3Render;});
+s3Render();
+
+/* =========================================================
+   ④ 信源编码定理
+   ========================================================= */
+var scAll=false;
+function s4Render(){
+  var K=num($('#scK').value),r=1-num($('#scR').value)/100;
+  var p=num($('#scP').value)/100,N=num($('#scN').value);
+  T('scRv',fx(r,2));T('scPv',fx(p,2));T('scNv',String(N));
+  var ps=IT.geometric(K,r),hf=IT.huffman(ps),H=IT.H(ps);
+  var t='<tr><th class="m">符号</th><th class="m">p</th><th class="m">−log₂p</th><th class="m">Huffman 码</th><th class="m">码长 l</th></tr>';
+  ps.forEach(function(pp,i){
+    t+='<tr><td class="m mono">'+i+'</td><td class="n">'+fx(pp,4)+'</td><td class="n">'+fx(IT.surprise(pp),4)+
+       '</td><td class="m"><span class="bits">'+(hf.codes[i]||'')+'</span></td><td class="m mono">'+hf.codes[i].length+'</td></tr>';
+  });
+  W('scTab',t);
+  T('scH',fx(H,4)+' bit');T('scL',fx(hf.L,4)+' bit');
+  T('scGap',fx(hf.L-H,4)+' bit');T('scKraft',fx(hf.kraft,6));
+  var Hp=IT.Hb(p),rate=IT.blockRate(p,N),upper=Hp+1/N;
+  var curve=[];for(var n=1;n<=6;n++)curve.push([n,IT.blockRate(p,n)]);
+  W('scSvg',plot({xmin:1,xmax:6,ymin:0,ymax:1.6,xd:0,yd:2,xlabel:'块长 N',
+    curves:[{pts:curve,color:'var(--accent)'}],
+    hlines:[{y:Hp,color:'var(--ok)',label:'H(p)='+fx(Hp,3)},{y:upper,color:'var(--warn)',label:'H+1/N'}],
+    markers:[{x:N,y:rate,label:'L/N='+fx(rate,3)}]}));
+  var bd=IT.blockDist(p,N),hfb=IT.huffman(bd.map(function(o){return o.p;}));
+  var lim=scAll?bd.length:Math.min(8,bd.length);
+  var bk='<tr><th class="m">块序列</th><th class="m">概率</th><th class="m">码字</th><th class="m">长度</th></tr>';
+  for(var i=0;i<lim;i++)bk+='<tr><td class="m mono">'+bd[i].s+'</td><td class="n">'+fx(bd[i].p,5)+
+    '</td><td class="m"><span class="bits">'+hfb.codes[i]+'</span></td><td class="m mono">'+hfb.codes[i].length+'</td></tr>';
+  W('scBook',scAll?('<div class="scroll"><table>'+bk+'</table></div>'):
+    '点「展开码本」看全部 '+bd.length+' 条码字（当前只显示 '+lim+' 条）');
+  T('scHp',fx(Hp,4)+' bit');T('scRate',fx(rate,4)+' bit/符号');
+  T('scBound',fx(upper,4)+' bit/符号');T('scRows',String(bd.length));
+  var dyadic=(hf.L-H)<1e-9;
+  VD('scV',true,'Huffman：H='+fx(H,4)+'，L*='+fx(hf.L,4)+'，开销 '+fx(hf.L-H,4)+
+    ' bit（在 [0,1) 内'+(dyadic?'，且本例恰好取等号 —— dyadic 分布':'')+'）。'+
+    '<br><span class="dim">块编码：N='+N+' 时每符号 '+fx(rate,4)+
+    ' bit，上界 H+1/N='+fx(upper,4)+'；曲线是对 N=1…6 每个块长真跑一次 Huffman 得到的。'+
+    '码长必须为整数，所以曲线会小幅回弹，单调收紧的是上界而不是实际码长。</span>');
+}
+$('#scK').onchange=s4Render;$('#scR').oninput=s4Render;
+$('#scP').oninput=s4Render;$('#scN').oninput=s4Render;
+$('#scMore').onclick=function(){scAll=!scAll;$('#scMore').textContent=scAll?'收起码本':'展开码本';s4Render();};
+s4Render();
+
+/* =========================================================
+   ⑤ 典型集 AEP
+   ========================================================= */
+var aeAll=false;
+function s5Render(){
+  var p=num($('#aeP').value)/100,N=num($('#aeN').value),eps=num($('#aeE').value);
+  T('aePv',fx(p,2));T('aeNv',String(N));
+  var A=IT.typicalSet(p,N,eps),H=A.H;
+  var xmax=Math.max(1.2,IT.surprise(Math.min(p,1-p)));
+  var BINS=20,hist=new Array(BINS),i;
+  for(i=0;i<BINS;i++)hist[i]=0;
+  A.seqs.forEach(function(o){
+    var b=Math.floor(o.per/xmax*BINS);if(b<0)b=0;if(b>=BINS)b=BINS-1;
+    hist[b]+=o.p;
+  });
+  var pts=hist.map(function(v,i){return [(i+0.5)*xmax/BINS,v];});
+  W('aeSvg',plot({xmin:0,xmax:xmax,ymin:0,ymax:Math.max.apply(null,hist)*1.1,
+    xd:2,yd:3,xlabel:'每符号自信息 −log₂P(x^N)/N（bit）',
+    curves:[{pts:pts,color:'var(--accent)'}],
+    hlines:[{y:0,color:'var(--line)',label:''}],
+    markers:[{x:H,y:0,color:'var(--ok)',label:'H='+fx(H,3)}]}));
+  T('aeAll',String(A.all));T('aeSize',String(A.size));
+  T('aePred',fx(A.pred,1));T('aeMass',fx(A.mass,6));
+  T('aeH',fx(H,4)+' bit');T('aeAvg',fx(A.avgPerSym,4)+' bit');
+  T('aeFrac',fx(100*A.size/A.all,3)+'%');
+  W('aeBars',barRows([
+    {n:'全部序列 2^N',v:A.all,t:String(A.all)},
+    {n:'典型集 |A|',v:A.size,t:String(A.size)},
+    {n:'2^(NH) 预测',v:A.pred,t:fx(A.pred,1)}
+  ],Math.max(A.all,A.pred)));
+  var lim=aeAll?Math.min(20,A.seqs.length):Math.min(8,A.seqs.length),cum=0;
+  var t='<tr><th class="m">#</th><th class="m">序列 x<sup>N</sup></th><th class="m">P(x<sup>N</sup>)</th><th class="m">每符号自信息</th><th class="m">离 H 的距离</th><th class="m">累计质量</th><th class="m">典型集内</th></tr>';
+  for(i=0;i<lim;i++){
+    cum+=A.seqs[i].p;
+    t+='<tr'+(i<A.size?' class="cex"':'')+'><td class="m mono">'+(i+1)+'</td><td class="m mono">'+A.seqs[i].s+
+      '</td><td class="n">'+fx(A.seqs[i].p,6)+'</td><td class="n">'+fx(A.seqs[i].per,4)+
+      '</td><td class="n">'+fx(A.seqs[i].dev,4)+'</td><td class="n">'+fx(cum,5)+
+      '</td><td class="m">'+(i<A.size?'是':'否')+'</td></tr>';
+  }
+  W('aeTab',t);
+  var unif=Math.abs(p-0.5)<1e-9;
+  VD('aeV',true,unif?'p=0.5：全部 2<sup>'+N+'</sup>='+A.all+' 个序列等概率，每个序列的每符号自信息都等于 H，典型集就是全体，|A|='+A.size+
+      ' = 2<sup>NH</sup>。':
+    '枚举 2<sup>'+N+'</sup>='+A.all+' 个序列、按与 H 的距离由近及远累加，凑够 1−ε='+fx(1-eps,2)+' 的质量需 <b>'+A.size+
+    '</b> 个（占 '+fx(100*A.size/A.all,2)+'%），渐近量级 2<sup>NH</sup>≈'+fx(A.pred,1)+
+    '，本例比值 '+fx(A.size/A.pred,2)+'×（有限 N + 质量容差，见下方说明）。'+
+    '<br><span class="dim">典型集内平均自信息 '+fx(A.avgPerSym,4)+' bit，与 H='+fx(H,4)+' 同量级；同一距离的序列整组计入。</span>');
+}
+$('#aeP').oninput=s5Render;$('#aeN').oninput=s5Render;$('#aeE').onchange=s5Render;
+$('#aeMore').onclick=function(){aeAll=!aeAll;$('#aeMore').textContent=aeAll?'收起序列':'展开序列';s5Render();};
+s5Render();
+
+/* =========================================================
+   ⑥ 二元对称信道 BSC
+   ========================================================= */
+function s6Render(){
+  var p=num($('#bcP').value)/100,q=num($('#bcQ').value)/100;
+  T('bcPv',fx(p,2));T('bcQv',fx(q,2));
+  var J=IT.bscJoint(q,p),m=IT.marginals(J),I=IT.infoFromJoint(J);
+  var t='<tr><th class="m">P(Y|X)</th><th class="m">Y=0</th><th class="m">Y=1</th></tr>';
+  t+='<tr><td class="m mono">X=0</td><td class="n">'+fx(1-p,4)+'</td><td class="n">'+fx(p,4)+'</td></tr>';
+  t+='<tr><td class="m mono">X=1</td><td class="n">'+fx(p,4)+'</td><td class="n">'+fx(1-p,4)+'</td></tr>';
+  t+='<tr><th class="m">P(X,Y)</th><th class="m">Y=0</th><th class="m">Y=1</th></tr>';
+  for(var x=0;x<2;x++)t+='<tr><td class="m mono">X='+x+'</td><td class="n">'+fx(J[x][0],4)+'</td><td class="n">'+fx(J[x][1],4)+'</td></tr>';
+  W('bcTab',t);
+  var pt='<tr><th class="m">给定 Y</th><th class="m">P(X=0|Y)</th><th class="m">P(X=1|Y)</th><th class="m">MAP 判 X</th></tr>';
+  for(var y=0;y<2;y++){
+    var den=J[0][y]+J[1][y],a0=den>0?J[0][y]/den:0,a1=den>0?J[1][y]/den:0;
+    var dec=a0>=a1?0:1;
+    pt+='<tr><td class="m mono">Y='+y+'</td><td class="n">'+fx(a0,4)+'</td><td class="n">'+fx(a1,4)+
+      '</td><td class="m mono"><b>'+dec+'</b></td></tr>';
+  }
+  W('bcPost',pt);
+  /* 信道图：四条线标真概率 */
+  var s='<svg viewBox="0 0 480 200" style="width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel2)" xmlns="http://www.w3.org/2000/svg">';
+  var lines=[
+    {y1:55,y2:55,pr:1-p,c:'var(--accent)',lab:'1−p = '+fx(1-p,3)},
+    {y1:55,y2:145,pr:p,c:'var(--bad)',lab:'p = '+fx(p,3)},
+    {y1:145,y2:55,pr:p,c:'var(--bad)',lab:'p = '+fx(p,3)},
+    {y1:145,y2:145,pr:1-p,c:'var(--accent)',lab:'1−p = '+fx(1-p,3)}
+  ];
+  lines.forEach(function(L,i){
+    s+='<line x1="110" y1="'+L.y1+'" x2="370" y2="'+L.y2+'" stroke="'+L.c+'" stroke-width="2"/>';
+    var mx=240,my=(L.y1+L.y2)/2+(i%2?10:-8);
+    s+='<text x="'+mx+'" y="'+my+'" text-anchor="middle" font-size="11" fill="'+L.c+'">'+L.lab+'</text>';
+  });
+  [[55,'X = 0','P(X=0)='+fx(1-q,3)],[145,'X = 1','P(X=1)='+fx(q,3)]].forEach(function(o){
+    s+='<rect x="14" y="'+(o[0]-22)+'" width="96" height="44" rx="8" fill="var(--panel2)" stroke="var(--line)"/>';
+    s+='<text x="62" y="'+(o[0]-3)+'" text-anchor="middle" font-size="12" fill="var(--fg)">'+o[1]+'</text>';
+    s+='<text x="62" y="'+(o[0]+13)+'" text-anchor="middle" font-size="9" fill="var(--dim)">'+o[2]+'</text>';
+  });
+  [[55,'Y = 0',m.py[0]],[145,'Y = 1',m.py[1]]].forEach(function(o){
+    s+='<rect x="370" y="'+(o[0]-22)+'" width="96" height="44" rx="8" fill="var(--panel2)" stroke="var(--line)"/>';
+    s+='<text x="418" y="'+(o[0]-3)+'" text-anchor="middle" font-size="12" fill="var(--fg)">'+o[1]+'</text>';
+    s+='<text x="418" y="'+(o[0]+13)+'" text-anchor="middle" font-size="9" fill="var(--dim)">P(Y)='+fx(o[2],3)+'</text>';
+  });
+  s+='</svg>';
+  W('bcSvg',s);
+  var c1=[],c2=[];
+  for(var i=0;i<=50;i++){var pp=i/100;c1.push([pp,IT.bscError(0.5,pp)]);c2.push([pp,IT.bscError(q,pp)]);}
+  W('bcSvg2',plot({xmin:0,xmax:0.5,ymin:0,ymax:0.55,xd:2,yd:2,xlabel:'翻转概率 p',
+    curves:[{pts:c1,color:'var(--accent)'},{pts:c2,color:'var(--ok)'}],
+    markers:[{x:p,y:IT.bscError(q,p),label:'MAP='+fx(IT.bscError(q,p),3)}]}));
+  T('bcPY',fx(m.py[1],6));T('bcNoise',fx(IT.Hb(p),6)+' bit');
+  T('bcMI',fx(I.I1,6)+' bit');T('bcErr',fx(IT.bscError(q,p),6));
+  T('bcML',fx(p,6));
+  var ext=p>0.499;
+  VD('bcV',true,ext?'p=0.5：输出与输入<b>统计独立</b>，I(X;Y)='+fx(I.I1,6)+
+      '≈0，MAP 只能猜多数类，错误率 '+fx(IT.bscError(q,p),4)+' = min(q,1−q)。':
+    'p='+fx(p,2)+'：噪声熵 H(Y|X)='+fx(IT.Hb(p),4)+' bit，互信息 I(X;Y)='+fx(I.I1,4)+
+    ' bit，MAP 错误率 '+fx(IT.bscError(q,p),4)+'（等先验时就是 p='+fx(p,4)+'）。'+
+    '<br><span class="dim">绿色曲线是当前先验 q='+fx(q,2)+' 的最优 MAP 错误率，蓝色是 q=0.5；两者之差是先验信息的价值。</span>');
+}
+$('#bcP').oninput=s6Render;$('#bcQ').oninput=s6Render;
+s6Render();
+
+/* =========================================================
+   ⑦ 互信息
+   ========================================================= */
+function s7Render(){
+  var p=num($('#miP').value)/100,q=num($('#miQ').value)/100;
+  T('miPv',fx(p,2));T('miQv',fx(q,2));
+  var J=IT.bscJoint(q,p),I=IT.infoFromJoint(J),cap=IT.bscCapacity(p);
+  var t='<tr><th class="m">算法</th><th class="m">式子</th><th class="m">结果 (bit)</th></tr>';
+  t+='<tr><td class="m">①</td><td class="m mono">H(X) − H(X|Y)</td><td class="n"><b>'+fx(I.I1,6)+'</b></td></tr>';
+  t+='<tr><td class="m">②</td><td class="m mono">H(Y) − H(Y|X)</td><td class="n"><b>'+fx(I.I2,6)+'</b></td></tr>';
+  t+='<tr><td class="m">③</td><td class="m mono">H(X)+H(Y) − H(X,Y)</td><td class="n"><b>'+fx(I.I3,6)+'</b></td></tr>';
+  t+='<tr class="hl"><td class="m">分量</td><td class="m mono">H(X) / H(Y) / H(X,Y)</td><td class="n">'+fx(I.HX,4)+' / '+fx(I.HY,4)+' / '+fx(I.HXY,4)+'</td></tr>';
+  t+='<tr class="hl"><td class="m">分量</td><td class="m mono">H(X|Y) / H(Y|X)</td><td class="n">'+fx(I.HXgY,4)+' / '+fx(I.HYgX,4)+'</td></tr>';
+  W('miTab',t);
+  T('miSum',fx(J[0][0]+J[0][1]+J[1][0]+J[1][1],6));
+  T('miBound',(I.I1>=-1e-12&&I.I1<=Math.min(I.HX,I.HY)+1e-9)?'成立':'不成立');
+  var pts=[];for(var i=0;i<=100;i++){var qq=i/100;pts.push([qq,IT.bscI(qq,p)]);}
+  W('miSvg',plot({xmin:0,xmax:1,ymin:0,ymax:1.05,xd:2,yd:2,xlabel:'输入先验 q = P(X=1)',
+    curves:[{pts:pts,color:'var(--accent)'}],
+    hlines:[{y:cap.closed,color:'var(--warn)',label:'C=1−H(p)='+fx(cap.closed,3)}],
+    markers:[{x:q,y:I.I1,label:'I='+fx(I.I1,3)}]}));
+  T('miNow',fx(I.I1,6)+' bit');T('miMax',fx(Math.max.apply(null,pts.map(function(o){return o[1];})),6)+' bit');
+  T('miClosed',fx(cap.closed,6)+' bit');
+  var zero=Math.abs(p-0.5)<1e-9;
+  VD('miV',true,zero?'p=0.5：<b>X 与 Y 独立</b>，三种算法都给出 I='+fx(I.I1,6)+
+      '≈0，无论输入先验 q 取什么值。':
+    'p='+fx(p,2)+'、q='+fx(q,2)+'：I(X;Y)='+fx(I.I1,4)+' bit；三种拆法的差 = '+
+    fx(Math.max(Math.abs(I.I1-I.I2),Math.abs(I.I1-I.I3),Math.abs(I.I2-I.I3)),2)+
+    '（数值误差）。<br><span class="dim">曲线峰值 '+fx(cap.closed,4)+' bit 出现在 q=0.5，下一面板用三分搜索精确求它。</span>');
+}
+$('#miP').oninput=s7Render;$('#miQ').oninput=s7Render;
+s7Render();
+
+/* =========================================================
+   ⑧ 信道容量
+   ========================================================= */
+function s8Render(){
+  var p=num($('#caP').value)/100,cap=IT.bscCapacity(p);
+  T('caPv',fx(p,2));
+  var t='<tr><th class="m">q = P(X=1)</th><th class="m">P(Y=1)</th><th class="m">I(q) = H(Y)−H(p)</th><th class="m">距 C 的差</th></tr>';
+  for(var i=0;i<=10;i++){
+    var q=i/10,r=q+p-2*q*p,mi=IT.bscI(q,p);
+    t+='<tr'+(Math.abs(q-0.5)<1e-9?' class="cex"':'')+'><td class="m mono">'+fx(q,2)+
+      '</td><td class="n">'+fx(r,4)+'</td><td class="n"><b>'+fx(mi,6)+'</b></td><td class="n">'+fx(cap.closed-mi,6)+'</td></tr>';
+  }
+  W('caTab',t);
+  var pts=[];for(var i2=0;i2<=200;i2++){var qq=i2/200;pts.push([qq,IT.bscI(qq,p)]);}
+  W('caSvg',plot({xmin:0,xmax:1,ymin:0,ymax:1.05,xd:2,yd:2,xlabel:'输入先验 q',
+    curves:[{pts:pts,color:'var(--accent)'}],
+    hlines:[{y:cap.closed,color:'var(--warn)',label:'C='+fx(cap.closed,3)}],
+    markers:[{x:cap.q,y:cap.C,color:'var(--ok)',label:'q*='+fx(cap.q,3)}]}));
+  T('caQ',fx(cap.q,8));T('caC',fx(cap.C,8)+' bit/use');
+  T('caClosed',fx(cap.closed,8)+' bit/use');T('caDiff',fx(Math.abs(cap.C-cap.closed),10));
+  T('caH',fx(IT.Hb(p),6)+' bit');
+  var ok=Math.abs(cap.C-cap.closed)<1e-9&&Math.abs(cap.q-0.5)<1e-6;
+  VD('caV',ok,'240 轮三分搜索得 q*='+fx(cap.q,6)+'（对称信道的均匀输入），C='+fx(cap.C,6)+
+    ' bit/use，与教材闭式 1−H(p)='+fx(cap.closed,6)+' 的差 '+fx(Math.abs(cap.C-cap.closed),10)+
+    '。<br><span class="dim">把 p 拉到 0：C=1；拉到 0.5：C=0。中间每一点都是现算的。</span>');
+}
+$('#caP').oninput=s8Render;
+s8Render();
+
+/* =========================================================
+   ⑨ 噪声信道编码定理
+   ========================================================= */
+function s9Render(){
+  var p=num($('#ncP').value)/100,n=num($('#ncN').value),R=num($('#ncR').value);
+  T('ncPv',fx(p,2));
+  var C=IT.bscCapacity(p).closed,rep=IT.repetitionError(p,n),ham=IT.hamming74WordError(p);
+  var HAM=4/7,dmin=IT.minDistance(IT.hamming74()),chk=Math.abs(ham-IT.hamming74Closed(p));
+  var t='<tr><th class="m">方案</th><th class="m">码率 R</th><th class="m">字错误率（精确）</th><th class="m">R &lt; C ?</th></tr>';
+  [[ '无编码（1 bit/use）',1,p],['重复码 n='+n,1/n,rep],['(7,4) 汉明码',HAM,ham]].forEach(function(o){
+    t+='<tr'+(o[1]<C?' class="cex"':'')+'><td class="m">'+o[0]+'</td><td class="n">'+fx(o[1],4)+
+      '</td><td class="n"><b>'+fx(o[2],6)+'</b></td><td class="m">'+(o[1]<C?'是':'否')+'</td></tr>';
+  });
+  W('ncTab',t);
+  T('ncC',fx(C,6)+' bit/use');T('ncD',String(dmin));
+  T('ncChk',fx(ham,6)+' / '+fx(IT.hamming74Closed(p),6)+'（差 '+fx(chk,10)+'）');
+  var fb=IT.fanoBound(R,C,100);
+  T('ncFano',fx(fb,6)+'（R='+fx(R,2)+'，k=100）');
+  var e1=[],e2=[],e3=[];
+  for(var i=1;i<=40;i++){var pp=i/100;
+    e1.push([pp,pp]);e2.push([pp,IT.repetitionError(pp,n)]);e3.push([pp,IT.hamming74WordError(pp)]);}
+  W('ncSvg',plot({xmin:0,xmax:0.4,ymin:0,ymax:0.55,xd:2,yd:2,xlabel:'翻转概率 p',
+    curves:[{pts:e1,color:'var(--bad)'},{pts:e2,color:'var(--accent)'},{pts:e3,color:'var(--ok)'}],
+    markers:[{x:p,y:rep,label:'rep='+fx(rep,3)}]}));
+  var cp=[];for(var i2=0;i2<=50;i2++){var pp2=i2/100;cp.push([pp2,1-IT.Hb(pp2)]);}
+  W('ncSvg2',plot({xmin:0,xmax:0.5,ymin:0,ymax:1.05,xd:2,yd:2,xlabel:'翻转概率 p',
+    curves:[{pts:cp,color:'var(--accent)'}],
+    hlines:[{y:R,color:'var(--warn)',label:'R='+fx(R,2)},
+            {y:HAM,color:'var(--ok)',label:'R(汉明)='+fx(HAM,2)}],
+    markers:[{x:p,y:C,color:'var(--purple)',label:'C='+fx(C,3)}]}));
+  VD('ncV',true,'p='+fx(p,2)+' 时 C='+fx(C,4)+' bit/use：重复码 n='+n+' 错误率 '+fx(rep,5)+
+    '（R='+fx(1/n,3)+'），汉明(7,4) 错误率 '+fx(ham,5)+'（R='+fx(HAM,3)+'，d<sub>min</sub>='+dmin+'）。'+
+    '<br><span class="dim">R='+fx(R,2)+(fb>0?' &gt; C，Fano 下界把错误率顶在 '+fx(fb,4)+' 以上，再长的码也压不下去。':
+      ' ≤ C，Fano 下界为 0 —— 这正是「可达」的区域。')+'</span>');
+}
+$('#ncP').oninput=s9Render;$('#ncN').onchange=s9Render;$('#ncR').onchange=s9Render;
+s9Render();
+
+/* =========================================================
+   ⑩ 连续变量桥
+   ========================================================= */
+function s10Render(){
+  var sigma=num($('#coS').value)/100,B=num($('#coB').value),snr=num($('#coT').value)/2;
+  T('coSv',fx(sigma,2));T('coBv',String(B));T('coTv',fx(snr,2));
+  var h=IT.gaussH(sigma),z=IT.sigmaZero(),width=Math.pow(2,h);
+  var xmin=IT.log2(0.05),xmax=IT.log2(3);
+  var pts=[];for(var i=0;i<=100;i++){var x=xmin+(xmax-xmin)*i/100;pts.push([x,IT.gaussH(Math.pow(2,x))]);}
+  W('coSvg',plot({xmin:xmin,xmax:xmax,ymin:-3,ymax:4,xd:2,yd:1,xlabel:'log₂ σ',
+    curves:[{pts:pts,color:'var(--accent)'}],
+    hlines:[{y:0,color:'var(--warn)',label:'h=0'}],
+    markers:[{x:IT.log2(sigma),y:h,label:'h='+fx(h,3)},
+             {x:IT.log2(z),y:0,color:'var(--bad)',label:'σ*='+fx(z,4)}]}));
+  var cpts=[];for(var i2=0;i2<=40;i2++){var s=i2/4;cpts.push([s,IT.awgnC(s)]);}
+  W('coSvg2',plot({xmin:0,xmax:10,ymin:0,ymax:2.5,xd:1,yd:2,xlabel:'SNR（线性）',
+    curves:[{pts:cpts,color:'var(--accent)'}],
+    markers:[{x:snr,y:IT.awgnC(snr),label:'C='+fx(IT.awgnC(snr),3)+' bit/use'}]}));
+  T('coH',fx(h,4)+' bit');T('coU',fx(IT.uniformH(1),4)+' bit');
+  T('coZero',fx(z,6));T('coWidth',fx(width,4));
+  T('coDb',fx(10*IT.log2(snr)/IT.log2(10),3)+' dB');
+  T('coC',fx(IT.awgnC(snr),4)+' bit/use');
+  T('coBC',fx(IT.bandC(B,snr),4)+' bits/s');
+  T('coChk',fx(IT.awgnC(3),4)+' bit/use');
+  VD('coV',true,h<0?'σ='+fx(sigma,2)+' &lt; 临界值 '+fx(z,4)+'，<b>微分熵 h='+fx(h,3)+
+      ' bit 为负</b>：离散熵做不到这件事。<br><span class="dim">等效支撑宽度 2^h='+fx(width,4)+
+      '；把 σ 拉大，h 每次翻倍就 +1 bit。</span>':
+    'σ='+fx(sigma,2)+'：h='+fx(h,4)+' bit，等效支撑宽度 2^h='+fx(width,4)+
+    '；AWGN 容量 ½log₂(1+SNR)='+fx(IT.awgnC(snr),4)+' bit/use，带限 B·log₂(1+SNR)='+
+    fx(IT.bandC(B,snr),4)+' bits/s。<br><span class="dim">把 σ 拉到 0.05 以下看 h 变负。</span>');
+}
+$('#coS').oninput=s10Render;$('#coB').oninput=s10Render;$('#coT').oninput=s10Render;
+s10Render();
+
+})();
+</script>
+</body>
+</html>
