@@ -28,7 +28,7 @@
 
 一次 Agent 请求通常同时跨三条缝：人在屏幕前用 **ACP** 看它干活，它用 **MCP** 伸手干活，跨团队的活儿用 **A2A** 发工单。
 
-记住箭头方向：ACP 是**双向**的——`session/prompt` 是 Client→Agent，而 `fs/*`、`terminal/*`、`session/request_permission` 是 **Agent→Client**。两边互为主客，这是它和单向 API 最大的差别（细节见 §1.3）。
+记住箭头方向：ACP 是**双向**的——`session/prompt` 是 Client→Agent，而 `fs/*`、`terminal/*`、`session/request_permission` 是 **Agent→Client**。两边互为主客，这是它和单向 API 最大的差别（细节见 §1.4）。
 
 每个编辑器想接每个编码 Agent，都是一次单独对接：**N 个 IDE × M 个 Agent = N×M 次适配**，且每家的「流式文字 / 工具卡片 / 权限弹窗 / diff 显示」都自己发明一遍。ACP 把这条缝标准化——它是 **LSP 的同构物**：LSP 让语言服务器插进任意编辑器，ACP 让 Agent 插进任意编辑器。
 
@@ -39,23 +39,64 @@
 | **Client** | Zed / JetBrains / VS Code 插件 / 终端 UI | 显示消息流、渲染工具卡片、管权限、提供文件系统与终端 |
 | **Agent** | 编码 Agent 进程（Claude Code、Codex、Kimi、自研 Harness） | 跑循环、发工具调用、回消息流与计划 |
 
-底层：JSON-RPC 2.0 over stdio，**换行分帧**（不是 LSP 的 `Content-Length` 头）。细节见 §1.4。
+底层：JSON-RPC 2.0 over stdio，**换行分帧**（不是 LSP 的 `Content-Length` 头）。细节见 §1.5。
 
-### 1.1 会话生命周期
+### 1.1 协议只记四件事
+
+官方定义：ACP 是编辑器和编码 Agent 之间的标准接口，本地和远端都能用。读规范时抓住下面四条，后面的方法名都是这四条的展开。
+
+**一条连接，多个会话。** 用户要连 Agent 时，Client 把它拉成子进程，消息走 stdin / stdout。一条连接上可以同时开多个 session，各有各的历史。远端走 HTTP / WebSocket，官方还在做，现在以本地 stdio 为准。
+
+**一轮 = 一个还没返回的 `session/prompt`。** Client 把用户的话发出去，这个请求一直挂着。Agent 中途用没有 `id` 的 `session/update` 往屏幕上推进度。人可以发 `session/cancel` 打断。Agent 最后才回包，带上 `stopReason`，这一轮才结束。
+
+**方法在两边，没声明的能力就当没有。** `initialize` 交换一个整数版本号和能力表。Client 报自己的最高版本。Agent 认就原样回，不认就回自己的最高版本。Client 再不认，就断开。表里没出现的字段等于不支持。
+
+| 谁必须实现 | 方法 | 干什么 |
+|---|---|---|
+| Agent | `initialize`、`session/new`、`session/prompt`、`session/cancel` | 连上、开会话、收一轮话、被叫停 |
+| Agent → Client | `session/update` | 往屏幕推文字、工具卡片、计划 |
+| Client | `session/request_permission` | 弹窗问人能不能做 |
+| 看能力 | `session/load`、`fs/*`、`terminal/*`、`elicitation/create`、`authenticate` | 没在 `initialize` 里声明，就不要调 |
+
+**屏幕上的每块东西都是内容块。** 五种：`text`、`image`、`audio`、`resource`（嵌进文件内容）、`resource_link`（只给地址）。所有 Agent 都能收 `text` 和 `resource_link`。图片、音频、内嵌文件要 Agent 声明 `promptCapabilities`。给人看的 `text` 按 Markdown 画。这套结构和 MCP 的内容块兼容，工具结果可以原样转发。ACP 多出来的是给编辑器看的 `diff` 和终端卡片。
+
+设计就三句：内容块尽量复用 MCP；协议为屏幕服务（diff、计划、权限）；编辑器把本地文件和 MCP 交给一个你信任的 Agent，工具调用仍要人点头。
+
+问人有两种：
+
+| | `session/request_permission` | `elicitation/create` |
+|---|---|---|
+| 问什么 | 这个工具操作做不做 | 要一份结构化答案，或打开一个外链 |
+| 人怎么答 | `allow_once` / `allow_always` / `reject_once` / `reject_always` | `accept` / `decline` / `cancel` |
+| 谁记住 | `allow_always` 由 **Agent** 记住。`kind` 只是按钮样式，范围写在选项的 `name` 里 | 表单不能要密码和 token。敏感流程走 URL。点接受只表示同意打开，不表示已经办完 |
+
+信任模型三句。ACP 不沙箱，Agent 进程有什么权限就有什么权限。Agent 写出的字、链接、路径都不可信，Markdown 里不要跑 HTML 和脚本。权限弹窗是建议：Agent 自己执行并负责听话；`fs/*` 和 `terminal/*` 由 Client 亲手做。
+
+### 1.2 会话生命周期
 
 ```
-initialize            能力协商（Client: fs / terminal；Agent: prompt / mcp / loadSession）
-  → session/new       开一个会话，拿到 sessionId（可带 cwd、mcpServers）
-  → session/prompt    发一轮 user prompt（content blocks），流式回 session/update
-  → session/cancel    用户点了停止
-  → session/load      进程/编辑器重开后按 id 恢复会话
+initialize            能力协商。没出现的能力 = 不支持
+  → authenticate      可选。Agent 要求登录时，不走完则 session/new 失败
+  → session/new       开会话，拿到 sessionId。参数：绝对路径 cwd + mcpServers
+  → session/prompt    发一轮用户消息。请求一直挂着，直到 stopReason
+  → session/cancel    打断当前这一轮（通知，没有回包）
+  → session/load      按 id 恢复，并用 session/update 重放历史（要 loadSession）
+  → session/resume    按 id 接上，不重放历史（要 sessionCapabilities.resume）
+  → session/close     停掉该会话并释放（要 sessionCapabilities.close）
   → session/set_mode  切换模式（如「先问再改」与「自动改」）
 ```
 
-### 1.2 `session/update` 通知（全部条带 `sessionId`）
+`session/new` 把编辑器里配好的 MCP server 交给 Agent。stdio 传输每个 Agent 都要会；HTTP、SSE 看 `mcpCapabilities`。`cwd` 是主工作目录，必须是绝对路径。Agent 声明了 `additionalDirectories` 时，还可以附上额外根目录。
+
+`session/list`、`session/delete`、`logout` 同样可选。`initialize` 里没声明就不要调。
+
+### 1.3 `session/update` 通知（全部条带 `sessionId`）
+
+更新不限于正在进行的一轮。建会话后可以先推斜杠命令；`session/load` 用同一条通知重放历史。
 
 | sessionUpdate | 用途 |
 |---|---|
+| `user_message_chunk` | 用户消息。`session/load` 重放历史时用它 |
 | `agent_message_chunk` | 给用户的文字流（打字机效果） |
 | `agent_thought_chunk` | 思考过程，UI 折叠显示 |
 | `tool_call` | 新建一个工具卡片：id、title、**kind**（read / edit / execute / search / delete / move / fetch / think / switch_mode / other）、locations、rawInput |
@@ -63,22 +104,28 @@ initialize            能力协商（Client: fs / terminal；Agent: prompt / mcp
 | `plan` | 步骤清单：`pending / in_progress / completed` + priority，UI 画成 todo 列表 |
 | `usage_update` | token 与花费，实时上屏 |
 | `available_commands_update` / `current_mode_update` / `config_option_update` | 斜杠命令、当前模式、可配置项同步 |
+| `session_info_update` | 会话标题、更新时间 |
+| `notice` | 临时提示，不进历史。要 Client 声明 `session.notices` |
+| `compaction_update` / `compaction_summary_chunk` | 上下文被压缩。要 Client 声明 `session.compaction` |
+
+`tool_call` 是汇报，不是执行。Agent 自己跑工具。`title` 给人看，`name` 是程序名，`kind` 决定图标和危险等级。`locations` 只给 UI 跳转，不授权读文件。卡片内容可以是普通内容块、`diff`（`oldText` / `newText`），或一个 `terminalId`。消息块可以带 `messageId`，重放时用它认出同一条消息。
 
 `session/prompt` 最终返回一个 **stopReason**：`end_turn`（正常说完了）、`cancelled`（用户停）、`refusal`（Agent 拒绝做）、`max_tokens` / `max_turn_requests`（触顶）。
 
-### 1.3 Agent 反向调用 Client（客户端是「手」的提供者）
+### 1.4 Agent 反向调用 Client（客户端是「手」的提供者）
 
 | 方法 | 用途 |
 |---|---|
 | `fs/read_text_file` / `fs/write_text_file` | 读写用户编辑器里的文件（带行号范围） |
 | `terminal/create`、`terminal/output`、`terminal/wait_for_exit`、`terminal/kill`、`terminal/release` | 起命令、流式取输出、等退出、杀掉 |
 | `session/request_permission` | **请求式权限**：带 options（allow_once / allow_always / reject_once / reject_always），由人拍板 |
+| `elicitation/create` | 问人要一份表单，或同意打开一个 URL。要 Client 声明对应的 `elicitation` 模式 |
 
 内容块统一为 text / image / audio / resource / resource_link，所以「把当前选中的代码块喂给 Agent」和「Agent 吐一张图」走同一套结构。
 
 关键设计：**ACP 不管 Agent 怎么想**。协议只保证「人能看见、能插手、能叫停」；循环、工具、压缩仍属 [Harness](../harness/) 与 [循环工程](../loop-graph/)。
 
-### 1.4 底层：编码、分帧、传输
+### 1.5 底层：编码、分帧、传输
 
 按层拆开看，ACP 的底座很薄，薄到可以手写：
 
@@ -293,12 +340,13 @@ Client (编辑器)                          Agent (编码 Agent 进程)
 |---|---|
 | [MCP](../mcp/) | 互补且正交：MCP = Agent→工具（横向下游），ACP = Client→Agent（纵向上游）。同一个 Agent 常同时是 **MCP client + ACP agent** |
 | [A2A](../a2a/) | A2A = Agent→Agent，对端是另一个大脑（工单）；ACP 的 Client 是一个**界面**，对端是人 |
+| [AG-UI](../ag-ui/) | 同是屏幕接缝。AG-UI 长在应用上：一次 POST、一条 SSE 事件流，运行中没有回程。ACP 长在编辑器上，运行中 Agent 可以调文件、终端和权限 |
 | LSP | 同构不同域：LSP 是无状态补全/跳转，ACP 是有副作用的长事务 |
 | [Harness](../harness/) | ACP 是把 Harness 的循环**投影到 UI** 的接缝；工具与权限模型仍在 Harness 里 |
 | [Guardrails](../../reliability/guardrails/) | ACP 只负责「问人」，真正的最小权限白名单在护栏层，不能只靠弹窗 |
 | [Eval](../../reliability/eval/) | `session/update` 流本身就是 trajectory，可直接落库做轨迹评测 |
 
-三个协议一句话记住：**MCP 接手，A2A 接同事，ACP 接屏幕。**
+四个协议一句话记住：**MCP 接手，A2A 接同事，ACP 接编辑器，AG-UI 接应用。**
 
 ---
 
@@ -316,7 +364,7 @@ Client (编辑器)                          Agent (编码 Agent 进程)
 
 ## 八、延伸阅读
 
-- 规范与 SDK：Agent Client Protocol（Zed 发起）官方站点与 `agent-client-protocol` 仓库
+- 规范与 SDK：[Introduction](https://agentclientprotocol.com/get-started/introduction)、[Architecture](https://agentclientprotocol.com/get-started/architecture)、[v1 Overview](https://agentclientprotocol.com/protocol/v1/overview)，以及 `agent-client-protocol` 仓库
 - 生态名单：官方 [Agents](https://agentclientprotocol.com/get-started/agents) / [Clients](https://agentclientprotocol.com/get-started/clients) / [ACP Registry](https://agentclientprotocol.com/get-started/registry)（一键安装 ACP agent）
 - 对照：[mcp](../mcp/)、[a2a](../a2a/)、[harness](../harness/)、[loop-graph](../loop-graph/)
 - 权限与人审：[guardrails](../../reliability/guardrails/)
@@ -359,3 +407,39 @@ UI 内命令：`/quit` 退出 · `/new` 新会话 · `/tools` 列出本轮工具
 
 1. **`session/prompt` 期间 Agent 会反向发请求**，Client 必须在独立线程里处理这些请求，不能和「等响应」串在同一条读循环上——`mock_agent.py` 第一版就是这么把自己堵死的（请求发出后读循环被占，响应永远读不到）。真 Agent 也一样：权限请求是在 prompt 未返回时进来的。
 2. **路径比较要 `realpath`**：macOS 上 `/tmp` 是 `/private/tmp` 的软链，直接用 `abspath` 比前缀会把工作区内的文件判成「越界」。
+
+---
+
+## 十一、浏览器版 UI（`web_ui.py`）
+
+上面的 `codebuddy_acp_ui.py` 是终端 REPL，在 IDE 里没法「打开成窗口」；`web_ui.py` 是同一个 ACP Client 的**浏览器版**：单文件、仅标准库，起一个本地 HTTP 服务把 ACP 事件流投到网页上。
+
+```
+浏览器 ←(JSON 轮询 /api/events)→ web_ui.py ←(JSON-RPC over stdio)→ Agent 子进程
+                                   │
+                                   └─ 真执行 fs/write_text_file、terminal/create，
+                                      权限请求弹窗由人点选后再回包
+```
+
+```bash
+python3 web_ui.py                        # http://127.0.0.1:8765，默认 demo 模式（免登录，打开即用）
+python3 web_ui.py --port 9000 --cwd /tmp/myproj
+python3 web_ui.py --agent codebuddy      # 默认就接真 CLI
+```
+
+页面右上角可切两种 Agent：
+
+| 模式 | Agent | 说明 |
+|---|---|---|
+| **演示 Agent（免登录）** | `mock_agent.py` | 打开即用，完整演示 plan / 工具卡片 / 权限弹窗 / 真实写文件 / 真实跑命令 / 消息流 / usage / `stopReason` |
+| **CodeBuddy CLI（真 ACP）** | `codebuddy --acp` | 真调本机 CLI；首次出现顶部登录条，点 iOA / Google·GitHub / 微信 / 企业域 任一项即发 `authenticate`，浏览器登录完成后自动 `session/new` |
+
+界面三块：中间是 ACP 会话流（消息气泡、计划清单、按 `kind` 着色的工具卡片与状态流转、usage、停止原因），底部输入框（回车发送、`停止` 发 `session/cancel`），右侧是**工作区真实文件列表**（点开看内容）。权限请求以模态弹窗裁决，选项直接来自 Agent 的 `options`（`allow_once` / `reject_once` 等）。
+
+HTTP 接口（都是 JSON，前端按 `seq` 增量轮询）：`GET /api/events?since=N`、`GET /api/files`、`GET /api/file?path=`、`POST /api/start`、`/api/auth`、`/api/prompt`、`/api/permission`、`/api/cancel`、`/api/clear`。
+
+**默认工作区**是 `acp/web_workspace/`（可用 `--cwd` 改）；演示模式下 Agent 写的文件是真实落盘的，所以右侧栏能直接看到 `hello.py` 和它的内容。这也是「ACP 的输出不是聊天文字，而是结构化副作用」最直观的演示。
+
+实现上比终端版多两处：① `session/prompt` 放到后台线程，否则 HTTP 请求会一直阻塞到一轮结束；② 权限请求用 `threading.Event` 挂起，等前端 POST 裁决再回包——**人的点击就是 ACP 请求-响应的响应端**。
+
+> 端口占用时换 `--port`；`--acp` 的 stdio 是 Agent 的通道，和本进程对浏览器提供的 HTTP 是两条独立的连接，别混。

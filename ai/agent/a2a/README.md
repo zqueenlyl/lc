@@ -77,6 +77,7 @@ Card 示例字段：`name`、`description`、`url`、`skills[]`（id / 输入输
 |---|---|
 | [MCP](../mcp/) | 互补：MCP 连工具，A2A 连 Agent |
 | [ACP](../acp/) | 别混：A2A 的对端是另一个大脑；ACP 的对端是一个**界面**（编辑器 / 客户端）。IBM 早期的 ACP（Agent Communication Protocol）已并入 A2A，与今天的 Agent Client Protocol 同名不同物 |
+| [AG-UI](../ag-ui/) | 应用和 Agent 之间的事件流。对端是人用的界面，不是另一个 Agent |
 | 多智能体（LangGraph） | 同进程图编排不必上 A2A；跨进程 / 跨组织才需要 |
 | [Guardrails](../../reliability/guardrails/) | 发出去的 Task 入参、收回来的 Artifact 都要校验 |
 | [Eval](../../reliability/eval/) | 按 hop 做 TaskCompletion，而不是只评最终一句回复 |

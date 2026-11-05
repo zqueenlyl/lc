@@ -60,7 +60,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 | **Harness** | 循环怎么转、默认工具、沙箱 | [harness](harness/) |
 | **循环与图** | 循环何时算完；执行图接线、事实共享（整栈见[§七](#七按栈升级从提示到图)） | [loop-graph](loop-graph/) |
 | **工具协议** | 手怎么接上 | [mcp](mcp/)、[structured-output](../reliability/structured-output/) |
-| **客户端协议** | 屏幕怎么接上（编辑器 / 终端 UI） | [acp](acp/) |
+| **客户端协议** | 屏幕怎么接上 | [acp](acp/)（编辑器）、[ag-ui](ag-ui/)（应用） |
 | **技能 / SOP** | 这类任务按什么做 | [agent-skills](agent-skills/) |
 | **记忆** | 这轮 / 这会话 / 跨会话记什么 | [memory](../knowledge/memory/) |
 | **上下文** | 窗口里塞谁、砍谁 | [context-engineering](../knowledge/context-engineering/) |
@@ -79,7 +79,7 @@ L4 没有 L2 的沙箱和验证，只是把幻觉放大。先闭环，再开放�
 | **外壳 Harness**（壳） | 工具 / 权限 / 循环 / 编排 | [harness](harness/)、[loop-graph](loop-graph/)、[langgraph](case-studies/langgraph/) | 本目录即主场 |
 | **环境 Env**（世界） | 能碰到什么 | [mcp](mcp/)、[a2a](a2a/)、[computer-use](computer-use/)、[环节 04](./环节04-工具调用详解.md)/[05](./环节05-工具接入协议MCP详解.md)/[06](./环节06-检索增强RAG详解.md) | [rag](../knowledge/rag/)、[memory](../knowledge/memory/)、[sandbox](../reliability/sandbox/) |
 
-本目录的重心是中间那项：模型本体在 [foundation](../foundation/)，环境纵深在 [knowledge](../knowledge/)、[reliability](../reliability/)。注意 [MCP](mcp/)、[A2A](a2a/)、[ACP](acp/) 是**接缝**——MCP 的 client 半边长在外壳、server 在环境，A2A 跨两个外壳，ACP 的另一头是编辑器，两边各占一半，所以平铺不塞桶。三个协议一句话：**MCP 接手，A2A 接同事，ACP 接屏幕。**
+本目录的重心是中间那项：模型本体在 [foundation](../foundation/)，环境纵深在 [knowledge](../knowledge/)、[reliability](../reliability/)。注意 [MCP](mcp/)、[A2A](a2a/)、[ACP](acp/)、[AG-UI](ag-ui/) 是**接缝**——MCP 的 client 半边长在外壳、server 在环境，A2A 跨两个外壳，ACP 的另一头是编辑器，AG-UI 的另一头是应用，两边各占一半，所以平铺不塞桶。四个协议一句话：**MCP 接手，A2A 接同事，ACP 接编辑器，AG-UI 接应用。**
 
 ---
 
@@ -140,6 +140,7 @@ MCP 解决「手」；A2A 解决「工单」。不是二选一。
 | 知识库 | 检索 + 引用 | 答案能在命中块里溯源 |
 | 其他 Agent | A2A Task | Artifact schema、hop 超时 |
 | 编辑器 / IDE | [ACP](acp/) session（fs / terminal） | 工具卡片可跳转、危险步人点确认、可 cancel |
+| 产品页面 / 终端 / IM | [AG-UI](ag-ui/) 事件流 | 文字与工具卡片能流式上屏、前端工具有回执、打断能续跑 |
 
 **验证者不要等于执行者。** 模型说「已修好」不算完；`pytest`、schema、人审才算。这是 Agent 评测难于 LLM 评测的原因：考的是模型 × Harness × 环境。见 [eval](../reliability/eval/)、[SWE-bench](https://www.swebench.com/)。
 
@@ -257,7 +258,8 @@ Prompt（怎么问一次）
 | **Harness** | 运行时外壳 |
 | **Subagent** | 缩小权限的子循环 |
 | **HITL** | Human in the loop，关键步暂停等人 |
-| **ACP** | Agent Client Protocol：编辑器 / 客户端 ↔ Agent 的接缝，[acp](acp/) |
+| **ACP** | Agent Client Protocol：编辑器 ↔ Agent 的接缝，[acp](acp/) |
+| **AG-UI** | Agent–User Interaction：应用 ↔ Agent 的事件流，[ag-ui](ag-ui/) |
 | **Autonomy** | 无人干预能走多远；不是越高越好 |
 | **% Resolved** | 上机题测绿的比例（SWE-bench） |
 | **执行图** | 控制流：节点=步骤，边=路由；回答「下一步跑谁」 |
@@ -279,6 +281,7 @@ Prompt（怎么问一次）
 | 工具插头 | [mcp/](mcp/) |
 | Agent 互委托 | [a2a/](a2a/) |
 | 编辑器 ↔ Agent 接缝 | [acp/](acp/) |
+| 应用 ↔ Agent 事件流 | [ag-ui/](ag-ui/) |
 | 实验室对照（何时拆 / 下发 / 产物 / 门控） | [multi-agent-research/](multi-agent-research/) |
 | 菜谱 | [agent-skills/](agent-skills/) |
 | 编码外壳 | [harness/](harness/) |
